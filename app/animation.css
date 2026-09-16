@@ -206,3 +206,32 @@ html,body{background:#e1dfca}
   .id-front>label{font-size:15px}
   .video-nav button span{font-size:10px}
 }
+
+/* Standalone viewport fix, pass 2.
+   WebKit bug 254868 reports reduced viewport heights with viewport-fit=cover.
+   Use the large legacy vh only for an installed app, NOT for Safari tabs.
+   The fixed footer uses an explicit top anchor to avoid a reduced bottom edge.
+   Keep its safe-area padding: controls must stay above the home indicator.
+   Device verification is still required; no hard-coded iPhone pixel offset. */
+@media (display-mode:standalone){
+  html,body,.video-app{min-height:100vh}
+  .video-app{--standalone-nav-height:calc(52px + env(safe-area-inset-bottom,0px))}
+  .video-page,.sub-screen{min-height:100vh}
+  .video-page:has(.id-screen){padding-top:25vh}
+  .id-screen .flip-shell{height:clamp(430px,53.75vh,620px)}
+  .video-nav{
+    top:calc(100vh - var(--standalone-nav-height));
+    bottom:auto;
+    height:var(--standalone-nav-height);
+    min-height:var(--standalone-nav-height);
+  }
+  .video-app:not(.panel-open) .video-watermark{
+    top:calc(100vh - var(--standalone-nav-height) - 7px);
+    bottom:auto;
+    transform:translate(-50%,-100%);
+  }
+}
+@media (display-mode:standalone) and (max-height:740px){
+  .video-page:has(.id-screen){padding-top:max(128px,calc(env(safe-area-inset-top,0px) + 76px))}
+  .id-screen .flip-shell{height:450px}
+}
