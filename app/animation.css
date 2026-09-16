@@ -81,3 +81,128 @@ body{min-height:100vh;min-height:100svh;min-height:100dvh}
   .flip-shell{height:390px}
   .screen-tools{height:36px;margin-bottom:8px}
 }
+
+/* Reference pass 1: geometry from the two supplied 552 x 1200 screenshots.
+   Demo branding and test data remain unchanged. Append-only, reversible override.
+   Target on a tall portrait screen: card x=5.45%, y=25%, height=53.75%.
+   Short screens use normal document scrolling instead of clipping the card. */
+html,body{background:#e1dfca}
+.video-app{
+  --bg:#e1dfca;
+  --card:#d4d3bd;
+  --ink:#10110d;
+  --orange:#ff8500;
+  --brown:#705014;
+  background:var(--bg);
+}
+.video-page:has(.id-screen){
+  padding-top:25dvh;
+  padding-left:5.45%;
+  padding-right:5.45%;
+  padding-bottom:calc(112px + env(safe-area-inset-bottom,0px));
+}
+.id-screen{min-height:0}
+.id-screen .screen-tools{
+  position:absolute;
+  top:max(72px,calc(env(safe-area-inset-top,0px) + 24px));
+  right:5.45%;
+  height:32px;
+  margin:0;
+}
+.id-screen .screen-tools button{
+  position:relative;
+  padding:6px 13px;
+  min-height:32px;
+  border-radius:24px;
+  background:#fafcf7;
+  color:#10110d;
+  font-size:16px;
+  line-height:20px;
+  font-weight:500;
+  gap:7px;
+}
+/* Keep a 44px touch area without making the visible pill too tall. */
+.id-screen .screen-tools button::before{content:"";position:absolute;inset:-6px 0}
+.id-screen .screen-tools svg{width:17px;height:17px;fill:currentColor}
+.id-screen .flip-shell{
+  height:clamp(430px,53.75dvh,620px);
+  min-height:0;
+  margin:0;
+}
+.id-screen .id-card,.id-screen .id-face{border-radius:9px}
+.id-screen .id-face{border-color:#999a85}
+.id-front .id-head{padding:23px 15px 5px}
+.id-front .id-head h1{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:22px;
+  line-height:1.15;
+  font-weight:600;
+}
+.id-front>label{
+  padding:10px 15px 0;
+  gap:5px;
+  color:#585a51;
+  font-size:16px;
+  line-height:1.2;
+  font-weight:400;
+}
+.id-front>label b{font-size:17px;font-weight:600}
+.id-front .shield{width:30px;height:37px}
+.id-front .card-space{min-height:40px}
+.id-front .status-strip{flex-shrink:0;padding:3px 0;font-size:16px;line-height:1.2}
+.id-front .id-person{
+  flex-shrink:0;
+  min-height:148px;
+  padding:30px 15px 14px;
+  gap:10px;
+}
+.id-front .id-person small{font-size:15px;line-height:1.2;font-weight:400}
+.id-front .id-person h2{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:23px;
+  line-height:1.1;
+  letter-spacing:0;
+  font-weight:500;
+  margin:8px 0 0;
+  overflow-wrap:anywhere;
+}
+.id-front .orange-circle{width:40px;height:40px}
+.video-nav{
+  bottom:0;
+  width:100%;
+  max-width:450px;
+  min-height:calc(50px + env(safe-area-inset-bottom,0px));
+  padding:6px 4px calc(4px + env(safe-area-inset-bottom,0px));
+  border:0;
+  border-radius:0;
+  background:#fafcf7;
+  box-shadow:none;
+  backdrop-filter:none;
+  align-items:start;
+}
+.video-nav button{min-height:40px;gap:3px;color:#10110d}
+.video-nav svg{width:24px;height:24px}
+.video-nav button.active svg{width:24px;height:24px;padding:2px;border-radius:2px}
+.video-nav button span{font-size:12px;line-height:1.15}
+.video-watermark{
+  bottom:calc(57px + env(safe-area-inset-bottom,0px));
+  max-width:calc(100% - 48px);
+}
+.panel-open .video-watermark{bottom:max(10px,env(safe-area-inset-bottom,0px))}
+
+/* Avoid a tiny QR on the reverse side, but keep its warning text visible. */
+.id-back .flip-qr{min-height:0;flex-shrink:1;aspect-ratio:1;max-height:100%}
+.id-back .flip-qr svg{width:100%;height:100%;max-height:100%}
+.id-back .back-warning,.id-back h2,.id-back .back-legal{flex-shrink:0}
+
+@media(max-height:740px){
+  .video-page:has(.id-screen){padding-top:max(128px,calc(env(safe-area-inset-top,0px) + 76px))}
+  .id-screen .flip-shell{height:450px}
+}
+@media(max-width:359px){
+  .id-front .id-person{padding:20px 12px 12px;min-height:140px}
+  .id-front .id-person h2{font-size:21px;line-height:1.12}
+  .id-front .id-person small{font-size:12px}
+  .id-front>label{font-size:15px}
+  .video-nav button span{font-size:10px}
+}
