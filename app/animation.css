@@ -235,3 +235,13 @@ html,body{background:#e1dfca}
   .video-page:has(.id-screen){padding-top:max(128px,calc(env(safe-area-inset-top,0px) + 76px))}
   .id-screen .flip-shell{height:450px}
 }
+
+/* Card typography pass 3. Only the front face; accepted shell/nav stay intact.
+   Approximation with the existing system font, not an embedded original font. */
+.id-front .id-head h1{font-weight:500}
+.id-front>label{padding-top:5px}
+/* Avoid inheriting the body's 1.5 line-height around the small profile label. */
+.id-front .id-person>div{line-height:1.2}
+.id-front .id-person h2{letter-spacing:.01em}
+.id-front .id-person .profile-surname{text-transform:uppercase}
+.id-front .orange-circle svg{width:24px;height:24px;stroke-linecap:butt}
