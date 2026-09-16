@@ -1,5 +1,5 @@
 .flip-shell{perspective:1100px;width:100%;height:min(58dvh,560px);min-height:470px}
-.flip-shell .id-card{height:100%;min-height:0;position:relative;overflow:visible;border:0;background:transparent;transform-style:preserve-3d;transition:transform .72s cubic-bezier(.22,.72,.22,1);will-change:transform}
+.flip-shell .id-card{height:100%;min-height:0;position:relative;overflow:visible;border:0;background:transparent;transform-style:preserve-3d;will-change:transform}
 .flip-shell .id-card.flipped{transform:rotateY(180deg)}
 .id-face{position:absolute;inset:0;border:1px solid #aaac96;border-radius:20px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .id-front{display:flex;flex-direction:column;background:var(--card)}

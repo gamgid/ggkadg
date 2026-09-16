@@ -1,0 +1,27 @@
+/* Animation-only overrides. No page, header, geometry or nav changes. */
+.flip-shell{
+  perspective:750px;
+  perspective-origin:50% 50%;
+}
+.flip-shell .id-card{
+  transform:rotateY(0deg);
+  transform-origin:50% 50%;
+  transform-style:preserve-3d;
+  transition:none;
+  /* Never put opacity, filter, containment or clipping on the 3D rotor. */
+}
+.flip-shell .id-face{
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  box-shadow:0 2px 4px rgba(0,0,0,.04);
+}
+.flip-shade{
+  position:absolute;
+  inset:0;
+  display:block;
+  z-index:10;
+  border-radius:inherit;
+  background:#000;
+  opacity:0;
+  pointer-events:none;
+}

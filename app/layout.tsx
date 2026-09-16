@@ -4,6 +4,7 @@ import './reference.css';
 import './video.css';
 import './cleanup.css';
 import './animation.css';
+import './card-flip.css';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 export const metadata: Metadata = {
