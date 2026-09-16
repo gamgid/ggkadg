@@ -1,0 +1,83 @@
+.flip-shell{perspective:1100px;width:100%;height:min(58dvh,560px);min-height:470px}
+.flip-shell .id-card{height:100%;min-height:0;position:relative;overflow:visible;border:0;background:transparent;transform-style:preserve-3d;transition:transform .72s cubic-bezier(.22,.72,.22,1);will-change:transform}
+.flip-shell .id-card.flipped{transform:rotateY(180deg)}
+.id-face{position:absolute;inset:0;border:1px solid #aaac96;border-radius:20px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.id-front{display:flex;flex-direction:column;background:var(--card)}
+.id-back{transform:rotateY(180deg);background:#f9f9f5;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:48px 28px 24px;text-align:center}
+.back-warning{margin:0;font-size:9px;font-weight:800;letter-spacing:.07em;color:#8f342e}
+.id-back h2{font-size:16px;margin:11px 0 18px;font-weight:650}
+.flip-qr{width:100%;max-width:320px;padding:0;background:#fff}
+.flip-qr svg{display:block;width:100%;height:auto}
+.id-back .back-legal{margin-top:10px;font-size:8px;font-weight:800;line-height:1.45;letter-spacing:.035em;color:#983c34}
+@media(max-width:350px){.id-back{padding-inline:22px}.id-back h2{font-size:15px}.flip-qr{max-width:290px}}
+.status-strip{overflow:hidden;padding:4px 0;font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;font-weight:500;line-height:1.2;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.status-track{display:flex;width:max-content;animation:statusMarquee 9s linear infinite}
+.status-track span{flex:none;padding:0 40px 0 14px}
+@keyframes statusMarquee{to{transform:translateX(-50%)}}
+.services-screen h1{font-family:Inter,"Inter Regular",Arial,sans-serif;font-size:30px;font-weight:400}
+.services-screen .bare-list button{font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;font-weight:500;-webkit-font-smoothing:antialiased}
+.menu-screen h1{font-family:Inter,"Inter Regular",Arial,sans-serif;font-size:26px;font-weight:700;-webkit-font-smoothing:antialiased}
+.id-front .id-head h1,.id-front>label,.id-front>label b,.id-front .id-person small{font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.id-screen .screen-tools button{font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:500;-webkit-font-smoothing:antialiased}
+.id-front>label{padding:10px 17px 0;color:#55594e;font-size:12px;font-weight:600;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.id-front>label b{display:block;font-size:14px;font-weight:700;color:#191a16}
+.id-front .id-person small{font-weight:600}
+.id-front .id-person h2::first-line{text-transform:uppercase}
+.id-front .id-head h1,.id-front .id-person h2{font-weight:550}
+.id-front .id-person h2{font-family:"e-Ukraine",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.video-page{padding-top:max(39px,calc(env(safe-area-inset-top,0px) + 14px))}
+.sub-screen{padding-top:max(95px,calc(env(safe-area-inset-top,0px) + 36px))}
+.sub-screen .back{top:max(46px,calc(env(safe-area-inset-top,0px) + 12px))}
+html,body{min-height:100%;background:#e6e7cf}
+body{min-height:100vh;min-height:100svh;min-height:100dvh}
+.video-app{--nav-bottom:calc(14px - env(safe-area-inset-bottom,0px));min-height:100vh;min-height:100svh;min-height:100dvh;background:#e6e7cf}
+.video-nav{bottom:var(--nav-bottom);padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));border-radius:19px 19px 0 0}
+.video-watermark{bottom:74px}
+
+/* Fluid phone layout: compact Androids through large iPhones. */
+.video-app{--page-x:clamp(12px,4.45vw,20px);width:100%;max-width:450px;overflow-x:hidden}
+.video-page{padding-left:var(--page-x);padding-right:var(--page-x);padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+.screen-tools{min-width:0}
+.screen-tools button{max-width:100%;white-space:nowrap}
+.id-screen{display:flex;min-height:calc(100dvh - max(39px,calc(env(safe-area-inset-top,0px) + 14px)) - 88px - env(safe-area-inset-bottom,0px));flex-direction:column}
+.id-screen .flip-shell{margin-block:auto}
+.flip-shell{height:clamp(390px,calc(100dvh - 218px - env(safe-area-inset-top,0px)),530px);min-height:0}
+.id-head{padding-left:clamp(14px,4.2vw,17px);padding-right:clamp(14px,4.2vw,17px)}
+.id-head h1{font-size:clamp(22px,6.7vw,25px)}
+.id-front>label{padding-left:clamp(14px,4.2vw,17px);padding-right:clamp(14px,4.2vw,17px)}
+.id-person{padding-left:clamp(12px,3.8vw,14px);padding-right:clamp(12px,3.8vw,14px)}
+.id-person>div{min-width:0}
+.id-person h2{font-size:clamp(20px,6.15vw,23px);overflow-wrap:anywhere}
+.orange-circle{flex:0 0 auto}
+.card-space strong{font-size:clamp(13px,4.25vw,16px)}
+.id-back{padding:clamp(28px,7vh,48px) clamp(15px,6vw,28px) 20px}
+.id-back h2{font-size:clamp(14px,4.3vw,16px);margin-bottom:clamp(12px,3vh,18px)}
+.flip-qr{max-width:min(320px,100%)}
+.video-nav{width:min(410px,calc(100% - clamp(12px,4vw,30px)));grid-template-columns:repeat(4,minmax(0,1fr))}
+.video-nav button{min-width:0;padding-inline:1px}
+.video-nav button span{display:block;max-width:100%;font-size:clamp(8px,2.5vw,10px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.video-watermark{width:min(350px,calc(100% - clamp(42px,16vw,72px)));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plain-screen,.menu-screen,.jobs-screen,.intro-screen{min-height:calc(100dvh - 165px)}
+.plain-screen h1,.menu-screen h1,.jobs-screen h1,.intro-screen h1,.sub-screen h1{font-size:clamp(25px,7.5vw,28px)}
+.services-screen h1{font-size:clamp(27px,8vw,30px)}
+.bare-list button,.menu-row,.white-list button{min-width:0}
+.bare-list button span,.menu-row span,.white-list button{overflow-wrap:anywhere}
+.bare-list button span,.menu-row span{min-width:0;padding-right:8px}
+.sub-screen{padding-left:clamp(16px,5vw,22px);padding-right:clamp(16px,5vw,22px);padding-bottom:calc(35px + env(safe-area-inset-bottom,0px))}
+.qr-sheet{padding-left:clamp(14px,5.5vw,25px);padding-right:clamp(14px,5.5vw,25px);padding-bottom:calc(25px + env(safe-area-inset-bottom,0px))}
+.qr-box{max-width:100%}
+
+@media(max-width:359px){
+  .screen-tools button{padding:8px 10px}
+  .status-strip{font-size:13px}
+  .status-track span{padding-right:28px}
+  .id-person h2{line-height:.94}
+  .id-back{padding-inline:14px}
+  .video-nav{width:calc(100% - 10px)}
+}
+
+@media(max-height:650px){
+  .video-page{padding-bottom:84px}
+  .flip-shell{height:390px}
+  .screen-tools{height:36px;margin-bottom:8px}
+}

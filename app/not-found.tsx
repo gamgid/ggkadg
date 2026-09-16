@@ -1,0 +1,1 @@
+import Link from'next/link';export default function NotFound(){return <main className="state-page"><h1>Сторінку не знайдено</h1><p>Такого демонстраційного екрана не існує.</p><Link href="/">Повернутися на головну</Link></main>}

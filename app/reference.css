@@ -1,0 +1,27 @@
+.reference-home{background:#e9e6d3}
+.reference-home nav{display:none}
+.reference-home .content{padding:8px 20px 18px}
+.compact-top{height:155px;padding:72px 25px 18px;display:flex;align-items:flex-end;justify-content:space-between}
+.compact-top button{width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;color:#1a1b17}
+.compact-top svg{width:30px;height:30px}
+.reference-screen{display:flex;flex-direction:column}
+.reference-card{padding:0;text-align:left;color:#161713;background:#d9d8c4;border:1.5px solid #aaa994;border-radius:23px;overflow:hidden;height:545px;flex:none;display:flex;flex-direction:column;box-shadow:none}
+.reference-title{display:flex;justify-content:space-between;align-items:flex-start;padding:26px 21px 5px}
+.reference-title h2{font-size:30px;line-height:.94;letter-spacing:-.04em;margin:0;font-weight:600;max-width:245px}
+.demo-sign{width:48px;height:55px;border-radius:9px 9px 17px 17px;background:#181914;color:#e9e6d3;display:grid;place-items:center;font-size:24px;font-weight:900}
+.reference-meta{display:grid;gap:14px;padding:25px 21px 0}
+.reference-meta label{font-size:15px;color:#56564d;display:flex;flex-direction:column;gap:3px}
+.reference-meta b{font-size:17px;color:#1a1b17}
+.reference-spacer{position:relative;flex:1;min-height:120px;display:grid;place-items:center;overflow:hidden}
+.reference-spacer strong{transform:rotate(-18deg);color:#76332a29;font-size:19px;white-space:nowrap}
+.reference-strip{padding:10px 20px;background:#6d4814;color:#fff;font-size:14px;white-space:nowrap}
+.reference-person{padding:12px 21px 14px;display:flex;justify-content:space-between;align-items:flex-end}
+.reference-person small{font-size:14px;color:#55564d}
+.reference-person h3{font-size:27px;line-height:.94;letter-spacing:-.035em;margin:7px 0 0;font-weight:500}
+.more{width:49px;height:49px;border-radius:50%;background:#ff7a0b;display:grid;place-items:center}
+.more svg{width:26px}
+.scan-action{border:0;background:transparent;color:#171814;display:flex;align-items:center;justify-content:center;gap:13px;font-size:17px;font-weight:600;padding:22px 10px 14px}
+.scan-action svg{width:28px;height:28px}
+@media(max-width:350px){.reference-title h2{font-size:27px;max-width:215px}.reference-card{height:525px}.reference-person h3{font-size:27px}}
+@media(max-height:750px){.compact-top{height:125px}.reference-card{height:510px}.reference-meta{gap:8px;padding-top:18px}.reference-person{padding-top:12px;padding-bottom:14px}.reference-person h3{font-size:27px}}
+.state-page{width:100%;max-width:450px;min-height:100dvh;margin:auto;padding:96px 26px 36px;background:#e9e6d3;display:flex;flex-direction:column;gap:18px}.state-page h1{font-size:38px;line-height:1.02}.state-page small{color:#6d6e66}.state-page a,.state-page button{display:block;margin-top:auto;border:0;border-radius:16px;padding:16px;background:#1d2923;color:#fff;text-align:center;text-decoration:none;font-weight:700}.skeleton{height:240px;border-radius:28px;background:linear-gradient(100deg,#d6d3c5 30%,#ebe9de 50%,#d6d3c5 70%);background-size:300% 100%;animation:shimmer 1.3s infinite}.skeleton.short{height:58px}@keyframes shimmer{to{background-position:-150% 0}}

@@ -1,0 +1,7 @@
+.video-watermark{position:fixed;top:auto;bottom:78px;width:min(350px,calc(100% - 72px));padding:4px 9px;border-radius:8px;background:rgba(24,36,29,.9);font-size:7px;pointer-events:none}
+.panel-open .video-watermark{bottom:10px}
+.video-page{min-height:100dvh;padding-top:18px}
+.screen-tools{height:42px;margin-bottom:12px}
+.sub-screen{padding-top:58px}
+.sub-screen .back{top:12px}
+.splash-v .island{display:none}

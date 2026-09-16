@@ -1,0 +1,1 @@
+'use client';export default function ErrorPage({reset}:{reset:()=>void}){return <main className="state-page"><h1>Щось пішло не так</h1><p>Демо-застосунок не зміг відкрити цей екран.</p><button onClick={reset}>Спробувати ще раз</button></main>}
