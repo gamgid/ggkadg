@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Bell, BriefcaseBusiness, ChevronLeft, ChevronRight, CircleHelp, Copy, FileText, Grid2X2, Headphones, LogOut, Menu, Plus, QrCode, Search, Settings, ShieldCheck, Smartphone, Upload, X } from 'lucide-react';
 import { storageService } from '../src/services/storageService';
@@ -42,7 +42,46 @@ export default function HomePage(){
   </main>;
 }
 
-function IdScreen({profile,qr,openMessages}:{profile:Profile;qr:string;seconds:number;openMessages:()=>void}){const[halfTurns,setHalfTurns]=useState(0),flipped=halfTurns%2===1,expiry=qrExpiryDate(),status='Демо-статус  •  Оновлено о 18:42';return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><button className={`id-card flip-card ${flipped?'flipped':''}`} style={{transform:`rotateY(${halfTurns*180}deg)`}} onClick={()=>setHalfTurns(turns=>turns+1)} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Демо ID</h1><span className="shield">D</span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" aria-hidden="true"><Plus strokeWidth={3.5}/></span></div></section><section className="id-face id-back"><p className="back-warning">ТЕСТОВИЙ QR — НЕ ДЛЯ ПЕРЕВІРКИ</p><h2>QR дійсний до {expiry}</h2><div className="flip-qr"><QRCodeSVG value={qr} size={320} minVersion={qrVersion} level="M" boostLevel={false}/></div><small className="back-legal">НЕ ПІДТВЕРДЖУЄ ОСОБУ · НЕ МАЄ ЮРИДИЧНОЇ СИЛИ</small></section></button></div></div>}
+function IdScreen({profile,qr,openMessages}:{profile:Profile;qr:string;seconds:number;openMessages:()=>void}){
+  const [halfTurns,setHalfTurns]=useState(0);
+  const [isTurning,setIsTurning]=useState(false);
+  const turning=useRef(false);
+  const releaseTimer=useRef<number|null>(null);
+  const flipped=halfTurns%2===1;
+  // Target-face duration: original recording is approximately 350 ms out / 300 ms back.
+  const durationMs=flipped?350:300;
+  const expiry=qrExpiryDate(),status='Демо-статус  •  Оновлено о 18:42';
+
+  useEffect(()=>()=>{
+    if(releaseTimer.current!==null)window.clearTimeout(releaseTimer.current);
+  },[]);
+
+  const finishTurn=()=>{
+    if(releaseTimer.current!==null){
+      window.clearTimeout(releaseTimer.current);
+      releaseTimer.current=null;
+    }
+    turning.current=false;
+    setIsTurning(false);
+  };
+
+  const startTurn=(button:HTMLButtonElement)=>{
+    // Synchronous lock also catches a second tap before React commits the render.
+    if(turning.current)return;
+    const motionDisabled=window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ||button.closest('.no-motion')!==null;
+    const nextDurationMs=flipped?300:350;
+    if(!motionDisabled){
+      turning.current=true;
+      setIsTurning(true);
+      // Safety release if Safari suppresses transitionend or the transition is cancelled.
+      releaseTimer.current=window.setTimeout(finishTurn,nextDurationMs+120);
+    }
+    // Never normalize modulo 360: 0 -> 180 -> 360 continues in one direction.
+    setHalfTurns(turns=>turns+1);
+  };
+
+  return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><button className={`id-card flip-card ${flipped?'flipped':''}`} style={{transform:`rotateY(${halfTurns*180}deg)`,transitionDuration:`${durationMs}ms`,transitionTimingFunction:'ease-in-out'}} onClick={event=>startTurn(event.currentTarget)} onTransitionEnd={event=>{if(event.target===event.currentTarget&&event.propertyName==='transform')finishTurn()}} onTransitionCancel={event=>{if(event.target===event.currentTarget&&event.propertyName==='transform')finishTurn()}} aria-disabled={isTurning} aria-busy={isTurning} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Демо ID</h1><span className="shield">D</span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" aria-hidden="true"><Plus strokeWidth={3.5}/></span></div></section><section className="id-face id-back"><p className="back-warning">ТЕСТОВИЙ QR — НЕ ДЛЯ ПЕРЕВІРКИ</p><h2>QR дійсний до {expiry}</h2><div className="flip-qr"><QRCodeSVG value={qr} size={320} minVersion={qrVersion} level="M" boostLevel={false}/></div><small className="back-legal">НЕ ПІДТВЕРДЖУЄ ОСОБУ · НЕ МАЄ ЮРИДИЧНОЇ СИЛИ</small></section></button></div></div>}
 
 function ServicesScreen({setNotice}:{setNotice:(v:string)=>void}){return <div className="plain-screen services-screen"><h1>Сервіси</h1><div className="bare-list">{services.map(x=><button key={x} onClick={()=>setNotice(`${x}: демонстраційний розділ`)}><span>{x}</span><ChevronRight/></button>)}</div></div>}
 
