@@ -289,16 +289,17 @@ html,body{background:#e1dfca}
 .video-nav .nav-glyph-services{width:22px;height:22px}
 .video-nav .nav-glyph-jobs{width:20px;height:23px}
 .video-nav .nav-glyph-menu{width:22px;height:18px}
-.video-nav .nav-document-body{fill:none}
-.video-nav button.active .nav-document-body{fill:currentColor}
-.video-nav .nav-document-lines{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square}
-.video-nav button.active .nav-document-lines{stroke:#fafcf7}
-.video-nav button.active .nav-glyph-services rect{fill:currentColor}
+.video-nav .nav-glyph-document:not(.nav-glyph-active) rect{fill:none}
+.video-nav .nav-glyph-document:not(.nav-glyph-active) path{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square}
+.video-nav .nav-glyph-document.nav-glyph-active rect{fill:currentColor;stroke:none}
+.video-nav .nav-glyph-document.nav-glyph-active path{fill:none;stroke:#fafcf7;stroke-width:2;stroke-linecap:square}
+.video-nav .nav-glyph-services.nav-glyph-active rect{fill:currentColor;stroke:none}
 .video-nav .nav-job-body{fill:none}
 .video-nav .nav-job-diamond{fill:currentColor;stroke:none}
-.video-nav button.active .nav-job-body{fill:currentColor}
-.video-nav button.active .nav-job-diamond{fill:#fafcf7}
-.video-nav .nav-menu-lines{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:square}
+.video-nav .nav-glyph-jobs.nav-glyph-active .nav-job-body{fill:currentColor;stroke:none}
+.video-nav .nav-glyph-jobs.nav-glyph-active .nav-job-diamond{fill:#fafcf7;stroke:none}
+.video-nav .nav-glyph-menu:not(.nav-glyph-active) path{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:square}
+.video-nav .nav-glyph-menu.nav-glyph-active rect{fill:currentColor;stroke:none}
 @media(max-width:359px){
   .video-nav .nav-icon{width:22px;height:22px}
   .video-nav .nav-icon svg{max-width:20px;max-height:21px}
