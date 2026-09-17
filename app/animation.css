@@ -250,26 +250,26 @@ html,body{background:#e1dfca}
    standalone safe-area anchoring; only icons and labels match the reference. */
 .video-nav button{
   justify-content:flex-start;
-  gap:1px;
+  gap:2px;
   color:#11120f;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-weight:400;
+  font-weight:500;
 }
 .video-nav .nav-icon{
   display:grid;
   place-items:center;
-  width:32px;
-  height:30px;
+  width:24px;
+  height:24px;
 }
 .video-nav .nav-icon svg{
-  width:30px;
-  height:30px;
+  width:22px;
+  height:22px;
   padding:0;
   background:transparent;
   color:currentColor;
   fill:none;
   stroke:currentColor;
-  stroke-width:2.4;
+  stroke-width:2;
   stroke-linecap:round;
   stroke-linejoin:round;
 }
@@ -278,20 +278,29 @@ html,body{background:#e1dfca}
   max-width:100%;
   overflow:visible;
   color:inherit;
-  font-size:13px;
-  line-height:15px;
-  letter-spacing:-.025em;
+  font-size:11px;
+  line-height:13px;
+  letter-spacing:-.015em;
   white-space:nowrap;
   text-overflow:clip;
 }
 .video-nav button.active{font-weight:700;color:#080906}
+.video-nav .nav-glyph-document{width:20px;height:23px}
+.video-nav .nav-glyph-services{width:22px;height:22px}
+.video-nav .nav-glyph-jobs{width:20px;height:23px}
+.video-nav .nav-glyph-menu{width:22px;height:18px}
 .video-nav .nav-document-body{fill:none}
 .video-nav button.active .nav-document-body{fill:currentColor}
-.video-nav .nav-document-lines{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:square}
+.video-nav .nav-document-lines{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square}
 .video-nav button.active .nav-document-lines{stroke:#fafcf7}
+.video-nav button.active .nav-glyph-services rect{fill:currentColor}
+.video-nav .nav-job-body{fill:none}
 .video-nav .nav-job-diamond{fill:currentColor;stroke:none}
-.video-nav .nav-menu-lines{fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:square}
+.video-nav button.active .nav-job-body{fill:currentColor}
+.video-nav button.active .nav-job-diamond{fill:#fafcf7}
+.video-nav .nav-menu-lines{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:square}
 @media(max-width:359px){
-  .video-nav .nav-icon,.video-nav .nav-icon svg{width:27px;height:27px}
-  .video-nav .nav-label{font-size:10px;letter-spacing:-.03em}
+  .video-nav .nav-icon{width:22px;height:22px}
+  .video-nav .nav-icon svg{max-width:20px;max-height:21px}
+  .video-nav .nav-label{font-size:10px;letter-spacing:-.02em}
 }
