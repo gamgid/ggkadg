@@ -70,18 +70,11 @@ function MenuScreen({open,openQr}:{open:(p:Panel)=>void;openQr:()=>void}){return
 function Row({icon:Icon,title,onClick}:{icon:typeof Settings;title:string;onClick?:()=>void}){return <button className="menu-row" onClick={onClick}><Icon/><span>{title}</span>{onClick&&<ChevronRight/>}</button>}
 
 function NavGlyph({id,active}:{id:Tab;active:boolean}){
-  if(id==='id')return active
-    ?<svg className="nav-glyph-document nav-glyph-active" viewBox="0 0 24 28" aria-hidden="true"><rect x="3.5" y="1.5" width="17" height="25" rx="1.5"/><path d="M6.5 17.5h11M6.5 21.5h11"/></svg>
-    :<svg className="nav-glyph-document" viewBox="0 0 24 28" aria-hidden="true"><rect x="3.5" y="1.5" width="17" height="25" rx="1.5"/><path d="M6.5 17.5h11M6.5 21.5h11"/></svg>;
-  if(id==='services')return active
-    ?<svg className="nav-glyph-services nav-glyph-active" viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="9" height="9" rx="1.2"/><rect x="15.5" y="1.5" width="9" height="9" rx="1.2"/><rect x="1.5" y="15.5" width="9" height="9" rx="1.2"/><rect x="15.5" y="15.5" width="9" height="9" rx="1.2"/></svg>
-    :<svg className="nav-glyph-services" viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="9" height="9" rx="1.2"/><rect x="15.5" y="1.5" width="9" height="9" rx="1.2"/><rect x="1.5" y="15.5" width="9" height="9" rx="1.2"/><rect x="15.5" y="15.5" width="9" height="9" rx="1.2"/></svg>;
-  if(id==='jobs')return active
-    ?<svg className="nav-glyph-jobs nav-glyph-active" viewBox="0 0 24 28" aria-hidden="true"><rect className="nav-job-body" x="2.5" y="1.5" width="19" height="25" rx="1.4"/><rect className="nav-job-diamond" x="8.6" y="8.6" width="7" height="7" rx=".7" transform="rotate(-40 12.1 12.1)"/></svg>
-    :<svg className="nav-glyph-jobs" viewBox="0 0 24 28" aria-hidden="true"><rect className="nav-job-body" x="2.5" y="1.5" width="19" height="25" rx="1.4"/><rect className="nav-job-diamond" x="8.6" y="8.6" width="7" height="7" rx=".7" transform="rotate(-40 12.1 12.1)"/></svg>;
-  return active
-    ?<svg className="nav-glyph-menu nav-glyph-active" viewBox="0 0 26 22" aria-hidden="true"><rect x="2" y=".5" width="22" height="4"/><rect x="2" y="9" width="22" height="4"/><rect x="2" y="17.5" width="22" height="4"/></svg>
-    :<svg className="nav-glyph-menu" viewBox="0 0 26 22" aria-hidden="true"><path d="M2 2.5h22M2 11h22M2 19.5h22"/></svg>;
+  const stateClass=active?' nav-glyph-active':'';
+  if(id==='id')return <svg className={`nav-glyph-document${stateClass}`} viewBox="0 0 20 24" aria-hidden="true"><rect className="nav-document-body" x="1" y="1" width="18" height="22" rx=".5"/><path className="nav-document-lines" d="M4 15.5h12M4 19.5h12"/></svg>;
+  if(id==='services')return <svg className={`nav-glyph-services${stateClass}`} viewBox="0 0 22 24" aria-hidden="true"><rect x="1" y="1" width="8" height="9" rx=".5"/><rect x="13" y="1" width="8" height="9" rx=".5"/><rect x="1" y="14" width="8" height="9" rx=".5"/><rect x="13" y="14" width="8" height="9" rx=".5"/></svg>;
+  if(id==='jobs')return <svg className={`nav-glyph-jobs${stateClass}`} viewBox="0 0 20 24" aria-hidden="true"><rect className="nav-job-body" x="1" y="1" width="18" height="22" rx=".5"/><rect className="nav-job-diamond" x="6" y="8" width="8" height="8" rx=".5" transform="rotate(45 10 12)"/></svg>;
+  return <svg className={`nav-glyph-menu${stateClass}`} viewBox="0 0 20 17" aria-hidden="true"><rect x="0" y="0" width="20" height="3"/><rect x="0" y="7" width="20" height="3"/><rect x="0" y="14" width="20" height="3"/></svg>;
 }
 
 function BottomNav({tab,setTab}:{tab:Tab;setTab:(t:Tab)=>void}){const tabs=[['id','Резерв ID'],['services','Сервіси'],['jobs','Вакансії'],['menu','Меню']] as const;return <nav className="video-nav" aria-label="Основна навігація">{tabs.map(([id,label])=>{const active=tab===id;return <button key={id} className={active?'active':''} onClick={()=>setTab(id)} aria-current={active?'page':undefined}><span className="nav-icon"><NavGlyph id={id} active={active}/></span><span className="nav-label">{label}</span></button>})}</nav>}

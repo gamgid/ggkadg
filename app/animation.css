@@ -171,11 +171,11 @@ html,body{background:#e1dfca}
   bottom:0;
   width:100%;
   max-width:450px;
-  min-height:calc(50px + env(safe-area-inset-bottom,0px));
-  padding:6px 4px calc(4px + env(safe-area-inset-bottom,0px));
+  min-height:calc(49px + env(safe-area-inset-bottom,0px));
+  padding:6px 0 calc(4px + env(safe-area-inset-bottom,0px));
   border:0;
   border-radius:0;
-  background:#fafcf7;
+  background:#fbfcfc;
   box-shadow:none;
   backdrop-filter:none;
   align-items:start;
@@ -215,7 +215,7 @@ html,body{background:#e1dfca}
    Device verification is still required; no hard-coded iPhone pixel offset. */
 @media (display-mode:standalone){
   html,body,.video-app{min-height:100vh}
-  .video-app{--standalone-nav-height:calc(52px + env(safe-area-inset-bottom,0px))}
+  .video-app{--standalone-nav-height:calc(49px + env(safe-area-inset-bottom,0px))}
   .video-page,.sub-screen{min-height:100vh}
   .video-page:has(.id-screen){padding-top:25vh}
   .id-screen .flip-shell{height:clamp(430px,53.75vh,620px)}
@@ -250,7 +250,7 @@ html,body{background:#e1dfca}
    standalone safe-area anchoring; only icons and labels match the reference. */
 .video-nav button{
   justify-content:flex-start;
-  gap:2px;
+  gap:5px;
   color:#11120f;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   font-weight:500;
@@ -278,30 +278,40 @@ html,body{background:#e1dfca}
   max-width:100%;
   overflow:visible;
   color:inherit;
-  font-size:11px;
+  font-size:12px;
   line-height:13px;
-  letter-spacing:-.015em;
+  letter-spacing:0;
   white-space:nowrap;
   text-overflow:clip;
 }
 .video-nav button.active{font-weight:700;color:#080906}
-.video-nav .nav-glyph-document{width:20px;height:23px}
-.video-nav .nav-glyph-services{width:22px;height:22px}
-.video-nav .nav-glyph-jobs{width:20px;height:23px}
-.video-nav .nav-glyph-menu{width:22px;height:18px}
-.video-nav .nav-glyph-document:not(.nav-glyph-active) rect{fill:none}
-.video-nav .nav-glyph-document:not(.nav-glyph-active) path{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square}
-.video-nav .nav-glyph-document.nav-glyph-active rect{fill:currentColor;stroke:none}
-.video-nav .nav-glyph-document.nav-glyph-active path{fill:none;stroke:#fafcf7;stroke-width:2;stroke-linecap:square}
-.video-nav .nav-glyph-services.nav-glyph-active rect{fill:currentColor;stroke:none}
-.video-nav .nav-job-body{fill:none}
+.video-nav .nav-glyph-document{width:20px;height:24px}
+.video-nav .nav-glyph-services{width:22px;height:24px}
+.video-nav .nav-glyph-jobs{width:20px;height:24px}
+.video-nav .nav-glyph-menu{width:20px;height:17px}
+.video-nav button.active .nav-icon svg{
+  padding:0;
+  border-radius:0;
+  background:transparent;
+}
+.video-nav button.active .nav-glyph-document{width:20px;height:24px}
+.video-nav button.active .nav-glyph-services{width:22px;height:24px}
+.video-nav button.active .nav-glyph-jobs{width:20px;height:24px}
+.video-nav button.active .nav-glyph-menu{width:20px;height:17px}
+.video-nav .nav-glyph-document:not(.nav-glyph-active) .nav-document-body{fill:none;stroke:currentColor;stroke-width:2}
+.video-nav .nav-glyph-document:not(.nav-glyph-active) .nav-document-lines{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square}
+.video-nav .nav-glyph-document.nav-glyph-active .nav-document-body{fill:currentColor;stroke:currentColor;stroke-width:2}
+.video-nav .nav-glyph-document.nav-glyph-active .nav-document-lines{fill:none;stroke:#fbfcfc;stroke-width:2;stroke-linecap:square}
+.video-nav .nav-glyph-services:not(.nav-glyph-active) rect{fill:none;stroke:currentColor;stroke-width:2}
+.video-nav .nav-glyph-services.nav-glyph-active rect{fill:currentColor;stroke:currentColor;stroke-width:2}
+.video-nav .nav-job-body{fill:none;stroke:currentColor;stroke-width:2}
 .video-nav .nav-job-diamond{fill:currentColor;stroke:none}
-.video-nav .nav-glyph-jobs.nav-glyph-active .nav-job-body{fill:currentColor;stroke:none}
-.video-nav .nav-glyph-jobs.nav-glyph-active .nav-job-diamond{fill:#fafcf7;stroke:none}
-.video-nav .nav-glyph-menu:not(.nav-glyph-active) path{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:square}
+.video-nav .nav-glyph-jobs.nav-glyph-active .nav-job-body{fill:currentColor;stroke:currentColor;stroke-width:2}
+.video-nav .nav-glyph-jobs.nav-glyph-active .nav-job-diamond{fill:#fbfcfc;stroke:none}
+.video-nav .nav-glyph-menu:not(.nav-glyph-active) rect{fill:currentColor;stroke:none}
 .video-nav .nav-glyph-menu.nav-glyph-active rect{fill:currentColor;stroke:none}
 @media(max-width:359px){
-  .video-nav .nav-icon{width:22px;height:22px}
-  .video-nav .nav-icon svg{max-width:20px;max-height:21px}
-  .video-nav .nav-label{font-size:10px;letter-spacing:-.02em}
+  .video-nav .nav-icon{width:24px;height:24px}
+  .video-nav .nav-icon svg{max-width:none;max-height:none}
+  .video-nav .nav-label{font-size:11px;letter-spacing:0}
 }
