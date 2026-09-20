@@ -293,6 +293,7 @@ html,body{background:#e1dfca}
   padding:0;
   border-radius:0;
   background:transparent;
+  color:#080906;
 }
 .video-nav button.active .nav-glyph-document{width:20px;height:24px}
 .video-nav button.active .nav-glyph-services{width:22px;height:24px}
