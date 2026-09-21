@@ -573,16 +573,13 @@ html,body{background:#e1dfca}
 
 /* Neighboring vacancy tabs from IMG_1576/IMG_1577. */
 .jobs-screen .interests-card{
-  height:604px;
   min-height:604px;
   margin:16px 24px 0;
   padding:24px 24px 23px;
   border-radius:20px;
   background:#fbfcfc;
-  overflow:hidden;
 }
 .jobs-screen .interests-card h2{
-  flex:none;
   font-size:22px;
   line-height:1.1;
   font-weight:500;
@@ -590,44 +587,22 @@ html,body{background:#e1dfca}
   transform-origin:left center;
 }
 .jobs-screen .interests-card>div{
-  flex:1 1 auto;
-  min-height:0;
-  align-content:flex-start;
-  gap:8px;
-  margin-top:24px;
-  padding:0 0 34px;
-  overflow-x:hidden;
-  overflow-y:auto;
-  overscroll-behavior:contain;
-  scrollbar-width:none;
-  touch-action:pan-y;
-  -webkit-overflow-scrolling:touch;
-  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 32px),transparent 100%);
-  mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 32px),transparent 100%);
+  gap:10px 8px;
+  margin-top:27px;
 }
-.jobs-screen .interests-card>div::-webkit-scrollbar{display:none}
 .jobs-screen .interests-card>div button{
-  flex:0 0 auto;
-  min-height:44px;
-  max-width:100%;
-  padding:8px 18px;
+  min-height:42px;
+  padding:8px 19px;
   border-radius:22px;
-  font-size:17px;
+  font-size:18px;
   line-height:1.1;
   font-weight:500;
-  white-space:nowrap;
 }
 .jobs-screen .interests-card>.answer-button{
-  position:relative;
-  z-index:1;
-  flex:0 0 64px;
-  height:64px;
   min-height:64px;
-  margin-top:0;
   border-radius:32px;
   font-size:17px;
 }
-.jobs-screen .interests-card>.answer-button:disabled{background:#bcbaa9;color:#5d5c54}
 .jobs-screen .units-card.direction-it .reference-unit-art{
   justify-content:flex-start;
   padding:58px 36px 30px;
