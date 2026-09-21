@@ -592,9 +592,9 @@ html,body{background:#e1dfca}
 }
 .jobs-screen .interests-card>div button{
   min-height:42px;
-  padding:8px 17px;
+  padding:8px 19px;
   border-radius:22px;
-  font-size:16px;
+  font-size:18px;
   line-height:1.1;
   font-weight:500;
 }
@@ -605,10 +605,10 @@ html,body{background:#e1dfca}
 }
 .jobs-screen .units-card.direction-it .reference-unit-art{
   justify-content:flex-start;
-  padding:58px 16px 28px;
+  padding:58px 36px 30px;
 }
 .jobs-screen .units-card.direction-it .reference-unit-art img{
-  width:310px;
+  width:77px;
   max-width:none;
 }
 @media(max-width:359px){
