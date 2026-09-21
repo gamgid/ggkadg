@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Bell, ChevronLeft, ChevronRight, CircleHelp, Copy, Headphones, LogOut, Plus, QrCode, Search, Settings, ShieldCheck, Smartphone, Upload, X } from 'lucide-react';
+import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, CircleHelp, Copy, Headphones, LogOut, Plus, QrCode, Search, Settings, ShieldCheck, Smartphone, Upload, X } from 'lucide-react';
 import { storageService } from '../src/services/storageService';
 import { createCardFlip } from '../src/animation/cardFlip.mjs';
 
 type Tab = 'id' | 'services' | 'jobs' | 'menu';
 type Panel = 'settings' | 'faq' | 'support' | 'notifications' | 'profile' | null;
+type JobDirection = 'drones' | 'contract' | 'it' | 'new' | 'for-you' | 'all';
 type Profile = { id:string; firstName:string; lastName:string; middleName:string; birthDate:string; phone:string; email:string; city:string; status:string; updatedAt:string; photo?:string };
 type Stored = { profile:Profile; qr:string; animations:boolean; notices:string[] };
 
@@ -30,7 +31,7 @@ const qrVersion=32;
 const qrExpiryDate=()=>{const date=new Date();date.setMonth(date.getMonth()+1);const months=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`};
 
 export default function HomePage(){
-  const [ready,setReady]=useState(false),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[jobsStarted,setJobsStarted]=useState(false),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
+  const [ready,setReady]=useState(false),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
   useEffect(()=>{const saved=storageService.load<Stored>();if(saved){setProfile(saved.profile||baseProfile);setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setProfile({...baseProfile,id:`DEMO-${String(crypto.getRandomValues(new Uint32Array(1))[0]).slice(0,8)}`});setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});const id=setTimeout(()=>setReady(true),850);return()=>clearTimeout(id)},[]);
   useEffect(()=>{if(ready)storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready]);
   useEffect(()=>{const id=setInterval(()=>setSeconds(s=>{if(s<=1){setQr(makeQr());return 180}return s-1}),1000);return()=>clearInterval(id)},[]);
@@ -42,10 +43,10 @@ export default function HomePage(){
       <section className="video-page">
         {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')}/>} 
         {tab==='services'&&<ServicesScreen setNotice={setNotice}/>} 
-        {tab==='jobs'&&<JobsScreen started={jobsStarted} start={()=>setJobsStarted(true)}/>} 
+        {tab==='jobs'&&<JobsScreen contractsOpen={jobsContractsOpen} openContracts={()=>setJobsContractsOpen(true)} closeContracts={()=>setJobsContractsOpen(false)} setNotice={setNotice}/>} 
         {tab==='menu'&&<MenuScreen open={setPanel} openQr={()=>setQrOpen(true)}/>} 
       </section>
-      <BottomNav tab={tab} setTab={setTab}/>
+      {!(tab==='jobs'&&jobsContractsOpen)&&<BottomNav tab={tab} setTab={setTab}/>} 
     </>}
     {qrOpen&&<QrSheet value={qr} seconds={seconds} regenerate={regenerate} close={()=>setQrOpen(false)}/>} 
     {notice&&<div className="toast" onAnimationEnd={()=>setNotice(null)}>{notice}</div>}
@@ -72,7 +73,76 @@ function IdScreen({profile,qr,openMessages}:{profile:Profile;qr:string;seconds:n
 
 function ServicesScreen({setNotice}:{setNotice:(v:string)=>void}){return <div className="plain-screen services-screen"><h1>Сервіси</h1><div className="bare-list">{services.map(x=><button key={x} onClick={()=>setNotice(`${x}: лише демонстрація, без надсилання запиту`)}><span>{x}</span><ChevronRight aria-hidden="true"/></button>)}</div></div>}
 
-function JobsScreen({started,start}:{started:boolean;start:()=>void}){if(!started)return <div className="intro-screen"><button className="help"><CircleHelp/></button><div><h1>Можливості</h1><p>Тут знаходяться демонстраційні пропозиції для знайомства з інтерфейсом. Вони не є справжніми вакансіями.</p><p>Виберіть напрямок і перегляньте тестові картки без надсилання заявок.</p></div><label className="check"><input type="checkbox"/> Більше не показувати</label><button className="orange-button" onClick={start}>Почати</button></div>;return <div className="jobs-screen"><header><h1>Демо-можливості<br/>в Україні</h1><button><Search/></button></header><div className="job-tabs"><b>Лінія демо</b><span>Контракт 18–24</span><span>Для вас</span></div><section className="job-card"><h2>На вас чекають</h2><div className="unit-grid">{['A1','B2','C3','D4','E5','F6','G7','+24'].map((x,i)=><span key={x} style={{background:['#222','#314d7b','#c99616','#7a3b24','#68774d'][i%5]}}>{x}</span>)}</div><button className="orange-button">Змінити демо-напрямок</button></section></div>}
+const jobDirections:{id:JobDirection;label:string}[]=[
+  {id:'drones',label:'Лінія дронів'},
+  {id:'contract',label:'Контракт 18–24'},
+  {id:'it',label:'IT-вертикаль'},
+  {id:'new',label:'Нові контракти'},
+  {id:'for-you',label:'Для вас'},
+  {id:'all',label:'Всі вакансії'},
+];
+const jobUnits:Record<Exclude<JobDirection,'for-you'|'all'|'new'>,{name:string;mark:string;color:string}[]>={
+  drones:[
+    {name:'Дрони',mark:'D1',color:'#273b68'},{name:'Розвідка',mark:'D2',color:'#183f2b'},{name:'Зв’язок',mark:'D3',color:'#a8251f'},
+    {name:'Навчання',mark:'D4',color:'#111'},{name:'Ремонт',mark:'D5',color:'#174a7a'},{name:'Логістика',mark:'D6',color:'#8b2f25'},
+    {name:'Підтримка',mark:'D7',color:'#e6e3d7'},{name:'Аналітика',mark:'D8',color:'#294a35'},
+  ],
+  contract:[
+    {name:'Підрозділ 1',mark:'18',color:'#1267bd'},{name:'Підрозділ 2',mark:'24',color:'#1568c1'},{name:'Підрозділ 3',mark:'К',color:'#244a49'},
+    {name:'Підрозділ 4',mark:'✦',color:'#f3f3f0'},{name:'Підрозділ 5',mark:'Х',color:'#111'},{name:'Підрозділ 6',mark:'Л',color:'#76322a'},
+    {name:'Підрозділ 7',mark:'КР',color:'#304f74'},{name:'Підрозділ 8',mark:'Щ',color:'#1b1b1b'},
+  ],
+  it:[{name:'IT-вертикаль',mark:'⌁',color:'#fff'}],
+};
+const demoVacancies=[
+  ['Механік БПЛА','Демонстраційний підрозділ 106'],
+  ['Слюсар-автомеханік','Демонстраційний батальйон зв’язку'],
+  ['Бойовий медик','Демонстраційний підрозділ підтримки'],
+  ['Зв’язківець','Демонстраційний підрозділ підтримки'],
+  ['Журналіст','Навчальний центр «Демо»'],
+  ['Motion-дизайнер','Навчальний центр «Демо»'],
+  ['Офіцер регіональної мобільної групи','Навчальний центр «Демо»'],
+  ['Начальник регіональної мобільної групи','Навчальний центр «Демо»'],
+  ['Аналітик даних','Демонстраційна IT-група'],
+  ['Оператор підтримки','Демонстраційна служба'],
+] as const;
+const interests=['Авіація','Артилерія','БПЛА','Броньована техніка','Зв’язок','Зеніт/ППО','IT','Командування','Кухня','Логістика','Медицина','Медіа','Морально-психологічне забезпечення','Навчання','Піхота','РЕБ/РЕР','Ремонт'];
+
+function JobsScreen({contractsOpen,openContracts,closeContracts,setNotice}:{contractsOpen:boolean;openContracts:()=>void;closeContracts:()=>void;setNotice:(value:string)=>void}){
+  const [direction,setDirection]=useState<JobDirection>('new');
+  const [searchOpen,setSearchOpen]=useState(false);
+  const [search,setSearch]=useState('');
+  const [interestsSelected,setInterestsSelected]=useState<string[]>([]);
+  const [selectedVacancies,setSelectedVacancies]=useState<number[]>([]);
+  const [expanded,setExpanded]=useState<number|null>(null);
+  const chooseDirection=(next:JobDirection)=>{if(next==='new'){setDirection(next);openContracts();return}setDirection(next)};
+  const returnToDirections=()=>{setDirection('drones');closeContracts()};
+  const toggleVacancy=(index:number)=>setSelectedVacancies(current=>current.includes(index)?current.filter(value=>value!==index):[...current,index].slice(0,10));
+  if(contractsOpen)return <section className="contracts-screen" aria-label="Нові контракти">
+    <button className="contracts-back" onClick={returnToDirections} aria-label="Повернутися до вакансій"><ChevronLeft/></button>
+    <header><h1>Нові контракти</h1><p>Ознайомся з умовами кожного виду служби та обирай вакансію, яка підходить саме тобі</p></header>
+    <div className="contract-types">
+      {['Новий піхотно-штурмовий контракт','Новий бойовий контракт','Новий базовий контракт','Як подати заявку?'].map((label,index)=><div className={`contract-type ${expanded===index?'expanded':''}`} key={label}><button onClick={()=>setExpanded(expanded===index?null:index)}><span>{index<3&&<i className="mini-shield">Д</i>}{label}</span>{expanded===index?<ChevronUp/>:<ChevronDown/>}</button>{expanded===index&&<p>{index===3?'Обери до 10 тестових вакансій. У демо-версії відгук нікуди не надсилається.':'Умови показані лише для демонстрації інтерфейсу та не є реальною пропозицією служби.'}</p>}</div>)}
+    </div>
+    <div className="vacancy-count"><span>Вакансії</span><b>{selectedVacancies.length}/10</b></div>
+    <div className="vacancy-list">{demoVacancies.map(([role,unit],index)=><label className="vacancy-row" key={role}><input type="checkbox" checked={selectedVacancies.includes(index)} onChange={()=>toggleVacancy(index)}/><i className={`vacancy-shield shield-${index%4}`}>{index%2?'Д':'✦'}</i><span><b>{role}</b><small>{unit}</small></span></label>)}</div>
+    <div className="contracts-action"><button disabled={!selectedVacancies.length} onClick={()=>setNotice(`Обрано тестових вакансій: ${selectedVacancies.length}. Дані нікуди не надіслано`)}>Відгукнутись на вакансії</button></div>
+  </section>;
+
+  const visibleVacancies=demoVacancies.filter(([role,unit])=>`${role} ${unit}`.toLowerCase().includes(search.trim().toLowerCase()));
+  return <div className="jobs-screen">
+    <header className="jobs-header"><h1>Вакансії в<br/>Силах оборони<br/>України</h1><button onClick={()=>setSearchOpen(value=>!value)} aria-label="Пошук вакансій"><Search/></button></header>
+    {searchOpen&&<div className="jobs-search"><Search/><input autoFocus value={search} onChange={event=>setSearch(event.target.value)} placeholder="Пошук у демо-вакансіях"/><button onClick={()=>{setSearch('');setSearchOpen(false)}} aria-label="Закрити пошук"><X/></button></div>}
+    <nav className="job-tabs" aria-label="Напрямки вакансій">{jobDirections.map(item=><button key={item.id} className={direction===item.id?'active':''} onClick={()=>chooseDirection(item.id)}>{item.id==='new'&&<i/>}{item.label}</button>)}</nav>
+    {searchOpen&&search.trim()?<section className="job-card search-results"><h2>Результати</h2>{visibleVacancies.length?<div className="simple-vacancies">{visibleVacancies.map(([role,unit])=><button key={role} onClick={()=>setNotice(`${role}: демонстраційна вакансія`)}><b>{role}</b><small>{unit}</small><ChevronRight/></button>)}</div>:<p>Нічого не знайдено</p>}</section>:direction==='for-you'?<ForYouCard selected={interestsSelected} setSelected={setInterestsSelected} setNotice={setNotice}/>:direction==='all'?<AllVacanciesCard setNotice={setNotice}/>:<UnitsCard direction={direction as 'drones'|'contract'|'it'} setNotice={setNotice}/>} 
+  </div>;
+}
+
+function UnitsCard({direction,setNotice}:{direction:'drones'|'contract'|'it';setNotice:(value:string)=>void}){const units=jobUnits[direction];return <section className="job-card units-card"><h2>На вас чекають</h2><div className={`unit-grid ${direction==='it'?'single-unit':''}`}>{units.map((unit,index)=><button key={unit.name} aria-label={unit.name} style={{'--unit-color':unit.color} as CSSProperties} onClick={()=>setNotice(`${unit.name}: демонстраційний напрямок`)}><span>{unit.mark}</span></button>)}{direction!=='it'&&<button className="unit-more" onClick={()=>setNotice(direction==='contract'?'+15 демонстраційних підрозділів':'+374 демонстраційні підрозділи')}><span>{direction==='contract'?'+15':'+374'}</span></button>}</div><button className="orange-button" onClick={()=>setNotice('Перебіг подій змінено лише у демо-версії')}>Змінити перебіг подій</button></section>}
+
+function ForYouCard({selected,setSelected,setNotice}:{selected:string[];setSelected:(value:string[])=>void;setNotice:(value:string)=>void}){const toggle=(value:string)=>setSelected(selected.includes(value)?selected.filter(item=>item!==value):[...selected,value]);return <section className="job-card interests-card"><h2>Що вас цікавить?</h2><div>{interests.map(value=><button key={value} className={selected.includes(value)?'selected':''} onClick={()=>toggle(value)}>{value}</button>)}</div><button className="answer-button" disabled={!selected.length} onClick={()=>setNotice(`Збережено тестових інтересів: ${selected.length}`)}>Відповісти</button></section>}
+
+function AllVacanciesCard({setNotice}:{setNotice:(value:string)=>void}){return <section className="job-card all-vacancies"><h2>Всі вакансії</h2><div className="simple-vacancies">{demoVacancies.slice(0,6).map(([role,unit])=><button key={role} onClick={()=>setNotice(`${role}: демонстраційна вакансія`)}><b>{role}</b><small>{unit}</small><ChevronRight/></button>)}</div></section>}
 
 function MenuScreen({open,openQr}:{open:(p:Panel)=>void;openQr:()=>void}){return <div className="menu-screen"><h1>Меню</h1><small>Версія DEMO 2.4.1</small><div className="menu-groups"><div><Row icon={Smartphone} title="Активні демо-сесії"/><Row icon={Settings} title="Налаштування" onClick={()=>open('settings')}/></div><div><Row icon={CircleHelp} title="Питання та відповіді" onClick={()=>open('faq')}/><Row icon={Headphones} title="Служба підтримки" onClick={()=>open('support')}/><Row icon={Copy} title="Копіювати демо-номер"/></div><div><Row icon={Bell} title="Повідомлення" onClick={()=>open('notifications')}/><Row icon={Upload} title="Редагувати демо-профіль" onClick={()=>open('profile')}/><Row icon={QrCode} title="Сканувати демо-документ" onClick={openQr}/></div></div><button className="logout"><LogOut/> Вийти</button><p className="privacy">Дані зберігаються лише на цьому пристрої</p></div>}
 
