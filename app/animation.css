@@ -316,3 +316,46 @@ html,body{background:#e1dfca}
   .video-nav .nav-icon svg{max-width:none;max-height:none}
   .video-nav .nav-label{font-size:11px;letter-spacing:0}
 }
+
+/* Services reference pass. The supplied 1320 x 2868 PNG is a 3x capture:
+   24px side insets, 65px rows, 1px separators and an eight-item list.
+   Navigation geometry and the persistent DEMO warning stay unchanged. */
+.video-app:has(.services-screen){background:#e0dfcc}
+.video-page:has(.services-screen){
+  padding-top:max(43px,calc(env(safe-area-inset-top,0px) + 18px));
+  padding-left:24px;
+  padding-right:24px;
+}
+.services-screen{color:#000}
+.services-screen h1{
+  margin:10px 0 30px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+  font-size:34px;
+  line-height:1.05;
+  font-weight:400;
+  letter-spacing:-.02em;
+}
+.services-screen .bare-list{display:grid}
+.services-screen .bare-list button{
+  min-height:65px;
+  padding:0;
+  border-bottom:1px solid #d5d3be;
+  color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.2;
+  font-weight:500;
+}
+.services-screen .bare-list button:last-child{border-bottom:0}
+.services-screen .bare-list button span{padding-right:18px;overflow:visible;overflow-wrap:normal}
+.services-screen .bare-list button svg{
+  flex:0 0 auto;
+  width:17px;
+  height:17px;
+  stroke-width:2;
+}
+@media(max-width:359px){
+  .video-page:has(.services-screen){padding-left:20px;padding-right:20px}
+  .services-screen h1{font-size:32px}
+  .services-screen .bare-list button{font-size:15px}
+}

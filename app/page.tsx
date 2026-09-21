@@ -12,7 +12,16 @@ type Profile = { id:string; firstName:string; lastName:string; middleName:string
 type Stored = { profile:Profile; qr:string; animations:boolean; notices:string[] };
 
 const baseProfile:Profile={id:'DEMO-57392817',firstName:'Тестовий',lastName:'Демо',middleName:'Профіль',birthDate:'2000-01-01',phone:'+380 00 000 00 00',email:'demo@example.com',city:'Київ',status:'Демонстраційний статус',updatedAt:'09.09.2026'};
-const services=['Виправити демо-дані онлайн','Електронна демо-черга','Запит на тестове оновлення','Навчальний напрямок','Розширені демо-дані','Створити локальний профіль','Уточнити контактні дані'];
+const services=[
+  'Виправити дані онлайн',
+  'Електронне направлення на ВЛК',
+  'Запит на відстрочку',
+  'Направлення на ВЛК',
+  'Розширені дані з реєстру',
+  'Штрафи онлайн',
+  'Стати на військовий облік',
+  'Рекрутинг',
+];
 const questions=['Електронна демо-черга','Дані профілю','Категорії обліку','Відстрочка','Загальні питання','Направлення','Можливості','Виправити дані онлайн'];
 const messages=['Дані профілю збережено','Новий демонстраційний QR створено','Це тестова версія сервісу'];
 const makeQr=()=>`DEMO-${crypto.getRandomValues(new Uint32Array(1))[0].toString(16).toUpperCase().padStart(8,'0').slice(0,8)}-${crypto.getRandomValues(new Uint32Array(1))[0].toString(16).toUpperCase().padStart(8,'0').slice(0,8)}`;
@@ -61,7 +70,7 @@ function IdScreen({profile,qr,openMessages}:{profile:Profile;qr:string;seconds:n
 
   return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><button ref={cardRef} className="id-card flip-card" onClick={()=>flipRef.current?.flip()} aria-disabled={isTurning} aria-busy={isTurning} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Демо ID</h1><span className="shield">D</span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" aria-hidden="true"><Plus strokeWidth={3.5}/></span></div><span className="flip-shade" aria-hidden="true"/></section><section className="id-face id-back"><p className="back-warning">ТЕСТОВИЙ QR — НЕ ДЛЯ ПЕРЕВІРКИ</p><h2>QR дійсний до {expiry}</h2><div className="flip-qr"><QRCodeSVG value={qr} size={320} minVersion={qrVersion} level="M" boostLevel={false}/></div><small className="back-legal">НЕ ПІДТВЕРДЖУЄ ОСОБУ · НЕ МАЄ ЮРИДИЧНОЇ СИЛИ</small><span className="flip-shade" aria-hidden="true"/></section></button></div></div>}
 
-function ServicesScreen({setNotice}:{setNotice:(v:string)=>void}){return <div className="plain-screen services-screen"><h1>Сервіси</h1><div className="bare-list">{services.map(x=><button key={x} onClick={()=>setNotice(`${x}: демонстраційний розділ`)}><span>{x}</span><ChevronRight/></button>)}</div></div>}
+function ServicesScreen({setNotice}:{setNotice:(v:string)=>void}){return <div className="plain-screen services-screen"><h1>Сервіси</h1><div className="bare-list">{services.map(x=><button key={x} onClick={()=>setNotice(`${x}: лише демонстрація, без надсилання запиту`)}><span>{x}</span><ChevronRight aria-hidden="true"/></button>)}</div></div>}
 
 function JobsScreen({started,start}:{started:boolean;start:()=>void}){if(!started)return <div className="intro-screen"><button className="help"><CircleHelp/></button><div><h1>Можливості</h1><p>Тут знаходяться демонстраційні пропозиції для знайомства з інтерфейсом. Вони не є справжніми вакансіями.</p><p>Виберіть напрямок і перегляньте тестові картки без надсилання заявок.</p></div><label className="check"><input type="checkbox"/> Більше не показувати</label><button className="orange-button" onClick={start}>Почати</button></div>;return <div className="jobs-screen"><header><h1>Демо-можливості<br/>в Україні</h1><button><Search/></button></header><div className="job-tabs"><b>Лінія демо</b><span>Контракт 18–24</span><span>Для вас</span></div><section className="job-card"><h2>На вас чекають</h2><div className="unit-grid">{['A1','B2','C3','D4','E5','F6','G7','+24'].map((x,i)=><span key={x} style={{background:['#222','#314d7b','#c99616','#7a3b24','#68774d'][i%5]}}>{x}</span>)}</div><button className="orange-button">Змінити демо-напрямок</button></section></div>}
 
