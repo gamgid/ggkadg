@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, CircleHelp, Copy, Headphones, LogOut, Plus, QrCode, Search, Settings, ShieldCheck, Smartphone, Upload, X } from 'lucide-react';
 import { storageService } from '../src/services/storageService';
@@ -43,7 +43,7 @@ export default function HomePage(){
       <section className="video-page">
         {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')}/>} 
         {tab==='services'&&<ServicesScreen setNotice={setNotice}/>} 
-        {tab==='jobs'&&<JobsScreen contractsOpen={jobsContractsOpen} openContracts={()=>setJobsContractsOpen(true)} closeContracts={()=>setJobsContractsOpen(false)} setNotice={setNotice}/>} 
+        {tab==='jobs'&&<JobsScreen contractsOpen={jobsContractsOpen} closeContracts={()=>setJobsContractsOpen(false)} setNotice={setNotice}/>} 
         {tab==='menu'&&<MenuScreen open={setPanel} openQr={()=>setQrOpen(true)}/>} 
       </section>
       {!(tab==='jobs'&&jobsContractsOpen)&&<BottomNav tab={tab} setTab={setTab}/>} 
@@ -81,68 +81,61 @@ const jobDirections:{id:JobDirection;label:string}[]=[
   {id:'for-you',label:'Для вас'},
   {id:'all',label:'Всі вакансії'},
 ];
-const jobUnits:Record<Exclude<JobDirection,'for-you'|'all'|'new'>,{name:string;mark:string;color:string}[]>={
-  drones:[
-    {name:'Дрони',mark:'D1',color:'#273b68'},{name:'Розвідка',mark:'D2',color:'#183f2b'},{name:'Зв’язок',mark:'D3',color:'#a8251f'},
-    {name:'Навчання',mark:'D4',color:'#111'},{name:'Ремонт',mark:'D5',color:'#174a7a'},{name:'Логістика',mark:'D6',color:'#8b2f25'},
-    {name:'Підтримка',mark:'D7',color:'#e6e3d7'},{name:'Аналітика',mark:'D8',color:'#294a35'},
-  ],
-  contract:[
-    {name:'Підрозділ 1',mark:'18',color:'#1267bd'},{name:'Підрозділ 2',mark:'24',color:'#1568c1'},{name:'Підрозділ 3',mark:'К',color:'#244a49'},
-    {name:'Підрозділ 4',mark:'✦',color:'#f3f3f0'},{name:'Підрозділ 5',mark:'Х',color:'#111'},{name:'Підрозділ 6',mark:'Л',color:'#76322a'},
-    {name:'Підрозділ 7',mark:'КР',color:'#304f74'},{name:'Підрозділ 8',mark:'Щ',color:'#1b1b1b'},
-  ],
-  it:[{name:'IT-вертикаль',mark:'⌁',color:'#fff'}],
-};
+const jobAsset=(name:string)=>`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/jobs/${name}`;
 const demoVacancies=[
-  ['Механік БПЛА','Демонстраційний підрозділ 106'],
-  ['Слюсар-автомеханік','Демонстраційний батальйон зв’язку'],
-  ['Бойовий медик','Демонстраційний підрозділ підтримки'],
-  ['Зв’язківець','Демонстраційний підрозділ підтримки'],
-  ['Журналіст','Навчальний центр «Демо»'],
-  ['Motion-дизайнер','Навчальний центр «Демо»'],
-  ['Офіцер регіональної мобільної групи','Навчальний центр «Демо»'],
-  ['Начальник регіональної мобільної групи','Навчальний центр «Демо»'],
-  ['Аналітик даних','Демонстраційна IT-група'],
-  ['Оператор підтримки','Демонстраційна служба'],
+  {role:'Механік БПЛА',unit:'106 окрема бригада територіальної оборони',badge:'vacancy-sun.png'},
+  {role:'Слюсар-автомеханік',unit:'81 окремий батальйон зв’язку',badge:'vacancy-tools.png'},
+  {role:'Бойовий медик',unit:'97 окремий батальйон підтримки',badge:'vacancy-trident.png'},
+  {role:'Зв’язківець',unit:'97 окремий батальйон підтримки',badge:'vacancy-trident.png'},
+  {role:'Штаб-сержант 3 категорії групи цифрового розвитку',unit:'97 окремий батальйон підтримки',badge:'vacancy-trident.png'},
+  {role:'Штаб-сержант відділення комунікацій',unit:'50 окрема артилерійська бригада',badge:'vacancy-red.png'},
+  {role:'Перекладач з іспанської мови',unit:'Центр рекрутингу Десантно-штурмових військ',badge:'vacancy-dshv.png'},
+  {role:'Журналіст',unit:'Центр рекрутингу Десантно-штурмових військ',badge:'vacancy-dshv.png'},
+  {role:'Motion-дизайнер',unit:'Центр рекрутингу Десантно-штурмових військ',badge:'vacancy-dshv.png'},
+  {role:'Начальник групи соціального супроводу',unit:'55 окрема механізована бригада',badge:'vacancy-trident.png'},
+  {role:'Офіцер Регіональної мобільної групи',unit:'Центр рекрутингу Десантно-штурмових військ',badge:'vacancy-dshv.png'},
+  {role:'Начальник Регіональної мобільної групи',unit:'Центр рекрутингу Десантно-штурмових військ',badge:'vacancy-dshv.png'},
+  {role:'Офіцер секції ЦВС',unit:'55 окрема механізована бригада',badge:'vacancy-trident.png'},
+  {role:'Оператор БПЛА',unit:'59 окрема штурмова бригада безпілотних систем імені Якова Гандзюка',badge:'vacancy-dark.png'},
+  {role:'Оператор НРК',unit:'59 окрема штурмова бригада безпілотних систем імені Якова Гандзюка',badge:'vacancy-dark.png'},
 ] as const;
 const interests=['Авіація','Артилерія','БПЛА','Броньована техніка','Зв’язок','Зеніт/ППО','IT','Командування','Кухня','Логістика','Медицина','Медіа','Морально-психологічне забезпечення','Навчання','Піхота','РЕБ/РЕР','Ремонт'];
 
-function JobsScreen({contractsOpen,openContracts,closeContracts,setNotice}:{contractsOpen:boolean;openContracts:()=>void;closeContracts:()=>void;setNotice:(value:string)=>void}){
+function JobsScreen({contractsOpen,closeContracts,setNotice}:{contractsOpen:boolean;closeContracts:()=>void;setNotice:(value:string)=>void}){
   const [direction,setDirection]=useState<JobDirection>('new');
   const [searchOpen,setSearchOpen]=useState(false);
   const [search,setSearch]=useState('');
   const [interestsSelected,setInterestsSelected]=useState<string[]>([]);
   const [selectedVacancies,setSelectedVacancies]=useState<number[]>([]);
   const [expanded,setExpanded]=useState<number|null>(null);
-  const chooseDirection=(next:JobDirection)=>{if(next==='new'){setDirection(next);openContracts();return}setDirection(next)};
-  const returnToDirections=()=>{setDirection('drones');closeContracts()};
+  const chooseDirection=(next:JobDirection)=>setDirection(next);
+  const returnToDirections=()=>{setDirection('new');closeContracts()};
   const toggleVacancy=(index:number)=>setSelectedVacancies(current=>current.includes(index)?current.filter(value=>value!==index):[...current,index].slice(0,10));
   if(contractsOpen)return <section className="contracts-screen" aria-label="Нові контракти">
     <button className="contracts-back" onClick={returnToDirections} aria-label="Повернутися до вакансій"><ChevronLeft/></button>
     <header><h1>Нові контракти</h1><p>Ознайомся з умовами кожного виду служби та обирай вакансію, яка підходить саме тобі</p></header>
     <div className="contract-types">
-      {['Новий піхотно-штурмовий контракт','Новий бойовий контракт','Новий базовий контракт','Як подати заявку?'].map((label,index)=><div className={`contract-type ${expanded===index?'expanded':''}`} key={label}><button onClick={()=>setExpanded(expanded===index?null:index)}><span>{index<3&&<i className="mini-shield">Д</i>}{label}</span>{expanded===index?<ChevronUp/>:<ChevronDown/>}</button>{expanded===index&&<p>{index===3?'Обери до 10 тестових вакансій. У демо-версії відгук нікуди не надсилається.':'Умови показані лише для демонстрації інтерфейсу та не є реальною пропозицією служби.'}</p>}</div>)}
+      {['Новий піхотно-штурмовий контракт','Новий бойовий контракт','Новий базовий контракт','Як подати заявку?'].map((label,index)=><div className={`contract-type ${expanded===index?'expanded':''}`} key={label}><button onClick={()=>setExpanded(expanded===index?null:index)}><span>{index<3&&<img className="contract-mark" src={jobAsset('contract-mark.png')} alt=""/>}{label}</span>{expanded===index?<ChevronUp/>:<ChevronDown/>}</button>{expanded===index&&<p>{index===3?'Обери до 10 вакансій і натисни кнопку відгуку. У демо-версії дані нікуди не надсилаються.':'Інформація цього розділу відтворена для демонстрації інтерфейсу.'}</p>}</div>)}
     </div>
     <div className="vacancy-count"><span>Вакансії</span><b>{selectedVacancies.length}/10</b></div>
-    <div className="vacancy-list">{demoVacancies.map(([role,unit],index)=><label className="vacancy-row" key={role}><input type="checkbox" checked={selectedVacancies.includes(index)} onChange={()=>toggleVacancy(index)}/><i className={`vacancy-shield shield-${index%4}`}>{index%2?'Д':'✦'}</i><span><b>{role}</b><small>{unit}</small></span></label>)}</div>
+    <div className="vacancy-list">{demoVacancies.map((vacancy,index)=><label className="vacancy-row" key={vacancy.role}><input type="checkbox" checked={selectedVacancies.includes(index)} onChange={()=>toggleVacancy(index)}/><img className="vacancy-shield" src={jobAsset(vacancy.badge)} alt=""/><span><b>{vacancy.role}</b><small>{vacancy.unit}</small></span></label>)}</div>
     <div className="contracts-action"><button disabled={!selectedVacancies.length} onClick={()=>setNotice(`Обрано тестових вакансій: ${selectedVacancies.length}. Дані нікуди не надіслано`)}>Відгукнутись на вакансії</button></div>
   </section>;
 
-  const visibleVacancies=demoVacancies.filter(([role,unit])=>`${role} ${unit}`.toLowerCase().includes(search.trim().toLowerCase()));
+  const visibleVacancies=demoVacancies.filter(vacancy=>`${vacancy.role} ${vacancy.unit}`.toLowerCase().includes(search.trim().toLowerCase()));
   return <div className="jobs-screen">
     <header className="jobs-header"><h1>Вакансії в<br/>Силах оборони<br/>України</h1><button onClick={()=>setSearchOpen(value=>!value)} aria-label="Пошук вакансій"><Search/></button></header>
     {searchOpen&&<div className="jobs-search"><Search/><input autoFocus value={search} onChange={event=>setSearch(event.target.value)} placeholder="Пошук у демо-вакансіях"/><button onClick={()=>{setSearch('');setSearchOpen(false)}} aria-label="Закрити пошук"><X/></button></div>}
     <nav className="job-tabs" aria-label="Напрямки вакансій">{jobDirections.map(item=><button key={item.id} className={direction===item.id?'active':''} onClick={()=>chooseDirection(item.id)}>{item.id==='new'&&<i/>}{item.label}</button>)}</nav>
-    {searchOpen&&search.trim()?<section className="job-card search-results"><h2>Результати</h2>{visibleVacancies.length?<div className="simple-vacancies">{visibleVacancies.map(([role,unit])=><button key={role} onClick={()=>setNotice(`${role}: демонстраційна вакансія`)}><b>{role}</b><small>{unit}</small><ChevronRight/></button>)}</div>:<p>Нічого не знайдено</p>}</section>:direction==='for-you'?<ForYouCard selected={interestsSelected} setSelected={setInterestsSelected} setNotice={setNotice}/>:direction==='all'?<AllVacanciesCard setNotice={setNotice}/>:<UnitsCard direction={direction as 'drones'|'contract'|'it'} setNotice={setNotice}/>} 
+    {searchOpen&&search.trim()?<section className="job-card search-results"><h2>Результати</h2>{visibleVacancies.length?<div className="simple-vacancies">{visibleVacancies.map(vacancy=><button key={vacancy.role} onClick={()=>setNotice(`${vacancy.role}: демонстраційна вакансія`)}><b>{vacancy.role}</b><small>{vacancy.unit}</small><ChevronRight/></button>)}</div>:<p>Нічого не знайдено</p>}</section>:direction==='for-you'?<ForYouCard selected={interestsSelected} setSelected={setInterestsSelected} setNotice={setNotice}/>:direction==='all'?<AllVacanciesCard setNotice={setNotice}/>:<UnitsCard direction={direction as 'drones'|'contract'|'it'|'new'} setNotice={setNotice}/>} 
   </div>;
 }
 
-function UnitsCard({direction,setNotice}:{direction:'drones'|'contract'|'it';setNotice:(value:string)=>void}){const units=jobUnits[direction];return <section className="job-card units-card"><h2>На вас чекають</h2><div className={`unit-grid ${direction==='it'?'single-unit':''}`}>{units.map((unit,index)=><button key={unit.name} aria-label={unit.name} style={{'--unit-color':unit.color} as CSSProperties} onClick={()=>setNotice(`${unit.name}: демонстраційний напрямок`)}><span>{unit.mark}</span></button>)}{direction!=='it'&&<button className="unit-more" onClick={()=>setNotice(direction==='contract'?'+15 демонстраційних підрозділів':'+374 демонстраційні підрозділи')}><span>{direction==='contract'?'+15':'+374'}</span></button>}</div><button className="orange-button" onClick={()=>setNotice('Перебіг подій змінено лише у демо-версії')}>Змінити перебіг подій</button></section>}
+function UnitsCard({direction,setNotice}:{direction:'drones'|'contract'|'it'|'new';setNotice:(value:string)=>void}){const image=direction==='contract'?'unit-grid-contract.png':direction==='it'?'it-trident.png':'unit-grid-new.png';return <section className={`job-card units-card direction-${direction}`}><h2>На вас чекають</h2><button className="reference-unit-art" onClick={()=>setNotice('Емблеми показані лише як частина навчального макета')}><img src={jobAsset(image)} alt="Добірка емблем напрямку"/></button><button className="orange-button" onClick={()=>setNotice('Перебіг подій змінено лише у демо-версії')}>Змінити перебіг подій</button></section>}
 
 function ForYouCard({selected,setSelected,setNotice}:{selected:string[];setSelected:(value:string[])=>void;setNotice:(value:string)=>void}){const toggle=(value:string)=>setSelected(selected.includes(value)?selected.filter(item=>item!==value):[...selected,value]);return <section className="job-card interests-card"><h2>Що вас цікавить?</h2><div>{interests.map(value=><button key={value} className={selected.includes(value)?'selected':''} onClick={()=>toggle(value)}>{value}</button>)}</div><button className="answer-button" disabled={!selected.length} onClick={()=>setNotice(`Збережено тестових інтересів: ${selected.length}`)}>Відповісти</button></section>}
 
-function AllVacanciesCard({setNotice}:{setNotice:(value:string)=>void}){return <section className="job-card all-vacancies"><h2>Всі вакансії</h2><div className="simple-vacancies">{demoVacancies.slice(0,6).map(([role,unit])=><button key={role} onClick={()=>setNotice(`${role}: демонстраційна вакансія`)}><b>{role}</b><small>{unit}</small><ChevronRight/></button>)}</div></section>}
+function AllVacanciesCard({setNotice}:{setNotice:(value:string)=>void}){return <section className="job-card all-vacancies"><h2>Всі вакансії</h2><div className="simple-vacancies">{demoVacancies.slice(0,6).map(vacancy=><button key={vacancy.role} onClick={()=>setNotice(`${vacancy.role}: демонстраційна вакансія`)}><b>{vacancy.role}</b><small>{vacancy.unit}</small><ChevronRight/></button>)}</div></section>}
 
 function MenuScreen({open,openQr}:{open:(p:Panel)=>void;openQr:()=>void}){return <div className="menu-screen"><h1>Меню</h1><small>Версія DEMO 2.4.1</small><div className="menu-groups"><div><Row icon={Smartphone} title="Активні демо-сесії"/><Row icon={Settings} title="Налаштування" onClick={()=>open('settings')}/></div><div><Row icon={CircleHelp} title="Питання та відповіді" onClick={()=>open('faq')}/><Row icon={Headphones} title="Служба підтримки" onClick={()=>open('support')}/><Row icon={Copy} title="Копіювати демо-номер"/></div><div><Row icon={Bell} title="Повідомлення" onClick={()=>open('notifications')}/><Row icon={Upload} title="Редагувати демо-профіль" onClick={()=>open('profile')}/><Row icon={QrCode} title="Сканувати демо-документ" onClick={openQr}/></div></div><button className="logout"><LogOut/> Вийти</button><p className="privacy">Дані зберігаються лише на цьому пристрої</p></div>}
 

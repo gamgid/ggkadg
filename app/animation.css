@@ -432,31 +432,20 @@ html,body{background:#e1dfca}
   flex-direction:column;
 }
 .job-card h2{margin:0;text-align:center;font-size:29px;line-height:1.1;font-weight:400}
-.units-card .unit-grid{
+.reference-unit-art{
   flex:1;
-  align-content:start;
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:20px 24px;
-  padding:58px 27px 35px;
+  width:100%;
+  min-height:0;
+  padding:45px 10px 30px;
+  border:0;
+  background:transparent;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
 }
-.unit-grid button{padding:0;border:0;background:transparent;display:grid;place-items:center}
-.unit-grid button>span{
-  width:82px;
-  height:96px;
-  border:4px solid #deded8;
-  border-radius:12px 12px 32px 32px;
-  background:var(--unit-color);
-  color:color-mix(in srgb,var(--unit-color),#fff 75%);
-  display:grid;
-  place-items:center;
-  font-size:23px;
-  font-weight:900;
-  box-shadow:inset 0 0 0 2px #0002;
-}
-.unit-grid .unit-more>span{border:0;border-radius:50%;width:58px;height:58px;align-self:center;background:#20211d;color:#fff;box-shadow:none;font-size:16px}
-.units-card .unit-grid.single-unit{display:flex;align-items:flex-start;justify-content:flex-start;padding:58px 38px}
-.units-card .unit-grid.single-unit button>span{border:0;border-radius:0;background:transparent!important;box-shadow:none;color:#ff8500;font-size:66px}
+.reference-unit-art img{display:block;width:100%;max-width:350px;height:auto}
+.direction-it .reference-unit-art{justify-content:flex-start;padding:58px 36px 30px}
+.direction-it .reference-unit-art img{width:77px;max-width:none}
 .job-card>.orange-button{width:100%;min-height:62px;border-radius:32px;background:#ff8500;color:#090909;font-size:18px;font-weight:500}
 .interests-card{min-height:620px;padding:31px 24px}
 .interests-card h2{text-align:left;font-size:28px}
@@ -481,28 +470,12 @@ html,body{background:#e1dfca}
   left:50%;
   transform:translateX(-50%);
   width:min(450px,100%);
-  padding:94px 24px calc(112px + env(safe-area-inset-bottom,0px));
+  padding:max(61px,calc(env(safe-area-inset-top,0px) + 14px)) 24px calc(112px + env(safe-area-inset-bottom,0px));
   background:#e3e2cf;
   color:#050505;
   overflow-y:auto;
   overscroll-behavior:contain;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
-}
-.contracts-screen::before{
-  content:"ДЕМО · НЕ Є СПРАВЖНІМ СЕРВІСОМ";
-  position:fixed;
-  z-index:2;
-  top:max(10px,env(safe-area-inset-top,0px));
-  left:50%;
-  transform:translateX(-50%);
-  padding:5px 9px;
-  border-radius:10px;
-  background:#18241d;
-  color:#fff;
-  font-size:8px;
-  font-weight:800;
-  letter-spacing:.05em;
-  white-space:nowrap;
 }
 .contracts-back{width:44px;height:44px;padding:0;border:0;border-radius:50%;background:#fff;display:grid;place-items:center}
 .contracts-back svg{width:27px;height:27px}
@@ -513,7 +486,7 @@ html,body{background:#e1dfca}
 .contract-type>button{width:100%;min-height:82px;padding:14px 18px;border:0;background:#fff;color:#080808;display:flex;align-items:center;justify-content:space-between;text-align:left}
 .contract-type>button span{display:flex;align-items:center;gap:14px;font-size:22px;line-height:1.03;font-weight:500}
 .contract-type>button svg{flex:0 0 auto;width:23px;height:23px;stroke-width:2.5}
-.mini-shield{flex:0 0 auto;width:27px;height:32px;border-radius:2px 2px 11px 11px;background:#2d2e28;color:#e8d38f;font:700 12px/32px inherit;text-align:center}
+.contract-mark{flex:0 0 auto;width:27px;height:34px;object-fit:cover}
 .contract-type>p{margin:0;padding:0 20px 18px;color:#55584f;font-size:14px;line-height:1.3}
 .vacancy-count{display:flex;justify-content:space-between;align-items:center;margin:29px 0 20px;padding:0 2px;font-size:20px}
 .vacancy-count b{font-weight:500}
@@ -522,10 +495,7 @@ html,body{background:#e1dfca}
 .vacancy-row input{appearance:none;width:29px;height:29px;margin:0;border:2px solid #111;border-radius:8px;background:#fff;display:grid;place-items:center}
 .vacancy-row input:checked{background:#171812;border-color:#171812}
 .vacancy-row input:checked::after{content:"✓";color:#fff;font-size:19px;font-weight:700}
-.vacancy-shield{width:46px;height:56px;border-radius:2px 2px 15px 15px;background:#243e75;color:#f8cf1d;display:grid;place-items:center;font-size:17px;font-weight:900;font-style:normal;border:2px solid #e4bd22}
-.vacancy-shield.shield-1{background:#7b7138;color:#fff;border-color:#7b7138}
-.vacancy-shield.shield-2{background:#762c2f;color:#e6c570;border-color:#aaa}
-.vacancy-shield.shield-3{background:#172c45;color:#fff;border-color:#d7c21d}
+.vacancy-shield{display:block;width:46px;height:58px;object-fit:contain;background:#fff}
 .vacancy-row>span{min-width:0;display:flex;flex-direction:column;gap:6px}
 .vacancy-row b{font-size:18px;line-height:1.12;font-weight:500}
 .vacancy-row small{font-size:14px;line-height:1.12}
@@ -534,6 +504,6 @@ html,body{background:#e1dfca}
 .contracts-action button:disabled{background:#bdbdad;color:#68685f}
 @media(max-width:359px){
   .jobs-header{padding-inline:20px}.jobs-header h1{font-size:34px}.job-tabs{padding-inline:20px}.job-tabs button{font-size:16px}
-  .job-card{margin-inline:20px;padding-inline:18px}.units-card .unit-grid{gap:17px 13px;padding-inline:10px}.unit-grid button>span{width:72px;height:84px}
+  .job-card{margin-inline:20px;padding-inline:18px}.reference-unit-art{padding-inline:4px}
   .contracts-screen{padding-inline:18px}.contracts-action{padding-inline:18px}.contract-type>button span{font-size:19px}.vacancy-row{grid-template-columns:32px 44px 1fr;padding-inline:14px;gap:9px}.vacancy-row b{font-size:16px}
 }
