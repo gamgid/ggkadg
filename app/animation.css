@@ -518,7 +518,7 @@ html,body{background:#e1dfca}
 }
 .jobs-screen .jobs-header{padding:22px 24px 0}
 .jobs-screen .jobs-header h1{
-  margin:0 0 49px;
+  margin:0 0 19px;
   font-size:30px;
   line-height:1;
   font-weight:400;
@@ -534,7 +534,7 @@ html,body{background:#e1dfca}
 .jobs-screen .job-tabs{padding-inline:24px}
 .jobs-screen .job-tabs button{
   min-height:48px;
-  padding:0 14px 13px;
+  padding:0 14px 6px;
   font-family:inherit;
   font-size:16px;
   font-weight:400;
@@ -549,9 +549,9 @@ html,body{background:#e1dfca}
   border-radius:20px;
   background:#fbfcfc;
 }
-.jobs-screen .units-card h2{font-size:25px;line-height:1.1}
+.jobs-screen .units-card h2{font-size:22px;line-height:1.1}
 .jobs-screen .reference-unit-art{padding:31px 6px 30px}
-.jobs-screen .reference-unit-art img{width:332px;max-width:100%}
+.jobs-screen .reference-unit-art img{width:300px;max-width:100%}
 .jobs-screen .units-card>.orange-button{
   min-height:64px;
   border-radius:32px;
