@@ -103,6 +103,7 @@ const interests=['Авіація','Артилерія','БПЛА','Броньо�
 
 function JobsScreen({contractsOpen,closeContracts,setNotice}:{contractsOpen:boolean;closeContracts:()=>void;setNotice:(value:string)=>void}){
   const [direction,setDirection]=useState<JobDirection>('new');
+  const directionsRef=useRef<HTMLElement|null>(null);
   const [searchOpen,setSearchOpen]=useState(false);
   const [search,setSearch]=useState('');
   const [interestsSelected,setInterestsSelected]=useState<string[]>([]);
@@ -111,6 +112,11 @@ function JobsScreen({contractsOpen,closeContracts,setNotice}:{contractsOpen:bool
   const chooseDirection=(next:JobDirection)=>setDirection(next);
   const returnToDirections=()=>{setDirection('new');closeContracts()};
   const toggleVacancy=(index:number)=>setSelectedVacancies(current=>current.includes(index)?current.filter(value=>value!==index):[...current,index].slice(0,10));
+  useEffect(()=>{
+    if(contractsOpen)return;
+    const frame=requestAnimationFrame(()=>directionsRef.current?.querySelector<HTMLButtonElement>('button.active')?.scrollIntoView({block:'nearest',inline:'center'}));
+    return ()=>cancelAnimationFrame(frame);
+  },[contractsOpen,direction]);
   if(contractsOpen)return <section className="contracts-screen" aria-label="Нові контракти">
     <button className="contracts-back" onClick={returnToDirections} aria-label="Повернутися до вакансій"><ChevronLeft/></button>
     <header><h1>Нові контракти</h1><p>Ознайомся з умовами кожного виду служби та обирай вакансію, яка підходить саме тобі</p></header>
@@ -126,7 +132,7 @@ function JobsScreen({contractsOpen,closeContracts,setNotice}:{contractsOpen:bool
   return <div className="jobs-screen">
     <header className="jobs-header"><h1>Вакансії в<br/>Силах оборони<br/>України</h1><button onClick={()=>setSearchOpen(value=>!value)} aria-label="Пошук вакансій"><Search/></button></header>
     {searchOpen&&<div className="jobs-search"><Search/><input autoFocus value={search} onChange={event=>setSearch(event.target.value)} placeholder="Пошук у демо-вакансіях"/><button onClick={()=>{setSearch('');setSearchOpen(false)}} aria-label="Закрити пошук"><X/></button></div>}
-    <nav className="job-tabs" aria-label="Напрямки вакансій">{jobDirections.map(item=><button key={item.id} className={direction===item.id?'active':''} onClick={()=>chooseDirection(item.id)}>{item.id==='new'&&<i/>}{item.label}</button>)}</nav>
+    <nav ref={directionsRef} className="job-tabs" aria-label="Напрямки вакансій">{jobDirections.map(item=><button key={item.id} className={direction===item.id?'active':''} onClick={()=>chooseDirection(item.id)}>{item.id==='new'&&<i/>}{item.label}</button>)}</nav>
     {searchOpen&&search.trim()?<section className="job-card search-results"><h2>Результати</h2>{visibleVacancies.length?<div className="simple-vacancies">{visibleVacancies.map(vacancy=><button key={vacancy.role} onClick={()=>setNotice(`${vacancy.role}: демонстраційна вакансія`)}><b>{vacancy.role}</b><small>{vacancy.unit}</small><ChevronRight/></button>)}</div>:<p>Нічого не знайдено</p>}</section>:direction==='for-you'?<ForYouCard selected={interestsSelected} setSelected={setInterestsSelected} setNotice={setNotice}/>:direction==='all'?<AllVacanciesCard setNotice={setNotice}/>:<UnitsCard direction={direction as 'drones'|'contract'|'it'|'new'} setNotice={setNotice}/>} 
   </div>;
 }
