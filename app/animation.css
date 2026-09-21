@@ -537,7 +537,7 @@ html,body{background:#e1dfca}
 .jobs-screen .job-tabs button{
   display:block;
   min-height:48px;
-  padding:0 14px 6px;
+  padding:4px 14px 2px;
   font-family:inherit;
   font-size:16px;
   font-weight:400;
@@ -555,6 +555,7 @@ html,body{background:#e1dfca}
 .jobs-screen .units-card h2{
   font-size:22px;
   line-height:1.1;
+  font-weight:500;
   transform:translateY(2px) scaleX(1.125);
 }
 .jobs-screen .reference-unit-art{padding:33px 6px 28px}
