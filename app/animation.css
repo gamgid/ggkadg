@@ -470,12 +470,14 @@ html,body{background:#e1dfca}
   left:50%;
   transform:translateX(-50%);
   width:min(450px,100%);
-  padding:max(61px,calc(env(safe-area-inset-top,0px) + 14px)) 24px calc(112px + env(safe-area-inset-bottom,0px));
+  padding:61px 24px calc(112px + env(safe-area-inset-bottom,0px));
   background:#e0dfcc;
   color:#050505;
   overflow-y:auto;
   overscroll-behavior:contain;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
 }
 .contracts-back{width:36px;height:36px;margin-left:-4px;padding:0;border:0;border-radius:50%;background:#f0efe6;display:grid;place-items:center}
 .contracts-back svg{width:19px;height:19px;stroke-width:2.35}
@@ -487,7 +489,7 @@ html,body{background:#e1dfca}
 .contract-type:first-child>button{min-height:96px}
 .contract-type>button span{display:flex;align-items:center;gap:14px;font-size:22px;line-height:1.03;font-weight:500}
 .contract-type>button svg{flex:0 0 auto;width:20px;height:20px;stroke-width:2.4}
-.contract-mark{flex:0 0 auto;width:17px;height:22px;object-fit:cover}
+.contract-mark{flex:0 0 auto;width:17px;height:22px;object-fit:cover;transform:scale(1.9) translateX(1px)}
 .contract-type>p{margin:0;padding:0 20px 18px;color:#55584f;font-size:14px;line-height:1.3}
 .vacancy-count{display:flex;justify-content:space-between;align-items:center;margin:29px 0 17px;padding:0 2px;font-size:20px}
 .vacancy-count b{font-weight:500}
@@ -496,7 +498,7 @@ html,body{background:#e1dfca}
 .vacancy-row input{appearance:none;width:24px;height:24px;margin:0;border:2px solid #111;border-radius:6px;background:#fbfcfc;display:grid;place-items:center}
 .vacancy-row input:checked{background:#171812;border-color:#171812}
 .vacancy-row input:checked::after{content:"✓";color:#fff;font-size:19px;font-weight:700}
-.vacancy-shield{display:block;width:35px;height:auto;max-height:52px;object-fit:contain;background:#fbfcfc}
+.vacancy-shield{display:block;width:35px;height:auto;max-height:52px;object-fit:contain;background:#fbfcfc;transform:scale(1.32)}
 .vacancy-row>span{min-width:0;display:flex;flex-direction:column;gap:6px}
 .vacancy-row b{font-size:18px;line-height:1.12;font-weight:500}
 .vacancy-row small{font-size:14px;line-height:1.12}
