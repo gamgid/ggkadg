@@ -605,10 +605,10 @@ html,body{background:#e1dfca}
 }
 .jobs-screen .units-card.direction-it .reference-unit-art{
   justify-content:flex-start;
-  padding:58px 36px 28px;
+  padding:58px 16px 28px;
 }
 .jobs-screen .units-card.direction-it .reference-unit-art img{
-  width:77px;
+  width:310px;
   max-width:none;
 }
 @media(max-width:359px){
