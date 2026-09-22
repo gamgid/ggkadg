@@ -3,10 +3,10 @@
 .flip-shell .id-card.flipped{transform:rotateY(180deg)}
 .id-face{position:absolute;inset:0;border:1px solid #aaac96;border-radius:20px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .id-front{display:flex;flex-direction:column;background:var(--card)}
-.id-back{transform:rotateY(180deg);background:#f9f9f5;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:48px 28px 24px;text-align:center}
+.id-back{transform:rotateY(180deg);background:#fbfcfc;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:67px 27px 24px;text-align:center}
 .back-warning{margin:0;font-size:9px;font-weight:800;letter-spacing:.07em;color:#8f342e}
-.id-back h2{font-size:16px;margin:11px 0 18px;font-weight:650}
-.flip-qr{width:100%;max-width:320px;padding:0;background:#fff}
+.id-back h2{font-size:16px;margin:0 0 23px;font-weight:650}
+.flip-qr{width:100%;max-width:336px;padding:0;background:#fff}
 .flip-qr svg{display:block;width:100%;height:auto}
 .id-back .back-legal{margin-top:10px;font-size:8px;font-weight:800;line-height:1.45;letter-spacing:.035em;color:#983c34}
 @media(max-width:350px){.id-back{padding-inline:22px}.id-back h2{font-size:15px}.flip-qr{max-width:290px}}
@@ -50,9 +50,9 @@ body{min-height:100vh;min-height:100svh;min-height:100dvh}
 .id-person h2{font-size:clamp(20px,6.15vw,23px);overflow-wrap:anywhere}
 .orange-circle{flex:0 0 auto}
 .card-space strong{font-size:clamp(13px,4.25vw,16px)}
-.id-back{padding:clamp(28px,7vh,48px) clamp(15px,6vw,28px) 20px}
-.id-back h2{font-size:clamp(14px,4.3vw,16px);margin-bottom:clamp(12px,3vh,18px)}
-.flip-qr{max-width:min(320px,100%)}
+.id-back{padding:clamp(48px,7vh,67px) clamp(15px,6.15vw,27px) 20px}
+.id-back h2{font-size:clamp(14px,4.3vw,16px);margin-bottom:clamp(18px,3vh,23px)}
+.flip-qr{max-width:min(336px,100%)}
 .video-nav{width:min(410px,calc(100% - clamp(12px,4vw,30px)));grid-template-columns:repeat(4,minmax(0,1fr))}
 .video-nav button{min-width:0;padding-inline:1px}
 .video-nav button span{display:block;max-width:100%;font-size:clamp(8px,2.5vw,10px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
