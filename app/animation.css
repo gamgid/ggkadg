@@ -643,3 +643,117 @@ html,body{background:#e1dfca}
   .jobs-screen .job-tabs button{font-size:15px}
   .jobs-screen .units-card,.jobs-screen .interests-card{margin-inline:20px;padding-inline:18px}
 }
+
+/* Menu reference match — isolated from accepted ID, services and jobs screens. */
+.video-page:has(> .menu-screen){
+  min-height:100dvh;
+  padding:max(37px,calc(env(safe-area-inset-top,0px) + 12px)) 24px calc(108px + env(safe-area-inset-bottom,0px));
+  background:#e0dfcc;
+}
+.menu-screen{
+  min-height:calc(100dvh - 145px);
+  color:#11120f;
+  font-family:Inter,"Inter Regular",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+.menu-screen h1{
+  margin:9px 0 5px;
+  font-family:Inter,"Inter Regular",Arial,sans-serif;
+  font-size:30px;
+  font-weight:500;
+  line-height:1.1;
+  letter-spacing:-.025em;
+}
+.menu-screen>small{
+  display:block;
+  margin:0;
+  color:#777a70;
+  font-size:14px;
+  font-weight:500;
+  line-height:17px;
+}
+.menu-screen .menu-groups{
+  display:grid;
+  gap:8px;
+  margin-top:16px;
+}
+.menu-screen .menu-groups>div{
+  overflow:hidden;
+  border-radius:17px;
+  background:#fbfcfc;
+}
+.menu-screen .menu-row{
+  position:relative;
+  width:100%;
+  min-height:61px;
+  padding:0 20px 0 22px;
+  border:0;
+  background:#fbfcfc;
+  color:#121310;
+  display:flex;
+  align-items:center;
+  gap:17px;
+  text-align:left;
+  font:600 17px/1.15 Inter,"Inter Regular",Arial,sans-serif;
+}
+.menu-screen .menu-row:not(:last-child):after{
+  content:"";
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:0;
+  height:1px;
+  background:#d8d9d2;
+}
+.menu-screen .menu-glyph{
+  flex:0 0 27px;
+  width:27px;
+  height:27px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2.25;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.menu-screen .menu-row>span{flex:1}
+.menu-screen .menu-chevron{
+  flex:0 0 22px;
+  width:22px;
+  height:22px;
+}
+.menu-screen .menu-groups>div:nth-child(2) .menu-row{min-height:60px}
+.menu-screen .menu-single .menu-row{min-height:65px}
+.menu-screen .logout{
+  width:121px;
+  height:48px;
+  margin:22px auto 0;
+  padding:0;
+  border:0;
+  border-radius:24px;
+  background:#2c2b26;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font:600 17px/1 Inter,"Inter Regular",Arial,sans-serif;
+}
+.menu-screen .privacy{
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin:18px auto 0;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#171814;
+  text-align:center;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  font:600 13px/20px Inter,"Inter Regular",Arial,sans-serif;
+}
+@media(max-width:360px){
+  .video-page:has(> .menu-screen){padding-left:20px;padding-right:20px}
+  .menu-screen .menu-row{padding-left:18px;padding-right:17px;gap:13px;font-size:15px}
+  .menu-screen .privacy{font-size:11px}
+}

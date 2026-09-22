@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, CircleHelp, Copy, Headphones, LogOut, Plus, QrCode, Search, Settings, ShieldCheck, Smartphone, Upload, X } from 'lucide-react';
+import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Headphones, Plus, QrCode, Search, Settings, ShieldCheck, Upload, X } from 'lucide-react';
 import { storageService } from '../src/services/storageService';
 import { createCardFlip } from '../src/animation/cardFlip.mjs';
 
@@ -36,6 +36,7 @@ export default function HomePage(){
   useEffect(()=>{if(ready)storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready]);
   useEffect(()=>{const id=setInterval(()=>setSeconds(s=>{if(s<=1){setQr(makeQr());return 180}return s-1}),1000);return()=>clearInterval(id)},[]);
   const regenerate=()=>{setQr(makeQr());setSeconds(180);setNotice('Новий тестовий QR створено')};
+  const copyDeviceNumber=async()=>{try{await navigator.clipboard.writeText(profile.id);setNotice('Номер демо-пристрою скопійовано')}catch{setNotice('Не вдалося скопіювати номер пристрою')}};
   if(!ready)return <main className="video-app splash-v"><div className="splash-mark">D</div><h1>Облік DEMO</h1><p>Демонстраційна пародія</p></main>;
   return <main className={`video-app ${animations?'':'no-motion'} ${panel?'panel-open':''}`}>
     <div className="video-watermark">ДЕМО / ПАРОДІЯ — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
@@ -44,7 +45,7 @@ export default function HomePage(){
         {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')}/>} 
         {tab==='services'&&<ServicesScreen setNotice={setNotice}/>} 
         {tab==='jobs'&&<JobsScreen contractsOpen={jobsContractsOpen} closeContracts={()=>setJobsContractsOpen(false)} setNotice={setNotice}/>} 
-        {tab==='menu'&&<MenuScreen open={setPanel} openQr={()=>setQrOpen(true)}/>} 
+        {tab==='menu'&&<MenuScreen open={setPanel} openQr={()=>setQrOpen(true)} copyDeviceNumber={copyDeviceNumber} notify={setNotice}/>} 
       </section>
       {!(tab==='jobs'&&jobsContractsOpen)&&<BottomNav tab={tab} setTab={setTab}/>} 
     </>}
@@ -143,7 +144,20 @@ function ForYouCard({selected,setSelected,setNotice}:{selected:string[];setSelec
 
 function AllVacanciesCard({setNotice}:{setNotice:(value:string)=>void}){return <section className="job-card all-vacancies"><h2>Всі вакансії</h2><div className="simple-vacancies">{demoVacancies.slice(0,6).map(vacancy=><button key={vacancy.role} onClick={()=>setNotice(`${vacancy.role}: демонстраційна вакансія`)}><b>{vacancy.role}</b><small>{vacancy.unit}</small><ChevronRight/></button>)}</div></section>}
 
-function MenuScreen({open,openQr}:{open:(p:Panel)=>void;openQr:()=>void}){return <div className="menu-screen"><h1>Меню</h1><small>Версія DEMO 2.4.1</small><div className="menu-groups"><div><Row icon={Smartphone} title="Активні демо-сесії"/><Row icon={Settings} title="Налаштування" onClick={()=>open('settings')}/></div><div><Row icon={CircleHelp} title="Питання та відповіді" onClick={()=>open('faq')}/><Row icon={Headphones} title="Служба підтримки" onClick={()=>open('support')}/><Row icon={Copy} title="Копіювати демо-номер"/></div><div><Row icon={Bell} title="Повідомлення" onClick={()=>open('notifications')}/><Row icon={Upload} title="Редагувати демо-профіль" onClick={()=>open('profile')}/><Row icon={QrCode} title="Сканувати демо-документ" onClick={openQr}/></div></div><button className="logout"><LogOut/> Вийти</button><p className="privacy">Дані зберігаються лише на цьому пристрої</p></div>}
+type MenuIcon = 'sessions' | 'settings' | 'faq' | 'support' | 'device' | 'scan';
+
+function MenuGlyph({name}:{name:MenuIcon}){
+  if(name==='settings')return <Settings className="menu-glyph" strokeWidth={2.45}/>;
+  if(name==='sessions')return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><rect x="6.5" y="2.5" width="15" height="23" rx="3"/><path d="M11 5.8h6M12.3 22.2h3.4"/></svg>;
+  if(name==='faq')return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><path d="M7 3.5h10.2L21 7.3v17.2H7z"/><path d="M17.2 3.8v4h3.5M11.2 11.2a3 3 0 1 1 4.2 2.7c-1 .5-1.4 1.1-1.4 2.1M14 20h.01"/></svg>;
+  if(name==='support')return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="5" width="21" height="18" rx="4"/><path d="m7.5 10 5 4-5 4M20.5 10l-5 4 5 4"/></svg>;
+  if(name==='device')return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><rect x="4" y="5" width="13" height="19" rx="2.5"/><rect x="11" y="3" width="13" height="19" rx="2.5"/><path d="M15.5 18.5h4"/></svg>;
+  return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><path d="M3 10V4h6M19 4h6v6M25 18v6h-6M9 24H3v-6"/><path d="M9 9h3v3H9zM16 9h3v3h-3zM9 16h3v3H9zM16 16h3v3h-3z"/></svg>;
+}
+
+function MenuScreen({open,openQr,copyDeviceNumber,notify}:{open:(p:Panel)=>void;openQr:()=>void;copyDeviceNumber:()=>void;notify:(value:string)=>void}){return <div className="menu-screen"><h1>Меню</h1><small>Версія 2.4.1</small><div className="menu-groups"><div><MenuRow icon="sessions" title="Активні сесії" chevron onClick={()=>notify('У демо-версії активна лише ця локальна сесія')}/><MenuRow icon="settings" title="Налаштування" chevron onClick={()=>open('settings')}/></div><div><MenuRow icon="faq" title="Питання та відповіді" chevron onClick={()=>open('faq')}/><MenuRow icon="support" title="Служба підтримки" chevron onClick={()=>open('support')}/><MenuRow icon="device" title="Копіювати номер пристрою" onClick={copyDeviceNumber}/></div><div className="menu-single"><MenuRow icon="scan" title="Сканувати документ" onClick={openQr}/></div></div><button className="logout" onClick={()=>notify('Вихід недоступний у локальній демо-версії')}>Вийти</button><button className="privacy" onClick={()=>notify('Демо-дані зберігаються лише локально на цьому пристрої')}>Повідомлення про обробку персональних даних</button></div>}
+
+function MenuRow({icon,title,chevron=false,onClick}:{icon:MenuIcon;title:string;chevron?:boolean;onClick?:()=>void}){return <button className="menu-row" onClick={onClick}><MenuGlyph name={icon}/><span>{title}</span>{chevron&&<ChevronRight className="menu-chevron" strokeWidth={3.2}/>}</button>}
 
 function Row({icon:Icon,title,onClick}:{icon:typeof Settings;title:string;onClick?:()=>void}){return <button className="menu-row" onClick={onClick}><Icon/><span>{title}</span>{onClick&&<ChevronRight/>}</button>}
 
