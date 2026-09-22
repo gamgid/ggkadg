@@ -687,7 +687,7 @@ html,body{background:#e1dfca}
   position:relative;
   width:100%;
   min-height:61px;
-  padding:0 20px 0 22px;
+  padding:0 20px;
   border:0;
   background:#fbfcfc;
   color:#121310;
@@ -707,14 +707,10 @@ html,body{background:#e1dfca}
   background:#d8d9d2;
 }
 .menu-screen .menu-glyph{
-  flex:0 0 27px;
-  width:27px;
-  height:27px;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:2.25;
-  stroke-linecap:round;
-  stroke-linejoin:round;
+  flex:0 0 24px;
+  width:24px;
+  height:24px;
+  object-fit:contain;
 }
 .menu-screen .menu-row>span{flex:1}
 .menu-screen .menu-chevron{

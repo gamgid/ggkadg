@@ -83,6 +83,7 @@ const jobDirections:{id:JobDirection;label:string}[]=[
   {id:'all',label:'Всі вакансії'},
 ];
 const jobAsset=(name:string)=>`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/jobs/${name}`;
+const menuAsset=(name:MenuIcon)=>`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/menu/${name}.png`;
 const demoVacancies=[
   {role:'Механік БПЛА',unit:'106 окрема бригада територіальної оборони',badge:'vacancy-sun.png'},
   {role:'Слюсар-автомеханік',unit:'81 окремий батальйон зв’язку',badge:'vacancy-tools.png'},
@@ -147,12 +148,7 @@ function AllVacanciesCard({setNotice}:{setNotice:(value:string)=>void}){return <
 type MenuIcon = 'sessions' | 'settings' | 'faq' | 'support' | 'device' | 'scan';
 
 function MenuGlyph({name}:{name:MenuIcon}){
-  if(name==='settings')return <Settings className="menu-glyph" strokeWidth={2.45}/>;
-  if(name==='sessions')return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><rect x="6.5" y="2.5" width="15" height="23" rx="3"/><path d="M11 5.8h6M12.3 22.2h3.4"/></svg>;
-  if(name==='faq')return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><path d="M7 3.5h10.2L21 7.3v17.2H7z"/><path d="M17.2 3.8v4h3.5M11.2 11.2a3 3 0 1 1 4.2 2.7c-1 .5-1.4 1.1-1.4 2.1M14 20h.01"/></svg>;
-  if(name==='support')return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="5" width="21" height="18" rx="4"/><path d="m7.5 10 5 4-5 4M20.5 10l-5 4 5 4"/></svg>;
-  if(name==='device')return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><rect x="4" y="5" width="13" height="19" rx="2.5"/><rect x="11" y="3" width="13" height="19" rx="2.5"/><path d="M15.5 18.5h4"/></svg>;
-  return <svg className="menu-glyph" viewBox="0 0 28 28" aria-hidden="true"><path d="M3 10V4h6M19 4h6v6M25 18v6h-6M9 24H3v-6"/><path d="M9 9h3v3H9zM16 9h3v3h-3zM9 16h3v3H9zM16 16h3v3h-3z"/></svg>;
+  return <img className="menu-glyph" src={menuAsset(name)} alt="" aria-hidden="true"/>;
 }
 
 function MenuScreen({open,openQr,copyDeviceNumber,notify}:{open:(p:Panel)=>void;openQr:()=>void;copyDeviceNumber:()=>void;notify:(value:string)=>void}){return <div className="menu-screen"><h1>Меню</h1><small>Версія 2.4.1</small><div className="menu-groups"><div><MenuRow icon="sessions" title="Активні сесії" chevron onClick={()=>notify('У демо-версії активна лише ця локальна сесія')}/><MenuRow icon="settings" title="Налаштування" chevron onClick={()=>open('settings')}/></div><div><MenuRow icon="faq" title="Питання та відповіді" chevron onClick={()=>open('faq')}/><MenuRow icon="support" title="Служба підтримки" chevron onClick={()=>open('support')}/><MenuRow icon="device" title="Копіювати номер пристрою" onClick={copyDeviceNumber}/></div><div className="menu-single"><MenuRow icon="scan" title="Сканувати документ" onClick={openQr}/></div></div><button className="logout" onClick={()=>notify('Вихід недоступний у локальній демо-версії')}>Вийти</button><button className="privacy" onClick={()=>notify('Демо-дані зберігаються лише локально на цьому пристрої')}>Повідомлення про обробку персональних даних</button></div>}
