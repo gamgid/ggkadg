@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Headphones, Plus, QrCode, Search, Settings, ShieldCheck, Upload, X } from 'lucide-react';
+import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Download, Headphones, List, Plus, QrCode, RefreshCw, Search, Settings, ShieldCheck, Upload, X } from 'lucide-react';
 import { storageService } from '../src/services/storageService';
 import { createCardFlip } from '../src/animation/cardFlip.mjs';
 
@@ -42,7 +42,7 @@ export default function HomePage(){
     <div className="video-watermark">ДЕМО / ПАРОДІЯ — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
     {panel?<SubPanel panel={panel} close={()=>setPanel(null)} profile={profile} setProfile={setProfile} animations={animations} setAnimations={setAnimations} openQr={()=>setQrOpen(true)}/>:<>
       <section className="video-page">
-        {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')}/>} 
+        {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')} notify={setNotice}/>} 
         {tab==='services'&&<ServicesScreen setNotice={setNotice}/>} 
         {tab==='jobs'&&<JobsScreen contractsOpen={jobsContractsOpen} closeContracts={()=>setJobsContractsOpen(false)} setNotice={setNotice}/>} 
         {tab==='menu'&&<MenuScreen open={setPanel} openQr={()=>setQrOpen(true)} copyDeviceNumber={copyDeviceNumber} notify={setNotice}/>} 
@@ -54,10 +54,11 @@ export default function HomePage(){
   </main>;
 }
 
-function IdScreen({profile,qr,openMessages}:{profile:Profile;qr:string;seconds:number;openMessages:()=>void}){
+function IdScreen({profile,qr,openMessages,notify}:{profile:Profile;qr:string;seconds:number;openMessages:()=>void;notify:(value:string)=>void}){
   const [flipped,setFlipped]=useState(false);
   const [isTurning,setIsTurning]=useState(false);
-  const cardRef=useRef<HTMLButtonElement|null>(null);
+  const [actionsOpen,setActionsOpen]=useState(false);
+  const cardRef=useRef<HTMLDivElement|null>(null);
   const flipRef=useRef<ReturnType<typeof createCardFlip>|null>(null);
   const expiry=qrExpiryDate(),status='Демо-статус  •  Оновлено о 18:42';
 
@@ -70,7 +71,12 @@ function IdScreen({profile,qr,openMessages}:{profile:Profile;qr:string;seconds:n
     return ()=>{controller.dispose();flipRef.current=null};
   },[]);
 
-  return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><button ref={cardRef} className="id-card flip-card" onClick={()=>flipRef.current?.flip()} aria-disabled={isTurning} aria-busy={isTurning} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Резерв ID</h1><span className="shield" aria-hidden="true"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/></span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" aria-hidden="true"><Plus strokeWidth={3.5}/></span></div><span className="flip-shade" aria-hidden="true"/></section><section className="id-face id-back"><h2>QR-код дійсний до {expiry}</h2><div className="flip-qr"><QRCodeSVG value={qr} size={336} minVersion={qrVersion} level="M" boostLevel={false}/></div><span className="flip-shade" aria-hidden="true"/></section></button></div></div>}
+  const flip=()=>flipRef.current?.flip();
+  const chooseAction=(message:string)=>{setActionsOpen(false);notify(message)};
+
+  return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><div ref={cardRef} className="id-card flip-card" role="button" tabIndex={0} onClick={flip} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();flip()}}} aria-disabled={isTurning} aria-busy={isTurning} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Резерв ID</h1><span className="shield" aria-hidden="true"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/></span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" role="button" tabIndex={0} aria-label="Відкрити дії з документом" onClick={event=>{event.stopPropagation();setActionsOpen(true)}} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();setActionsOpen(true)}}}><Plus strokeWidth={3.5}/></span></div><span className="flip-shade" aria-hidden="true"/></section><section className="id-face id-back"><h2>QR-код дійсний до {expiry}</h2><div className="flip-qr"><QRCodeSVG value={qr} size={336} minVersion={qrVersion} level="M" boostLevel={false}/></div><span className="flip-shade" aria-hidden="true"/></section></div></div>{actionsOpen&&<DocumentActions close={()=>setActionsOpen(false)} choose={chooseAction}/>}</div>}
+
+function DocumentActions({close,choose}:{close:()=>void;choose:(message:string)=>void}){return <div className="document-actions-backdrop" role="presentation" onClick={close}><section className="document-actions" role="dialog" aria-modal="true" aria-label="Дії з документом" onClick={event=>event.stopPropagation()}><span className="document-actions-handle" aria-hidden="true"/><button onClick={()=>choose('Дані демо-документа оновлено локально')}><RefreshCw/><span>Оновити дані з реєстру</span></button><button onClick={()=>choose('Завантаження PDF недоступне у демонстраційній версії')}><Download/><span>Завантажити PDF</span></button><button onClick={()=>choose('Повна інформація містить лише вигадані демонстраційні дані')}><List/><span>Повна інформація</span></button></section></div>}
 
 function ServicesScreen({setNotice}:{setNotice:(v:string)=>void}){return <div className="plain-screen services-screen"><h1>Сервіси</h1><div className="bare-list">{services.map(x=><button key={x} onClick={()=>setNotice(`${x}: лише демонстрація, без надсилання запиту`)}><span>{x}</span><ChevronRight aria-hidden="true"/></button>)}</div></div>}
 

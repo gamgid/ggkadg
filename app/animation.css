@@ -246,6 +246,62 @@ html,body{background:#e1dfca}
 .id-front .id-person h2{letter-spacing:.01em}
 .id-front .id-person .profile-surname{text-transform:uppercase}
 .id-front .orange-circle svg{width:24px;height:24px;stroke-linecap:butt}
+.id-front .orange-circle{border:0;color:#10110d;cursor:pointer;position:relative;z-index:2}
+.id-front .orange-circle::before{content:"";position:absolute;inset:-8px;border-radius:50%}
+.id-front .orange-circle:focus-visible{outline:2px solid #10110d;outline-offset:3px}
+
+/* Document actions opened by the orange plus. Geometry follows IMG_1595:
+   8px side inset, 220px sheet, 56px rows and the iPhone safe-area gap. */
+.document-actions-backdrop{
+  position:fixed;
+  z-index:70;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:0 8px env(safe-area-inset-bottom,0px);
+  background:rgba(0,0,0,.70);
+}
+.document-actions{
+  position:relative;
+  width:min(424px,100%);
+  height:220px;
+  padding:38px 18px 14px;
+  border-radius:16px;
+  background:#fbfcfc;
+  color:#000;
+  box-shadow:none;
+  animation:documentActionsUp .22s ease-out;
+}
+.document-actions-handle{
+  position:absolute;
+  top:16px;
+  left:50%;
+  width:40px;
+  height:4px;
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:#000;
+}
+.document-actions button{
+  width:100%;
+  height:56px;
+  padding:0 16px 0 8px;
+  border:0;
+  background:transparent;
+  color:inherit;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  text-align:left;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:20px;
+  font-weight:500;
+}
+.document-actions button svg{flex:0 0 20px;width:20px;height:20px;stroke-width:2}
+.document-actions button:active{opacity:.55}
+@keyframes documentActionsUp{from{transform:translateY(calc(100% + 16px))}to{transform:translateY(0)}}
 
 /* Bottom navigation reference pass. Keep the accepted panel bounds and
    standalone safe-area anchoring; only icons and labels match the reference. */
