@@ -31,18 +31,18 @@ const qrVersion=18;
 const qrExpiryDate=()=>{const date=new Date();date.setFullYear(date.getFullYear()+1);const months=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`};
 
 export default function HomePage(){
-  const [ready,setReady]=useState(false),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
+  const [ready,setReady]=useState(false),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
   useEffect(()=>{const saved=storageService.load<Stored>();if(saved){setProfile(saved.profile||baseProfile);setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setProfile({...baseProfile,id:`DEMO-${String(crypto.getRandomValues(new Uint32Array(1))[0]).slice(0,8)}`});setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});const id=setTimeout(()=>setReady(true),850);return()=>clearTimeout(id)},[]);
   useEffect(()=>{if(ready)storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready]);
   useEffect(()=>{const id=setInterval(()=>setSeconds(s=>{if(s<=1){setQr(makeQr());return 180}return s-1}),1000);return()=>clearInterval(id)},[]);
   const regenerate=()=>{setQr(makeQr());setSeconds(180);setNotice('Новий тестовий QR створено')};
   const copyDeviceNumber=async()=>{try{await navigator.clipboard.writeText(profile.id);setNotice('Номер демо-пристрою скопійовано')}catch{setNotice('Не вдалося скопіювати номер пристрою')}};
   if(!ready)return <main className="video-app splash-v"><div className="splash-mark">D</div><h1>Облік DEMO</h1><p>Демонстраційна пародія</p></main>;
-  return <main className={`video-app ${animations?'':'no-motion'} ${panel?'panel-open':''}`}>
+  return <main className={`video-app ${animations?'':'no-motion'} ${panel?'panel-open':''} ${documentOpen?'document-open':''}`}>
     <div className="video-watermark">ДЕМО / ПАРОДІЯ — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
-    {panel?<SubPanel panel={panel} close={()=>setPanel(null)} profile={profile} setProfile={setProfile} animations={animations} setAnimations={setAnimations} openQr={()=>setQrOpen(true)}/>:<>
+    {documentOpen?<DocumentView profile={profile} close={()=>setDocumentOpen(false)}/>:panel?<SubPanel panel={panel} close={()=>setPanel(null)} profile={profile} setProfile={setProfile} animations={animations} setAnimations={setAnimations} openQr={()=>setQrOpen(true)}/>:<>
       <section className="video-page">
-        {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')} notify={setNotice}/>} 
+        {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')} openDocument={()=>setDocumentOpen(true)} notify={setNotice}/>} 
         {tab==='services'&&<ServicesScreen setNotice={setNotice}/>} 
         {tab==='jobs'&&<JobsScreen contractsOpen={jobsContractsOpen} closeContracts={()=>setJobsContractsOpen(false)} setNotice={setNotice}/>} 
         {tab==='menu'&&<MenuScreen open={setPanel} openQr={()=>setQrOpen(true)} copyDeviceNumber={copyDeviceNumber} notify={setNotice}/>} 
@@ -54,7 +54,7 @@ export default function HomePage(){
   </main>;
 }
 
-function IdScreen({profile,qr,openMessages,notify}:{profile:Profile;qr:string;seconds:number;openMessages:()=>void;notify:(value:string)=>void}){
+function IdScreen({profile,qr,openMessages,openDocument,notify}:{profile:Profile;qr:string;seconds:number;openMessages:()=>void;openDocument:()=>void;notify:(value:string)=>void}){
   const [flipped,setFlipped]=useState(false);
   const [isTurning,setIsTurning]=useState(false);
   const [actionsOpen,setActionsOpen]=useState(false);
@@ -74,9 +74,41 @@ function IdScreen({profile,qr,openMessages,notify}:{profile:Profile;qr:string;se
   const flip=()=>flipRef.current?.flip();
   const chooseAction=(message:string)=>{setActionsOpen(false);notify(message)};
 
-  return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><div ref={cardRef} className="id-card flip-card" role="button" tabIndex={0} onClick={flip} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();flip()}}} aria-disabled={isTurning} aria-busy={isTurning} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Резерв ID</h1><span className="shield" aria-hidden="true"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/></span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" role="button" tabIndex={0} aria-label="Відкрити дії з документом" onClick={event=>{event.stopPropagation();setActionsOpen(true)}} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();setActionsOpen(true)}}}><Plus strokeWidth={3.5}/></span></div><span className="flip-shade" aria-hidden="true"/></section><section className="id-face id-back"><h2>QR-код дійсний до {expiry}</h2><div className="flip-qr"><QRCodeSVG value={qr} size={336} minVersion={qrVersion} level="M" boostLevel={false}/></div><span className="flip-shade" aria-hidden="true"/></section></div></div>{actionsOpen&&<DocumentActions close={()=>setActionsOpen(false)} choose={chooseAction}/>}</div>}
+  return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><div ref={cardRef} className="id-card flip-card" role="button" tabIndex={0} onClick={flip} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();flip()}}} aria-disabled={isTurning} aria-busy={isTurning} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Резерв ID</h1><span className="shield" aria-hidden="true"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/></span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" role="button" tabIndex={0} aria-label="Відкрити дії з документом" onClick={event=>{event.stopPropagation();setActionsOpen(true)}} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();setActionsOpen(true)}}}><Plus strokeWidth={3.5}/></span></div><span className="flip-shade" aria-hidden="true"/></section><section className="id-face id-back"><h2>QR-код дійсний до {expiry}</h2><div className="flip-qr"><QRCodeSVG value={qr} size={336} minVersion={qrVersion} level="M" boostLevel={false}/></div><span className="flip-shade" aria-hidden="true"/></section></div></div>{actionsOpen&&<DocumentActions close={()=>setActionsOpen(false)} view={()=>{setActionsOpen(false);openDocument()}} choose={chooseAction}/>}</div>}
 
-function DocumentActions({close,choose}:{close:()=>void;choose:(message:string)=>void}){return <div className="document-actions-backdrop" role="presentation" onClick={close}><section className="document-actions" role="dialog" aria-modal="true" aria-label="Дії з документом" onClick={event=>event.stopPropagation()}><span className="document-actions-handle" aria-hidden="true"/><button onClick={()=>choose('Документ містить лише вигадані демонстраційні дані')}><Info/><span>Переглянути документ</span></button><button onClick={()=>choose('Завантаження PDF недоступне у демонстраційній версії')}><Download/><span>Завантажити PDF</span></button><button onClick={()=>choose('Демо-документ оновлено локально')}><RefreshCw/><span>Оновити документ</span></button></section></div>}
+function DocumentActions({close,view,choose}:{close:()=>void;view:()=>void;choose:(message:string)=>void}){return <div className="document-actions-backdrop" role="presentation" onClick={close}><section className="document-actions" role="dialog" aria-modal="true" aria-label="Дії з документом" onClick={event=>event.stopPropagation()}><span className="document-actions-handle" aria-hidden="true"/><button onClick={view}><Info/><span>Переглянути документ</span></button><button onClick={()=>choose('Завантаження PDF недоступне у демонстраційній версії')}><Download/><span>Завантажити PDF</span></button><button onClick={()=>choose('Демо-документ оновлено локально')}><RefreshCw/><span>Оновити документ</span></button></section></div>}
+
+const documentFacts=(profile:Profile)=>[
+  ['Прізвище, ім’я, по батькові',`${profile.lastName.toUpperCase()} ${profile.firstName} ${profile.middleName}`],
+  ['Дата народження',uaDate(profile.birthDate)],
+  ['РНОКПП','0000000000'],
+  ['Відстрочка','Не надано'],
+  ['Постанова ВЛК','Дані відсутні'],
+  ['Військово-облікова спеціальність','Демонстраційні дані'],
+  ['Категорія обліку','Демо-категорія'],
+  ['Військове звання','Не вказано'],
+  ['Перебуває на обліку','Демонстраційний запис'],
+  ['ТЦК та СП','Навчальний демо-центр'],
+  ['Дата уточнення даних',profile.updatedAt],
+] as const;
+
+function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
+  const marquee='ДЕМО • ДАНІ ОНОВЛЕНО О 18:42';
+  return <section className="document-view" aria-label="Демонстраційний військово-обліковий документ">
+    <header className="document-view-header">
+      <button className="document-view-back" onClick={close} aria-label="Повернутися"><ChevronLeft/></button>
+      <h1>Військово-обліковий<br/>документ</h1>
+    </header>
+    <div className="document-view-marquee" aria-label={marquee}>
+      <div className="document-view-marquee-track"><span>{marquee}</span><span aria-hidden="true">{marquee}</span><span aria-hidden="true">{marquee}</span><span aria-hidden="true">{marquee}</span></div>
+    </div>
+    <div className="document-view-demo">ДЕМО — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
+    <div className="document-view-facts">
+      {documentFacts(profile).map(([label,value])=><div className="document-view-row" key={label}><small>{label}</small><strong>{value}</strong></div>)}
+    </div>
+    <p className="document-view-note">Усі відомості на цьому екрані вигадані та збережені лише на вашому пристрої.</p>
+  </section>
+}
 
 function ServicesScreen({setNotice}:{setNotice:(v:string)=>void}){return <div className="plain-screen services-screen"><h1>Сервіси</h1><div className="bare-list">{services.map(x=><button key={x} onClick={()=>setNotice(`${x}: лише демонстрація, без надсилання запиту`)}><span>{x}</span><ChevronRight aria-hidden="true"/></button>)}</div></div>}
 

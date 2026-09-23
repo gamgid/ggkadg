@@ -303,6 +303,129 @@ html,body{background:#e1dfca}
 .document-actions button:active{opacity:.55}
 @keyframes documentActionsUp{from{transform:translateY(calc(100% + 16px))}to{transform:translateY(0)}}
 
+/* Full document view opened from the first action. The page is intentionally
+   scrollable: IMG_1597 is its beginning and IMG_1598 is the continuation. */
+.document-open{overflow:hidden}
+.document-open .video-watermark{
+  position:fixed;
+  z-index:45;
+  top:auto;
+  bottom:max(10px,env(safe-area-inset-bottom,0px));
+  pointer-events:none;
+}
+.document-view{
+  width:100%;
+  height:100dvh;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  padding:max(56px,calc(env(safe-area-inset-top,0px) + 20px)) 20px calc(76px + env(safe-area-inset-bottom,0px));
+  background:#e4e2cf;
+  color:#10110e;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+  scrollbar-width:none;
+}
+.document-view::-webkit-scrollbar{display:none}
+.document-view-header{
+  display:grid;
+  grid-template-columns:42px 1fr 42px;
+  align-items:start;
+  margin-bottom:24px;
+}
+.document-view-header h1{
+  grid-column:2;
+  margin:0;
+  text-align:center;
+  font-size:29px;
+  line-height:31px;
+  letter-spacing:-.8px;
+  font-weight:600;
+}
+.document-view-back{
+  grid-column:1;
+  width:40px;
+  height:40px;
+  margin-top:-3px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#f8f8ee;
+  color:#11120f;
+  display:grid;
+  place-items:center;
+}
+.document-view-back svg{width:23px;height:23px;stroke-width:2}
+.document-view-marquee{
+  width:calc(100% + 40px);
+  margin:0 -20px 18px;
+  overflow:hidden;
+  background:#7b4c12;
+  color:#fff;
+  white-space:nowrap;
+  font-size:15px;
+  line-height:38px;
+  font-weight:600;
+}
+.document-view-marquee-track{
+  display:flex;
+  width:max-content;
+  animation:documentViewMarquee 10s linear infinite;
+  will-change:transform;
+}
+.document-view-marquee-track span{flex:none;padding-right:44px}
+@keyframes documentViewMarquee{to{transform:translateX(-50%)}}
+.document-view-demo{
+  margin-bottom:12px;
+  padding:10px 12px;
+  border:1px solid #8f9180;
+  border-radius:9px;
+  color:#5f2d27;
+  text-align:center;
+  font-size:10px;
+  line-height:14px;
+  font-weight:800;
+  letter-spacing:.07em;
+}
+.document-view-facts{
+  overflow:hidden;
+  border:1px solid #9b9d8b;
+  border-radius:10px;
+  background:#ecebdc;
+}
+.document-view-row{
+  min-height:78px;
+  padding:14px 16px 13px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:7px;
+}
+.document-view-row:not(:last-child){border-bottom:1px solid #adaf9e}
+.document-view-row small{
+  color:#696b60;
+  font-size:13px;
+  line-height:16px;
+  font-weight:500;
+}
+.document-view-row strong{
+  color:#12130f;
+  font-size:17px;
+  line-height:21px;
+  font-weight:600;
+}
+.document-view-note{
+  margin:18px 6px 0;
+  color:#686a60;
+  text-align:center;
+  font-size:12px;
+  line-height:16px;
+}
+@media(max-width:360px){
+  .document-view{padding-left:16px;padding-right:16px}
+  .document-view-marquee{width:calc(100% + 32px);margin-left:-16px;margin-right:-16px}
+  .document-view-header h1{font-size:26px;line-height:28px}
+}
+
 /* Bottom navigation reference pass. Keep the accepted panel bounds and
    standalone safe-area anchoring; only icons and labels match the reference. */
 .video-nav button{
