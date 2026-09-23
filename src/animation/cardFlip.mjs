@@ -24,7 +24,7 @@ export const FLIP_SPEC = Object.freeze({
  * of applying filter/opacity to the rotor, which would flatten its 3D children.
  * All effects share the same timeline start, duration and effect-level easing.
  * Lighting offsets therefore refer to ANGLE progress: dark at 90 degrees.
- * @param {HTMLButtonElement} card
+ * @param {HTMLElement} card
  * @param {{onChange?: (state: {flipped: boolean, busy: boolean, angle: number}) => void}} options
  */
 export function createCardFlip(card, options = {}) {
