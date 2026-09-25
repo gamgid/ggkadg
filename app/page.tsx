@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Download, Headphones, Info, Plus, QrCode, RefreshCw, Search, Settings, ShieldCheck, Upload, X } from 'lucide-react';
 import { storageService } from '../src/services/storageService';
@@ -78,35 +78,45 @@ function IdScreen({profile,qr,openMessages,openDocument,notify}:{profile:Profile
 
 function DocumentActions({close,view,choose}:{close:()=>void;view:()=>void;choose:(message:string)=>void}){return <div className="document-actions-backdrop" role="presentation" onClick={close}><section className="document-actions" role="dialog" aria-modal="true" aria-label="Дії з документом" onClick={event=>event.stopPropagation()}><span className="document-actions-handle" aria-hidden="true"/><button onClick={view}><Info/><span>Переглянути документ</span></button><button onClick={()=>choose('Завантаження PDF недоступне у демонстраційній версії')}><Download/><span>Завантажити PDF</span></button><button onClick={()=>choose('Демо-документ оновлено локально')}><RefreshCw/><span>Оновити документ</span></button></section></div>}
 
-const documentFacts=(profile:Profile)=>[
-  ['Прізвище, ім’я, по батькові',`${profile.lastName.toUpperCase()} ${profile.firstName} ${profile.middleName}`],
-  ['Дата народження',uaDate(profile.birthDate)],
-  ['РНОКПП','0000000000'],
-  ['Відстрочка','Не надано'],
-  ['Постанова ВЛК','Дані відсутні'],
-  ['Військово-облікова спеціальність','Демонстраційні дані'],
-  ['Категорія обліку','Демо-категорія'],
-  ['Військове звання','Не вказано'],
-  ['Перебуває на обліку','Демонстраційний запис'],
-  ['ТЦК та СП','Навчальний демо-центр'],
-  ['Дата уточнення даних',profile.updatedAt],
-] as const;
-
 function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
-  const marquee='ДЕМО • ДАНІ ОНОВЛЕНО О 18:42';
+  const marquee='ДЕМО • НЕ Є ДОКУМЕНТОМ • ДАНІ ОНОВЛЕНО О 18:42 •';
+  const Fact=({label,children}:{label:string;children:ReactNode})=><div className="document-view-fact"><small>{label}</small><strong>{children}</strong></div>;
   return <section className="document-view" aria-label="Демонстраційний військово-обліковий документ">
-    <header className="document-view-header">
-      <button className="document-view-back" onClick={close} aria-label="Повернутися"><ChevronLeft/></button>
-      <h1>Військово-обліковий<br/>документ</h1>
-    </header>
-    <div className="document-view-marquee" aria-label={marquee}>
-      <div className="document-view-marquee-track"><span>{marquee}</span><span aria-hidden="true">{marquee}</span><span aria-hidden="true">{marquee}</span><span aria-hidden="true">{marquee}</span></div>
+    <div className="document-view-grip" aria-hidden="true"><span/></div>
+    <div className="document-view-content">
+      <header className="document-view-header">
+        <h1>Військово-обліковий<br/>документ</h1>
+        <button className="document-view-close" onClick={close} aria-label="Закрити"><X/></button>
+      </header>
+      <div className="document-view-marquee" aria-label={marquee}>
+        <div className="document-view-marquee-track">
+          <span>{marquee}</span><span aria-hidden="true">{marquee}</span><span aria-hidden="true">{marquee}</span><span aria-hidden="true">{marquee}</span>
+        </div>
+      </div>
+      <div className="document-view-cards">
+        <section className="document-view-card document-view-card-personal">
+          <Fact label="Прізвище, ім’я, по батькові"><>{profile.lastName.toUpperCase()}<br/>{profile.firstName} {profile.middleName}</></Fact>
+          <Fact label="Дата народження">{uaDate(profile.birthDate)}</Fact>
+          <Fact label="РНОКПП">0000000000</Fact>
+        </section>
+        <section className="document-view-card document-view-card-status">
+          <Fact label="Відстрочка">Не надано</Fact>
+          <p>Відомості наведені у демонстраційному режимі</p>
+        </section>
+        <section className="document-view-card document-view-card-register">
+          <Fact label="Військово-облікова спеціальність">Демонстраційна<br/>військово-облікова<br/>спеціальність</Fact>
+          <Fact label="Категорія обліку">Військовозобов’язаний</Fact>
+          <Fact label="Військове звання">Не вказано</Fact>
+        </section>
+        <section className="document-view-card document-view-card-office">
+          <Fact label="Перебуває на обліку">Демонстраційний запис</Fact>
+          <Fact label="ТЦК та СП">Навчальний демо-центр</Fact>
+        </section>
+        <section className="document-view-card document-view-card-updated">
+          <Fact label="Дата уточнення даних">{profile.updatedAt}</Fact>
+        </section>
+      </div>
     </div>
-    <div className="document-view-demo">ДЕМО — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
-    <div className="document-view-facts">
-      {documentFacts(profile).map(([label,value])=><div className="document-view-row" key={label}><small>{label}</small><strong>{value}</strong></div>)}
-    </div>
-    <p className="document-view-note">Усі відомості на цьому екрані вигадані та збережені лише на вашому пристрої.</p>
   </section>
 }
 

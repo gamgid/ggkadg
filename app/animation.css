@@ -303,127 +303,122 @@ html,body{background:#e1dfca}
 .document-actions button:active{opacity:.55}
 @keyframes documentActionsUp{from{transform:translateY(calc(100% + 16px))}to{transform:translateY(0)}}
 
-/* Full document view opened from the first action. The page is intentionally
-   scrollable: IMG_1597 is its beginning and IMG_1598 is the continuation. */
-.document-open{overflow:hidden}
-.document-open .video-watermark{
-  position:fixed;
-  z-index:45;
-  top:auto;
-  bottom:max(10px,env(safe-area-inset-bottom,0px));
-  pointer-events:none;
-}
+/* Scrollable document sheet: IMG_1597 is the top and IMG_1598 is the same
+   sheet after a roughly 200px scroll. */
+.document-open{overflow:hidden;background:#000}
+.document-open .video-watermark{display:none}
 .document-view{
   width:100%;
-  height:100dvh;
+  height:calc(100dvh - 62px);
+  margin-top:62px;
   overflow-x:hidden;
   overflow-y:auto;
   overscroll-behavior-y:contain;
-  padding:max(56px,calc(env(safe-area-inset-top,0px) + 20px)) 20px calc(76px + env(safe-area-inset-bottom,0px));
-  background:#e4e2cf;
-  color:#10110e;
+  border-radius:22px 22px 0 0;
+  background:#e0dfcc;
+  color:#000;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
   scrollbar-width:none;
 }
 .document-view::-webkit-scrollbar{display:none}
+.document-view-grip{
+  position:sticky;
+  z-index:3;
+  top:0;
+  height:46px;
+  margin-bottom:-46px;
+  background:linear-gradient(#c5c4b3 0 10px,#e0dfcc 10px);
+  display:flex;
+  justify-content:center;
+  padding-top:18px;
+}
+.document-view-grip span{width:36px;height:5px;border-radius:4px;background:#000}
+.document-view-content{padding-top:46px;padding-bottom:56px}
 .document-view-header{
-  display:grid;
-  grid-template-columns:42px 1fr 42px;
-  align-items:start;
-  margin-bottom:24px;
+  min-height:81px;
+  padding:8px 24px 24px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
 }
 .document-view-header h1{
-  grid-column:2;
   margin:0;
-  text-align:center;
-  font-size:29px;
-  line-height:31px;
-  letter-spacing:-.8px;
-  font-weight:600;
+  font-size:22px;
+  line-height:24px;
+  letter-spacing:-.45px;
+  font-weight:700;
 }
-.document-view-back{
-  grid-column:1;
-  width:40px;
-  height:40px;
-  margin-top:-3px;
+.document-view-close{
+  flex:0 0 32px;
+  width:32px;
+  height:32px;
   padding:0;
   border:0;
   border-radius:50%;
-  background:#f8f8ee;
-  color:#11120f;
+  background:transparent;
+  color:#000;
   display:grid;
   place-items:center;
 }
-.document-view-back svg{width:23px;height:23px;stroke-width:2}
+.document-view-close svg{width:30px;height:30px;stroke-width:2.1}
 .document-view-marquee{
-  width:calc(100% + 40px);
-  margin:0 -20px 18px;
+  width:100%;
+  height:20px;
   overflow:hidden;
-  background:#7b4c12;
-  color:#fff;
+  background:#6b4b1a;
+  color:#c3b7a4;
   white-space:nowrap;
-  font-size:15px;
-  line-height:38px;
-  font-weight:600;
+  font-size:10px;
+  line-height:20px;
+  font-weight:700;
+  letter-spacing:.02em;
 }
 .document-view-marquee-track{
   display:flex;
   width:max-content;
-  animation:documentViewMarquee 10s linear infinite;
+  animation:documentViewMarquee 13s linear infinite;
   will-change:transform;
 }
-.document-view-marquee-track span{flex:none;padding-right:44px}
+.document-view-marquee-track span{flex:none;padding-right:24px}
 @keyframes documentViewMarquee{to{transform:translateX(-50%)}}
-.document-view-demo{
-  margin-bottom:12px;
-  padding:10px 12px;
-  border:1px solid #8f9180;
-  border-radius:9px;
-  color:#5f2d27;
-  text-align:center;
-  font-size:10px;
-  line-height:14px;
-  font-weight:800;
-  letter-spacing:.07em;
-}
-.document-view-facts{
+.document-view-cards{padding:29px 24px 0;display:grid;gap:9px}
+.document-view-card{
   overflow:hidden;
-  border:1px solid #9b9d8b;
-  border-radius:10px;
-  background:#ecebdc;
+  padding:16px;
+  border:0;
+  border-radius:17px;
+  background:#fbfcfc;
 }
-.document-view-row{
-  min-height:78px;
-  padding:14px 16px 13px;
+.document-view-fact{
   display:flex;
   flex-direction:column;
-  justify-content:center;
   gap:7px;
 }
-.document-view-row:not(:last-child){border-bottom:1px solid #adaf9e}
-.document-view-row small{
-  color:#696b60;
-  font-size:13px;
-  line-height:16px;
-  font-weight:500;
+.document-view-fact small{
+  color:#000;
+  font-size:15px;
+  line-height:18px;
+  font-weight:650;
 }
-.document-view-row strong{
-  color:#12130f;
-  font-size:17px;
-  line-height:21px;
-  font-weight:600;
+.document-view-fact strong{
+  color:#000;
+  font-size:14px;
+  line-height:17px;
+  font-weight:400;
 }
-.document-view-note{
-  margin:18px 6px 0;
-  color:#686a60;
-  text-align:center;
-  font-size:12px;
-  line-height:16px;
-}
+.document-view-card-personal{height:251px;display:grid;align-content:start;gap:17px}
+.document-view-card-personal .document-view-fact:first-child{gap:5px}
+.document-view-card-personal .document-view-fact:first-child strong{font-size:21px;line-height:24px;font-weight:650;letter-spacing:-.25px}
+.document-view-card-status{height:122px}
+.document-view-card-status p{margin:29px 0 0;font-size:12px;line-height:14px;color:#000}
+.document-view-card-register{height:242px;display:grid;align-content:start;gap:19px}
+.document-view-card-office{height:152px;display:grid;align-content:start;gap:18px}
+.document-view-card-updated{height:62px;padding-top:12px}
+@media(prefers-reduced-motion:reduce){.document-view-marquee-track{animation:none}}
 @media(max-width:360px){
-  .document-view{padding-left:16px;padding-right:16px}
-  .document-view-marquee{width:calc(100% + 32px);margin-left:-16px;margin-right:-16px}
-  .document-view-header h1{font-size:26px;line-height:28px}
+  .document-view-cards{padding-left:18px;padding-right:18px}
+  .document-view-header{padding-left:18px;padding-right:18px}
 }
 
 /* Bottom navigation reference pass. Keep the accepted panel bounds and
