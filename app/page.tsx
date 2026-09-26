@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Download, Headphones, Info, Plus, QrCode, RefreshCw, Search, Settings, ShieldCheck, Upload, X } from 'lucide-react';
 import { storageService } from '../src/services/storageService';
@@ -80,9 +80,37 @@ function DocumentActions({close,view,choose}:{close:()=>void;view:()=>void;choos
 
 function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
   const marquee='ДЕМО • НЕ Є ДОКУМЕНТОМ • ДОКУМЕНТ ОНОВЛЕНО О 18:42 •';
+  const dragStart=useRef<number|null>(null);
+  const dragOffsetRef=useRef(0);
+  const [dragOffset,setDragOffset]=useState(0);
+  const [dragging,setDragging]=useState(false);
+  useEffect(()=>{
+    const onKeyDown=(event:KeyboardEvent)=>{if(event.key==='Escape')close()};
+    window.addEventListener('keydown',onKeyDown);
+    return()=>window.removeEventListener('keydown',onKeyDown);
+  },[close]);
+  const startCloseDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{
+    dragStart.current=event.clientY;
+    setDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const moveCloseDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{
+    if(dragStart.current===null)return;
+    const nextOffset=Math.max(0,event.clientY-dragStart.current);
+    dragOffsetRef.current=nextOffset;
+    setDragOffset(nextOffset);
+  };
+  const finishCloseDrag=()=>{
+    const shouldClose=dragOffsetRef.current>=72;
+    dragStart.current=null;
+    dragOffsetRef.current=0;
+    setDragging(false);
+    setDragOffset(0);
+    if(shouldClose)close();
+  };
   const Fact=({label,children}:{label:string;children:ReactNode})=><div className="document-view-fact"><small>{label}</small><strong>{children}</strong></div>;
-  return <section className="document-view" aria-label="Демонстраційний військово-обліковий документ">
-    <div className="document-view-grip" aria-hidden="true"><span/></div>
+  return <><button className="document-view-backdrop-close" onClick={close} aria-label="Закрити документ"/><section className={`document-view${dragging?' is-dragging':''}`} style={{transform:`translateY(${dragOffset}px)`}} aria-label="Демонстраційний військово-обліковий документ">
+    <div className="document-view-grip" role="button" tabIndex={0} aria-label="Потягніть вниз, щоб закрити" onPointerDown={startCloseDrag} onPointerMove={moveCloseDrag} onPointerUp={finishCloseDrag} onPointerCancel={finishCloseDrag} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();close()}}}><span/></div>
     <div className="document-view-content">
       <header className="document-view-header">
         <h1>Резерв ID</h1>
@@ -128,7 +156,7 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
         </section>
       </div>
     </div>
-  </section>
+  </section></>
 }
 
 function ServicesScreen({setNotice}:{setNotice:(v:string)=>void}){return <div className="plain-screen services-screen"><h1>Сервіси</h1><div className="bare-list">{services.map(x=><button key={x} onClick={()=>setNotice(`${x}: лише демонстрація, без надсилання запиту`)}><span>{x}</span><ChevronRight aria-hidden="true"/></button>)}</div></div>}

@@ -307,7 +307,10 @@ html,body{background:#e1dfca}
    IMG_1609 is the top and IMG_1610 is the same sheet at its scroll limit. */
 .document-open{overflow:hidden;background:#000}
 .document-open .video-watermark{display:none}
+.document-view-backdrop-close{position:fixed;z-index:1;inset:0 0 auto;width:100%;height:62px;padding:0;border:0;background:#000}
 .document-view{
+  position:relative;
+  z-index:2;
   width:100%;
   height:calc(100dvh - 62px);
   margin-top:62px;
@@ -317,9 +320,11 @@ html,body{background:#e1dfca}
   border-radius:22px 22px 0 0;
   background:#e0dfcc;
   color:#000;
-  font-family:"e-Ukraine",Arial,Helvetica,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
   scrollbar-width:none;
+  transition:transform .2s ease-out;
 }
+.document-view.is-dragging{transition:none}
 .document-view::-webkit-scrollbar{display:none}
 .document-view-grip{
   position:sticky;
@@ -331,7 +336,10 @@ html,body{background:#e1dfca}
   display:flex;
   justify-content:center;
   padding-top:18px;
+  touch-action:none;
+  cursor:grab;
 }
+.document-view-grip:active{cursor:grabbing}
 .document-view-grip span{width:36px;height:5px;border-radius:4px;background:#000}
 .document-view-content{padding-top:44px;padding-bottom:56px}
 .document-view-header{
@@ -342,14 +350,9 @@ html,body{background:#e1dfca}
   justify-content:space-between;
   gap:18px;
 }
-.document-view-header h1{
-  margin:0;
-  font-size:28px;
-  line-height:34px;
-  letter-spacing:-.35px;
-  font-weight:600;
-}
+.document-view-header h1{margin:0;font-size:28px;line-height:34px;letter-spacing:-.35px;font-weight:500}
 .document-view-mark{
+  position:relative;
   flex:0 0 32px;
   width:32px;
   height:38px;
@@ -358,7 +361,9 @@ html,body{background:#e1dfca}
   background:transparent;
   display:grid;
   place-items:center;
+  touch-action:manipulation;
 }
+.document-view-mark::before{content:"";position:absolute;width:52px;height:52px}
 .document-view-mark img{display:block;width:30px;height:36px;object-fit:contain}
 .document-view-marquee{
   width:100%;
@@ -369,7 +374,7 @@ html,body{background:#e1dfca}
   white-space:nowrap;
   font-size:13px;
   line-height:24px;
-  font-weight:600;
+  font-weight:500;
   letter-spacing:.02em;
 }
 .document-view-marquee-track{
@@ -393,33 +398,25 @@ html,body{background:#e1dfca}
   flex-direction:column;
   gap:7px;
 }
-.document-view-fact small{
-  color:#000;
-  font-size:15px;
-  line-height:18px;
-  font-weight:600;
-}
-.document-view-fact strong{
-  color:#000;
-  font-size:14px;
-  line-height:17px;
-  font-weight:600;
-}
+.document-view-fact small{color:#000;font-size:15px;line-height:18px;font-weight:400}
+.document-view-fact strong{color:#000;font-size:14px;line-height:17px;font-weight:500}
 .document-view-card-personal{height:253px;display:flex;flex-direction:column;align-items:flex-start}
-.document-view-name{font-size:21px;line-height:24px;font-weight:600;letter-spacing:-.25px}
-.document-view-register-status{margin-top:16px;font-size:15px;line-height:18px;font-weight:600}
+.document-view-name{font-size:21px;line-height:24px;font-weight:500;letter-spacing:-.25px}
+.document-view-register-status{margin-top:16px;font-size:15px;line-height:18px;font-weight:400}
 .document-view-card-personal .document-view-fact{margin-top:14px}
 .document-view-card-personal .document-view-fact:last-child{margin-top:15px}
 .document-view-card-medical{height:124px;margin-top:8px;padding:0}
 .document-view-medical-main{height:75px;padding:16px;border-bottom:1px solid #e0dfcc}
 .document-view-medical-date{height:49px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.document-view-medical-date span,.document-view-medical-date strong{font-size:14px;line-height:17px;font-weight:600}
+.document-view-medical-date span{font-size:14px;line-height:17px;font-weight:400}
+.document-view-medical-date strong{font-size:14px;line-height:17px;font-weight:500}
 .document-view-card-registration{height:241px;margin-top:8px;padding:0}
 .document-view-registration-office{height:109px;padding:16px;border-bottom:1px solid #e0dfcc}
 .document-view-register-meta{height:132px;padding:16px;display:grid;align-content:start;gap:16px}
 .document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:14px}
 .document-view-card-updated{height:66px;margin-top:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.document-view-card-updated span,.document-view-card-updated strong{font-size:14px;line-height:17px;font-weight:600}
+.document-view-card-updated span{font-size:14px;line-height:17px;font-weight:400}
+.document-view-card-updated strong{font-size:14px;line-height:17px;font-weight:500}
 @media(prefers-reduced-motion:reduce){.document-view-marquee-track{animation:none}}
 @media(max-width:360px){
   .document-view-cards{padding-left:18px;padding-right:18px}
