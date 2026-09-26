@@ -79,14 +79,16 @@ function IdScreen({profile,qr,openMessages,openDocument,notify}:{profile:Profile
 function DocumentActions({close,view,choose}:{close:()=>void;view:()=>void;choose:(message:string)=>void}){return <div className="document-actions-backdrop" role="presentation" onClick={close}><section className="document-actions" role="dialog" aria-modal="true" aria-label="Дії з документом" onClick={event=>event.stopPropagation()}><span className="document-actions-handle" aria-hidden="true"/><button onClick={view}><Info/><span>Переглянути документ</span></button><button onClick={()=>choose('Завантаження PDF недоступне у демонстраційній версії')}><Download/><span>Завантажити PDF</span></button><button onClick={()=>choose('Демо-документ оновлено локально')}><RefreshCw/><span>Оновити документ</span></button></section></div>}
 
 function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
-  const marquee='ДЕМО • НЕ Є ДОКУМЕНТОМ • ДАНІ ОНОВЛЕНО О 18:42 •';
+  const marquee='ДЕМО • НЕ Є ДОКУМЕНТОМ • ДОКУМЕНТ ОНОВЛЕНО О 18:42 •';
   const Fact=({label,children}:{label:string;children:ReactNode})=><div className="document-view-fact"><small>{label}</small><strong>{children}</strong></div>;
   return <section className="document-view" aria-label="Демонстраційний військово-обліковий документ">
     <div className="document-view-grip" aria-hidden="true"><span/></div>
     <div className="document-view-content">
       <header className="document-view-header">
-        <h1>Документ</h1>
-        <button className="document-view-close" onClick={close} aria-label="Закрити"><X/></button>
+        <h1>Резерв ID</h1>
+        <button className="document-view-mark" onClick={close} aria-label="Закрити документ">
+          <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/>
+        </button>
       </header>
       <div className="document-view-marquee" aria-label={marquee}>
         <div className="document-view-marquee-track">
@@ -95,29 +97,30 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
       </div>
       <div className="document-view-cards">
         <section className="document-view-card document-view-card-personal">
-          <Fact label="Прізвище, ім’я, по батькові"><>{profile.lastName.toUpperCase()}<br/>{profile.firstName} {profile.middleName}</></Fact>
+          <div className="document-view-name">{profile.lastName.toUpperCase()}<br/>{profile.firstName}<br/>{profile.middleName}</div>
+          <div className="document-view-register-status">Призовник</div>
           <Fact label="Дата народження">{uaDate(profile.birthDate)}</Fact>
           <Fact label="РНОКПП">0000000000</Fact>
         </section>
         <section className="document-view-card document-view-card-status-main">
-          <Fact label="Відстрочка">Не надано</Fact>
+          <Fact label="Постанова ВЛК">Придатний</Fact>
         </section>
         <section className="document-view-card document-view-card-status-note">
-          <p>Відомості наведені у демонстраційному режимі</p>
+          <span>Дата ВЛК:</span><strong>23.01.2024</strong>
         </section>
         <section className="document-view-card document-view-card-specialty">
-          <Fact label="Військово-облікова спеціальність">Демонстраційна<br/>військово-облікова<br/>спеціальність</Fact>
+          <Fact label="ТЦК та СП">Навчальний об'єднаний міський<br/>територіальний центр комплектування та<br/>соціальної підтримки</Fact>
         </section>
         <section className="document-view-card document-view-card-register-meta">
-          <Fact label="Категорія обліку">Військовозобов’язаний</Fact>
-          <Fact label="Військове звання">Не вказано</Fact>
+          <Fact label="Категорія обліку">Призовник</Fact>
+          <Fact label="Номер в реєстрі Оберіг">DEMO23012024000004</Fact>
         </section>
         <section className="document-view-card document-view-card-office">
-          <Fact label="Перебуває на обліку">Демонстраційний запис</Fact>
-          <Fact label="ТЦК та СП">Навчальний демо-центр</Fact>
+          <Fact label="Телефон">+380 00 000 0000</Fact>
+          <Fact label="Адреса проживання">Україна, навчальна область, м Демо, вул.<br/>Тестова, буд. 1, кв. 1</Fact>
         </section>
         <section className="document-view-card document-view-card-updated">
-          <Fact label="Дата уточнення даних">{profile.updatedAt}</Fact>
+          <span>Дата останнього<br/>уточнення даних:</span><strong>{profile.updatedAt}</strong>
         </section>
       </div>
     </div>
