@@ -85,7 +85,7 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
     <div className="document-view-grip" aria-hidden="true"><span/></div>
     <div className="document-view-content">
       <header className="document-view-header">
-        <h1>Військово-обліковий<br/>документ</h1>
+        <h1>Документ</h1>
         <button className="document-view-close" onClick={close} aria-label="Закрити"><X/></button>
       </header>
       <div className="document-view-marquee" aria-label={marquee}>
@@ -99,12 +99,16 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
           <Fact label="Дата народження">{uaDate(profile.birthDate)}</Fact>
           <Fact label="РНОКПП">0000000000</Fact>
         </section>
-        <section className="document-view-card document-view-card-status">
+        <section className="document-view-card document-view-card-status-main">
           <Fact label="Відстрочка">Не надано</Fact>
+        </section>
+        <section className="document-view-card document-view-card-status-note">
           <p>Відомості наведені у демонстраційному режимі</p>
         </section>
-        <section className="document-view-card document-view-card-register">
+        <section className="document-view-card document-view-card-specialty">
           <Fact label="Військово-облікова спеціальність">Демонстраційна<br/>військово-облікова<br/>спеціальність</Fact>
+        </section>
+        <section className="document-view-card document-view-card-register-meta">
           <Fact label="Категорія обліку">Військовозобов’язаний</Fact>
           <Fact label="Військове звання">Не вказано</Fact>
         </section>
