@@ -305,52 +305,21 @@ html,body{background:#e1dfca}
 
 /* Scrollable document sheet calibrated against the stable 440x956 captures:
    IMG_1609 is the top and IMG_1610 is the same sheet at its scroll limit. */
-@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Light.otf") format("opentype");font-style:normal;font-weight:300;font-display:swap}
-@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:swap}
-@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Medium.otf") format("opentype");font-style:normal;font-weight:500;font-display:swap}
-.document-open{overflow:hidden}
-.document-view-layer{
-  position:fixed;
-  z-index:75;
-  inset:0;
-  width:min(450px,100%);
-  margin:0 auto;
-  overflow:hidden;
-  pointer-events:none;
-}
-.document-view-backdrop-close{
-  position:absolute;
-  z-index:1;
-  inset:0;
-  width:100%;
-  padding:0;
-  border:0;
-  pointer-events:auto;
-  transition:background-color .12s linear;
-}
+.document-open{overflow:hidden;background:#000}
+.document-open .video-watermark{display:none}
 .document-view{
-  position:absolute;
-  z-index:2;
-  top:62px;
-  left:0;
   width:100%;
   height:calc(100dvh - 62px);
-  margin:0;
+  margin-top:62px;
   overflow-x:hidden;
   overflow-y:auto;
   overscroll-behavior-y:contain;
   border-radius:22px 22px 0 0;
   background:#e0dfcc;
   color:#000;
-  font-family:"e-Ukraine",Arial,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
   scrollbar-width:none;
-  transition:transform .26s cubic-bezier(.22,.72,.2,1);
-  will-change:transform;
-  pointer-events:auto;
 }
-.flip-card.flipped .orange-circle{visibility:hidden;pointer-events:none}
-.document-view.is-dragging{transition:none}
-.document-view.is-closing{transition:transform .24s cubic-bezier(.4,0,1,1)}
 .document-view::-webkit-scrollbar{display:none}
 .document-view-grip{
   position:sticky;
@@ -362,10 +331,7 @@ html,body{background:#e1dfca}
   display:flex;
   justify-content:center;
   padding-top:18px;
-  touch-action:none;
-  cursor:grab;
 }
-.document-view-grip:active{cursor:grabbing}
 .document-view-grip span{width:36px;height:5px;border-radius:4px;background:#000}
 .document-view-content{padding-top:44px;padding-bottom:56px}
 .document-view-header{
@@ -375,24 +341,27 @@ html,body{background:#e1dfca}
   align-items:flex-start;
   justify-content:space-between;
   gap:18px;
-  touch-action:none;
-  user-select:none;
 }
-.document-view-header h1{margin:0;font-size:28px;line-height:34px;letter-spacing:-.35px;font-weight:400}
-.document-view-mark{
-  position:relative;
+.document-view-header h1{
+  margin:0;
+  font-size:28px;
+  line-height:34px;
+  letter-spacing:-.55px;
+  font-weight:700;
+}
+.document-view-close{
   flex:0 0 32px;
   width:32px;
-  height:38px;
+  height:32px;
   padding:0;
   border:0;
-  background:transparent;
+  border-radius:50%;
+  background:#000;
+  color:#e0dfcc;
   display:grid;
   place-items:center;
-  touch-action:manipulation;
 }
-.document-view-mark::before{content:"";position:absolute;width:52px;height:52px}
-.document-view-mark img{display:block;width:30px;height:36px;object-fit:contain}
+.document-view-close svg{width:19px;height:19px;stroke-width:2.8}
 .document-view-marquee{
   width:100%;
   height:24px;
@@ -402,7 +371,7 @@ html,body{background:#e1dfca}
   white-space:nowrap;
   font-size:13px;
   line-height:24px;
-  font-weight:400;
+  font-weight:600;
   letter-spacing:.02em;
 }
 .document-view-marquee-track{
@@ -426,25 +395,28 @@ html,body{background:#e1dfca}
   flex-direction:column;
   gap:7px;
 }
-.document-view-fact small{color:#000;font-size:15px;line-height:18px;font-weight:300}
-.document-view-fact strong{color:#000;font-size:14px;line-height:17px;font-weight:500}
-.document-view-card-personal{height:253px;display:flex;flex-direction:column;align-items:flex-start}
-.document-view-name{font-size:21px;line-height:24px;font-weight:500;letter-spacing:-.25px}
-.document-view-register-status{margin-top:16px;font-size:15px;line-height:18px;font-weight:300}
-.document-view-card-personal .document-view-fact{margin-top:14px}
-.document-view-card-personal .document-view-fact:last-child{margin-top:15px}
-.document-view-card-medical{height:124px;margin-top:8px;padding:0}
-.document-view-medical-main{height:75px;padding:16px;border-bottom:1px solid #e0dfcc}
-.document-view-medical-date{height:49px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.document-view-medical-date span{font-size:14px;line-height:17px;font-weight:300}
-.document-view-medical-date strong{font-size:14px;line-height:17px;font-weight:500}
-.document-view-card-registration{height:241px;margin-top:8px;padding:0}
-.document-view-registration-office{height:109px;padding:16px;border-bottom:1px solid #e0dfcc}
-.document-view-register-meta{height:132px;padding:16px;display:grid;align-content:start;gap:16px}
-.document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:14px}
-.document-view-card-updated{height:66px;margin-top:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.document-view-card-updated span{font-size:14px;line-height:17px;font-weight:300}
-.document-view-card-updated strong{font-size:14px;line-height:17px;font-weight:500}
+.document-view-fact small{
+  color:#000;
+  font-size:15px;
+  line-height:18px;
+  font-weight:650;
+}
+.document-view-fact strong{
+  color:#000;
+  font-size:14px;
+  line-height:17px;
+  font-weight:400;
+}
+.document-view-card-personal{height:253px;display:grid;align-content:start;gap:17px}
+.document-view-card-personal .document-view-fact:first-child{gap:5px}
+.document-view-card-personal .document-view-fact:first-child strong{font-size:21px;line-height:24px;font-weight:650;letter-spacing:-.25px}
+.document-view-card-status-main{height:74px;margin-top:8px}
+.document-view-card-status-note{height:49px;margin-top:1px}
+.document-view-card-status-note p{margin:0;font-size:12px;line-height:14px;color:#000}
+.document-view-card-specialty{height:108px;margin-top:8px}
+.document-view-card-register-meta{height:132px;margin-top:1px;display:grid;align-content:start;gap:19px}
+.document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:18px}
+.document-view-card-updated{height:66px;margin-top:8px}
 @media(prefers-reduced-motion:reduce){.document-view-marquee-track{animation:none}}
 @media(max-width:360px){
   .document-view-cards{padding-left:18px;padding-right:18px}

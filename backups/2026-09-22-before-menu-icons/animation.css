@@ -3,10 +3,10 @@
 .flip-shell .id-card.flipped{transform:rotateY(180deg)}
 .id-face{position:absolute;inset:0;border:1px solid #aaac96;border-radius:20px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .id-front{display:flex;flex-direction:column;background:var(--card)}
-.id-back{transform:rotateY(180deg);background:#fbfcfc;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:67px 27px 24px;text-align:center}
+.id-back{transform:rotateY(180deg);background:#f9f9f5;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:48px 28px 24px;text-align:center}
 .back-warning{margin:0;font-size:9px;font-weight:800;letter-spacing:.07em;color:#8f342e}
-.id-back h2{font-size:16px;margin:0 0 23px;font-weight:650}
-.flip-qr{width:100%;max-width:336px;padding:0;background:#fff}
+.id-back h2{font-size:16px;margin:11px 0 18px;font-weight:650}
+.flip-qr{width:100%;max-width:320px;padding:0;background:#fff}
 .flip-qr svg{display:block;width:100%;height:auto}
 .id-back .back-legal{margin-top:10px;font-size:8px;font-weight:800;line-height:1.45;letter-spacing:.035em;color:#983c34}
 @media(max-width:350px){.id-back{padding-inline:22px}.id-back h2{font-size:15px}.flip-qr{max-width:290px}}
@@ -50,9 +50,9 @@ body{min-height:100vh;min-height:100svh;min-height:100dvh}
 .id-person h2{font-size:clamp(20px,6.15vw,23px);overflow-wrap:anywhere}
 .orange-circle{flex:0 0 auto}
 .card-space strong{font-size:clamp(13px,4.25vw,16px)}
-.id-back{padding:clamp(48px,7vh,67px) clamp(15px,6.15vw,27px) 20px}
-.id-back h2{font-size:clamp(14px,4.3vw,16px);margin-bottom:clamp(18px,3vh,23px)}
-.flip-qr{max-width:min(336px,100%)}
+.id-back{padding:clamp(28px,7vh,48px) clamp(15px,6vw,28px) 20px}
+.id-back h2{font-size:clamp(14px,4.3vw,16px);margin-bottom:clamp(12px,3vh,18px)}
+.flip-qr{max-width:min(320px,100%)}
 .video-nav{width:min(410px,calc(100% - clamp(12px,4vw,30px)));grid-template-columns:repeat(4,minmax(0,1fr))}
 .video-nav button{min-width:0;padding-inline:1px}
 .video-nav button span{display:block;max-width:100%;font-size:clamp(8px,2.5vw,10px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -147,8 +147,7 @@ html,body{background:#e1dfca}
   font-weight:400;
 }
 .id-front>label b{font-size:17px;font-weight:600}
-.id-front .shield{display:block;flex:0 0 auto;width:30px;height:36px;border-radius:0;background:transparent;color:inherit}
-.id-front .shield img{display:block;width:30px;height:36px;object-fit:contain}
+.id-front .shield{width:30px;height:37px}
 .id-front .card-space{min-height:40px}
 .id-front .status-strip{flex-shrink:0;padding:3px 0;font-size:16px;line-height:1.2}
 .id-front .id-person{
@@ -246,210 +245,6 @@ html,body{background:#e1dfca}
 .id-front .id-person h2{letter-spacing:.01em}
 .id-front .id-person .profile-surname{text-transform:uppercase}
 .id-front .orange-circle svg{width:24px;height:24px;stroke-linecap:butt}
-.id-front .orange-circle{border:0;color:#10110d;cursor:pointer;position:relative;z-index:2}
-.id-front .orange-circle::before{content:"";position:absolute;inset:-8px;border-radius:50%}
-.id-front .orange-circle:focus-visible{outline:2px solid #10110d;outline-offset:3px}
-
-/* Document actions opened by the orange plus. Geometry follows IMG_1595:
-   8px side inset, 220px sheet, 56px rows and the iPhone safe-area gap. */
-.document-actions-backdrop{
-  position:fixed;
-  z-index:70;
-  inset:0;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  padding:0 8px env(safe-area-inset-bottom,0px);
-  background:rgba(0,0,0,.70);
-}
-.document-actions{
-  position:relative;
-  width:min(424px,100%);
-  height:220px;
-  padding:38px 18px 14px;
-  border-radius:16px;
-  background:#fbfcfc;
-  color:#000;
-  box-shadow:none;
-  animation:documentActionsUp .22s ease-out;
-}
-.document-actions-handle{
-  position:absolute;
-  top:16px;
-  left:50%;
-  width:40px;
-  height:4px;
-  transform:translateX(-50%);
-  border-radius:999px;
-  background:#000;
-}
-.document-actions button{
-  width:100%;
-  height:56px;
-  padding:0 16px 0 8px;
-  border:0;
-  background:transparent;
-  color:inherit;
-  display:flex;
-  align-items:center;
-  gap:20px;
-  text-align:left;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
-  font-size:16px;
-  line-height:20px;
-  font-weight:500;
-}
-.document-actions button svg{flex:0 0 20px;width:20px;height:20px;stroke-width:2}
-.document-actions button:active{opacity:.55}
-@keyframes documentActionsUp{from{transform:translateY(calc(100% + 16px))}to{transform:translateY(0)}}
-
-/* Scrollable document sheet calibrated against the stable 440x956 captures:
-   IMG_1609 is the top and IMG_1610 is the same sheet at its scroll limit. */
-@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Light.otf") format("opentype");font-style:normal;font-weight:300;font-display:swap}
-@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:swap}
-@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Medium.otf") format("opentype");font-style:normal;font-weight:500;font-display:swap}
-.document-open{overflow:hidden}
-.document-view-layer{
-  position:fixed;
-  z-index:75;
-  inset:0;
-  width:min(450px,100%);
-  margin:0 auto;
-  overflow:hidden;
-  pointer-events:none;
-}
-.document-view-backdrop-close{
-  position:absolute;
-  z-index:1;
-  inset:0;
-  width:100%;
-  padding:0;
-  border:0;
-  pointer-events:auto;
-  transition:background-color .12s linear;
-}
-.document-view{
-  position:absolute;
-  z-index:2;
-  top:62px;
-  left:0;
-  width:100%;
-  height:calc(100dvh - 62px);
-  margin:0;
-  overflow-x:hidden;
-  overflow-y:auto;
-  overscroll-behavior-y:contain;
-  border-radius:22px 22px 0 0;
-  background:#e0dfcc;
-  color:#000;
-  font-family:"e-Ukraine",Arial,sans-serif;
-  scrollbar-width:none;
-  transition:transform .26s cubic-bezier(.22,.72,.2,1);
-  will-change:transform;
-  pointer-events:auto;
-}
-.flip-card.flipped .orange-circle{visibility:hidden;pointer-events:none}
-.document-view.is-dragging{transition:none}
-.document-view.is-closing{transition:transform .24s cubic-bezier(.4,0,1,1)}
-.document-view::-webkit-scrollbar{display:none}
-.document-view-grip{
-  position:sticky;
-  z-index:3;
-  top:0;
-  height:46px;
-  margin-bottom:-46px;
-  background:linear-gradient(#c5c4b3 0 10px,#e0dfcc 10px);
-  display:flex;
-  justify-content:center;
-  padding-top:18px;
-  touch-action:none;
-  cursor:grab;
-}
-.document-view-grip:active{cursor:grabbing}
-.document-view-grip span{width:36px;height:5px;border-radius:4px;background:#000}
-.document-view-content{padding-top:44px;padding-bottom:56px}
-.document-view-header{
-  min-height:80px;
-  padding:14px 24px 18px 27px;
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:18px;
-  touch-action:none;
-  user-select:none;
-}
-.document-view-header h1{margin:0;font-size:28px;line-height:34px;letter-spacing:-.35px;font-weight:400}
-.document-view-mark{
-  position:relative;
-  flex:0 0 32px;
-  width:32px;
-  height:38px;
-  padding:0;
-  border:0;
-  background:transparent;
-  display:grid;
-  place-items:center;
-  touch-action:manipulation;
-}
-.document-view-mark::before{content:"";position:absolute;width:52px;height:52px}
-.document-view-mark img{display:block;width:30px;height:36px;object-fit:contain}
-.document-view-marquee{
-  width:100%;
-  height:24px;
-  overflow:hidden;
-  background:#6b4b1a;
-  color:#c3b7a4;
-  white-space:nowrap;
-  font-size:13px;
-  line-height:24px;
-  font-weight:400;
-  letter-spacing:.02em;
-}
-.document-view-marquee-track{
-  display:flex;
-  width:max-content;
-  animation:documentViewMarquee 14s linear infinite;
-  will-change:transform;
-}
-.document-view-marquee-track span{flex:none;padding-right:30px}
-@keyframes documentViewMarquee{to{transform:translateX(-50%)}}
-.document-view-cards{padding:24px 24px 0;display:grid;gap:0}
-.document-view-card{
-  overflow:hidden;
-  padding:16px;
-  border:0;
-  border-radius:16px;
-  background:#fbfcfc;
-}
-.document-view-fact{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-}
-.document-view-fact small{color:#000;font-size:15px;line-height:18px;font-weight:300}
-.document-view-fact strong{color:#000;font-size:14px;line-height:17px;font-weight:500}
-.document-view-card-personal{height:253px;display:flex;flex-direction:column;align-items:flex-start}
-.document-view-name{font-size:21px;line-height:24px;font-weight:500;letter-spacing:-.25px}
-.document-view-register-status{margin-top:16px;font-size:15px;line-height:18px;font-weight:300}
-.document-view-card-personal .document-view-fact{margin-top:14px}
-.document-view-card-personal .document-view-fact:last-child{margin-top:15px}
-.document-view-card-medical{height:124px;margin-top:8px;padding:0}
-.document-view-medical-main{height:75px;padding:16px;border-bottom:1px solid #e0dfcc}
-.document-view-medical-date{height:49px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.document-view-medical-date span{font-size:14px;line-height:17px;font-weight:300}
-.document-view-medical-date strong{font-size:14px;line-height:17px;font-weight:500}
-.document-view-card-registration{height:241px;margin-top:8px;padding:0}
-.document-view-registration-office{height:109px;padding:16px;border-bottom:1px solid #e0dfcc}
-.document-view-register-meta{height:132px;padding:16px;display:grid;align-content:start;gap:16px}
-.document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:14px}
-.document-view-card-updated{height:66px;margin-top:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.document-view-card-updated span{font-size:14px;line-height:17px;font-weight:300}
-.document-view-card-updated strong{font-size:14px;line-height:17px;font-weight:500}
-@media(prefers-reduced-motion:reduce){.document-view-marquee-track{animation:none}}
-@media(max-width:360px){
-  .document-view-cards{padding-left:18px;padding-right:18px}
-  .document-view-header{padding-left:18px;padding-right:18px}
-}
 
 /* Bottom navigation reference pass. Keep the accepted panel bounds and
    standalone safe-area anchoring; only icons and labels match the reference. */
@@ -892,7 +687,7 @@ html,body{background:#e1dfca}
   position:relative;
   width:100%;
   min-height:61px;
-  padding:0 20px;
+  padding:0 20px 0 22px;
   border:0;
   background:#fbfcfc;
   color:#121310;
@@ -912,10 +707,14 @@ html,body{background:#e1dfca}
   background:#d8d9d2;
 }
 .menu-screen .menu-glyph{
-  flex:0 0 24px;
-  width:24px;
-  height:24px;
-  object-fit:contain;
+  flex:0 0 27px;
+  width:27px;
+  height:27px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2.25;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 .menu-screen .menu-row>span{flex:1}
 .menu-screen .menu-chevron{

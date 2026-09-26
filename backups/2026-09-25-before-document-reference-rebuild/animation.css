@@ -303,152 +303,127 @@ html,body{background:#e1dfca}
 .document-actions button:active{opacity:.55}
 @keyframes documentActionsUp{from{transform:translateY(calc(100% + 16px))}to{transform:translateY(0)}}
 
-/* Scrollable document sheet calibrated against the stable 440x956 captures:
-   IMG_1609 is the top and IMG_1610 is the same sheet at its scroll limit. */
-@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Light.otf") format("opentype");font-style:normal;font-weight:300;font-display:swap}
-@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:swap}
-@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Medium.otf") format("opentype");font-style:normal;font-weight:500;font-display:swap}
+/* Full document view opened from the first action. The page is intentionally
+   scrollable: IMG_1597 is its beginning and IMG_1598 is the continuation. */
 .document-open{overflow:hidden}
-.document-view-layer{
+.document-open .video-watermark{
   position:fixed;
-  z-index:75;
-  inset:0;
-  width:min(450px,100%);
-  margin:0 auto;
-  overflow:hidden;
+  z-index:45;
+  top:auto;
+  bottom:max(10px,env(safe-area-inset-bottom,0px));
   pointer-events:none;
 }
-.document-view-backdrop-close{
-  position:absolute;
-  z-index:1;
-  inset:0;
-  width:100%;
-  padding:0;
-  border:0;
-  pointer-events:auto;
-  transition:background-color .12s linear;
-}
 .document-view{
-  position:absolute;
-  z-index:2;
-  top:62px;
-  left:0;
   width:100%;
-  height:calc(100dvh - 62px);
-  margin:0;
+  height:100dvh;
   overflow-x:hidden;
   overflow-y:auto;
   overscroll-behavior-y:contain;
-  border-radius:22px 22px 0 0;
-  background:#e0dfcc;
-  color:#000;
-  font-family:"e-Ukraine",Arial,sans-serif;
+  padding:max(56px,calc(env(safe-area-inset-top,0px) + 20px)) 20px calc(76px + env(safe-area-inset-bottom,0px));
+  background:#e4e2cf;
+  color:#10110e;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
   scrollbar-width:none;
-  transition:transform .26s cubic-bezier(.22,.72,.2,1);
-  will-change:transform;
-  pointer-events:auto;
 }
-.flip-card.flipped .orange-circle{visibility:hidden;pointer-events:none}
-.document-view.is-dragging{transition:none}
-.document-view.is-closing{transition:transform .24s cubic-bezier(.4,0,1,1)}
 .document-view::-webkit-scrollbar{display:none}
-.document-view-grip{
-  position:sticky;
-  z-index:3;
-  top:0;
-  height:46px;
-  margin-bottom:-46px;
-  background:linear-gradient(#c5c4b3 0 10px,#e0dfcc 10px);
-  display:flex;
-  justify-content:center;
-  padding-top:18px;
-  touch-action:none;
-  cursor:grab;
-}
-.document-view-grip:active{cursor:grabbing}
-.document-view-grip span{width:36px;height:5px;border-radius:4px;background:#000}
-.document-view-content{padding-top:44px;padding-bottom:56px}
 .document-view-header{
-  min-height:80px;
-  padding:14px 24px 18px 27px;
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:18px;
-  touch-action:none;
-  user-select:none;
+  display:grid;
+  grid-template-columns:42px 1fr 42px;
+  align-items:start;
+  margin-bottom:24px;
 }
-.document-view-header h1{margin:0;font-size:28px;line-height:34px;letter-spacing:-.35px;font-weight:400}
-.document-view-mark{
-  position:relative;
-  flex:0 0 32px;
-  width:32px;
-  height:38px;
+.document-view-header h1{
+  grid-column:2;
+  margin:0;
+  text-align:center;
+  font-size:29px;
+  line-height:31px;
+  letter-spacing:-.8px;
+  font-weight:600;
+}
+.document-view-back{
+  grid-column:1;
+  width:40px;
+  height:40px;
+  margin-top:-3px;
   padding:0;
   border:0;
-  background:transparent;
+  border-radius:50%;
+  background:#f8f8ee;
+  color:#11120f;
   display:grid;
   place-items:center;
-  touch-action:manipulation;
 }
-.document-view-mark::before{content:"";position:absolute;width:52px;height:52px}
-.document-view-mark img{display:block;width:30px;height:36px;object-fit:contain}
+.document-view-back svg{width:23px;height:23px;stroke-width:2}
 .document-view-marquee{
-  width:100%;
-  height:24px;
+  width:calc(100% + 40px);
+  margin:0 -20px 18px;
   overflow:hidden;
-  background:#6b4b1a;
-  color:#c3b7a4;
+  background:#7b4c12;
+  color:#fff;
   white-space:nowrap;
-  font-size:13px;
-  line-height:24px;
-  font-weight:400;
-  letter-spacing:.02em;
+  font-size:15px;
+  line-height:38px;
+  font-weight:600;
 }
 .document-view-marquee-track{
   display:flex;
   width:max-content;
-  animation:documentViewMarquee 14s linear infinite;
+  animation:documentViewMarquee 10s linear infinite;
   will-change:transform;
 }
-.document-view-marquee-track span{flex:none;padding-right:30px}
+.document-view-marquee-track span{flex:none;padding-right:44px}
 @keyframes documentViewMarquee{to{transform:translateX(-50%)}}
-.document-view-cards{padding:24px 24px 0;display:grid;gap:0}
-.document-view-card{
-  overflow:hidden;
-  padding:16px;
-  border:0;
-  border-radius:16px;
-  background:#fbfcfc;
+.document-view-demo{
+  margin-bottom:12px;
+  padding:10px 12px;
+  border:1px solid #8f9180;
+  border-radius:9px;
+  color:#5f2d27;
+  text-align:center;
+  font-size:10px;
+  line-height:14px;
+  font-weight:800;
+  letter-spacing:.07em;
 }
-.document-view-fact{
+.document-view-facts{
+  overflow:hidden;
+  border:1px solid #9b9d8b;
+  border-radius:10px;
+  background:#ecebdc;
+}
+.document-view-row{
+  min-height:78px;
+  padding:14px 16px 13px;
   display:flex;
   flex-direction:column;
+  justify-content:center;
   gap:7px;
 }
-.document-view-fact small{color:#000;font-size:15px;line-height:18px;font-weight:300}
-.document-view-fact strong{color:#000;font-size:14px;line-height:17px;font-weight:500}
-.document-view-card-personal{height:253px;display:flex;flex-direction:column;align-items:flex-start}
-.document-view-name{font-size:21px;line-height:24px;font-weight:500;letter-spacing:-.25px}
-.document-view-register-status{margin-top:16px;font-size:15px;line-height:18px;font-weight:300}
-.document-view-card-personal .document-view-fact{margin-top:14px}
-.document-view-card-personal .document-view-fact:last-child{margin-top:15px}
-.document-view-card-medical{height:124px;margin-top:8px;padding:0}
-.document-view-medical-main{height:75px;padding:16px;border-bottom:1px solid #e0dfcc}
-.document-view-medical-date{height:49px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.document-view-medical-date span{font-size:14px;line-height:17px;font-weight:300}
-.document-view-medical-date strong{font-size:14px;line-height:17px;font-weight:500}
-.document-view-card-registration{height:241px;margin-top:8px;padding:0}
-.document-view-registration-office{height:109px;padding:16px;border-bottom:1px solid #e0dfcc}
-.document-view-register-meta{height:132px;padding:16px;display:grid;align-content:start;gap:16px}
-.document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:14px}
-.document-view-card-updated{height:66px;margin-top:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.document-view-card-updated span{font-size:14px;line-height:17px;font-weight:300}
-.document-view-card-updated strong{font-size:14px;line-height:17px;font-weight:500}
-@media(prefers-reduced-motion:reduce){.document-view-marquee-track{animation:none}}
+.document-view-row:not(:last-child){border-bottom:1px solid #adaf9e}
+.document-view-row small{
+  color:#696b60;
+  font-size:13px;
+  line-height:16px;
+  font-weight:500;
+}
+.document-view-row strong{
+  color:#12130f;
+  font-size:17px;
+  line-height:21px;
+  font-weight:600;
+}
+.document-view-note{
+  margin:18px 6px 0;
+  color:#686a60;
+  text-align:center;
+  font-size:12px;
+  line-height:16px;
+}
 @media(max-width:360px){
-  .document-view-cards{padding-left:18px;padding-right:18px}
-  .document-view-header{padding-left:18px;padding-right:18px}
+  .document-view{padding-left:16px;padding-right:16px}
+  .document-view-marquee{width:calc(100% + 32px);margin-left:-16px;margin-right:-16px}
+  .document-view-header h1{font-size:26px;line-height:28px}
 }
 
 /* Bottom navigation reference pass. Keep the accepted panel bounds and
