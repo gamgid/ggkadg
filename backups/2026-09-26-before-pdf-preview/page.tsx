@@ -29,10 +29,9 @@ const makeQr=()=>`DEMO-${crypto.getRandomValues(new Uint32Array(1))[0].toString(
 const uaDate=(value:string)=>value.split('-').reverse().join('.');
 const qrVersion=18;
 const qrExpiryDate=()=>{const date=new Date();date.setFullYear(date.getFullYear()+1);const months=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`};
-const DemoQr=({value,size}:{value:string;size:number})=><QRCodeSVG value={value} size={size} minVersion={qrVersion} level="M" boostLevel={false}/>;
 
 export default function HomePage(){
-  const [ready,setReady]=useState(false),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
+  const [ready,setReady]=useState(false),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
   useEffect(()=>{const saved=storageService.load<Stored>();if(saved){setProfile(saved.profile||baseProfile);setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setProfile({...baseProfile,id:`DEMO-${String(crypto.getRandomValues(new Uint32Array(1))[0]).slice(0,8)}`});setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});const id=setTimeout(()=>setReady(true),850);return()=>clearTimeout(id)},[]);
   useEffect(()=>{if(ready)storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready]);
   useEffect(()=>{const id=setInterval(()=>setSeconds(s=>{if(s<=1){setQr(makeQr());return 180}return s-1}),1000);return()=>clearInterval(id)},[]);
@@ -43,7 +42,7 @@ export default function HomePage(){
     <div className="video-watermark">ДЕМО / ПАРОДІЯ — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
     {panel?<SubPanel panel={panel} close={()=>setPanel(null)} profile={profile} setProfile={setProfile} animations={animations} setAnimations={setAnimations} openQr={()=>setQrOpen(true)}/>:<>
       <section className="video-page">
-        {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')} openDocument={()=>setDocumentOpen(true)} openPdf={()=>setPdfOpen(true)} notify={setNotice}/>} 
+        {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')} openDocument={()=>setDocumentOpen(true)} notify={setNotice}/>} 
         {tab==='services'&&<ServicesScreen setNotice={setNotice}/>} 
         {tab==='jobs'&&<JobsScreen contractsOpen={jobsContractsOpen} closeContracts={()=>setJobsContractsOpen(false)} setNotice={setNotice}/>} 
         {tab==='menu'&&<MenuScreen open={setPanel} openQr={()=>setQrOpen(true)} copyDeviceNumber={copyDeviceNumber} notify={setNotice}/>} 
@@ -51,13 +50,12 @@ export default function HomePage(){
       {!(tab==='jobs'&&jobsContractsOpen)&&<BottomNav tab={tab} setTab={setTab}/>} 
     </>}
     {documentOpen&&<DocumentView profile={profile} close={()=>setDocumentOpen(false)}/>} 
-    {pdfOpen&&<PdfPreview profile={profile} qr={qr} close={()=>setPdfOpen(false)} notify={setNotice}/>} 
     {qrOpen&&<QrSheet value={qr} seconds={seconds} regenerate={regenerate} close={()=>setQrOpen(false)}/>} 
     {notice&&<div className="toast" onAnimationEnd={()=>setNotice(null)}>{notice}</div>}
   </main>;
 }
 
-function IdScreen({profile,qr,openMessages,openDocument,openPdf,notify}:{profile:Profile;qr:string;seconds:number;openMessages:()=>void;openDocument:()=>void;openPdf:()=>void;notify:(value:string)=>void}){
+function IdScreen({profile,qr,openMessages,openDocument,notify}:{profile:Profile;qr:string;seconds:number;openMessages:()=>void;openDocument:()=>void;notify:(value:string)=>void}){
   const [flipped,setFlipped]=useState(false);
   const [isTurning,setIsTurning]=useState(false);
   const [actionsOpen,setActionsOpen]=useState(false);
@@ -77,51 +75,9 @@ function IdScreen({profile,qr,openMessages,openDocument,openPdf,notify}:{profile
   const flip=()=>flipRef.current?.flip();
   const chooseAction=(message:string)=>{setActionsOpen(false);notify(message)};
 
-  return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><div ref={cardRef} className={`id-card flip-card${flipped?' flipped':''}`} role="button" tabIndex={0} onClick={flip} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();flip()}}} aria-disabled={isTurning} aria-busy={isTurning} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Резерв ID</h1><span className="shield" aria-hidden="true"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/></span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" role="button" tabIndex={flipped?-1:0} aria-hidden={flipped} aria-label="Відкрити дії з документом" onClick={event=>{event.stopPropagation();setActionsOpen(true)}} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();setActionsOpen(true)}}}><Plus strokeWidth={3.5}/></span></div><span className="flip-shade" aria-hidden="true"/></section><section className="id-face id-back"><h2>QR-код дійсний до {expiry}</h2><div className="flip-qr"><DemoQr value={qr} size={336}/></div><span className="flip-shade" aria-hidden="true"/></section></div></div>{actionsOpen&&<DocumentActions close={()=>setActionsOpen(false)} view={()=>{setActionsOpen(false);openDocument()}} pdf={()=>{setActionsOpen(false);openPdf()}} choose={chooseAction}/>}</div>}
+  return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><div ref={cardRef} className={`id-card flip-card${flipped?' flipped':''}`} role="button" tabIndex={0} onClick={flip} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();flip()}}} aria-disabled={isTurning} aria-busy={isTurning} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Резерв ID</h1><span className="shield" aria-hidden="true"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/></span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" role="button" tabIndex={flipped?-1:0} aria-hidden={flipped} aria-label="Відкрити дії з документом" onClick={event=>{event.stopPropagation();setActionsOpen(true)}} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();setActionsOpen(true)}}}><Plus strokeWidth={3.5}/></span></div><span className="flip-shade" aria-hidden="true"/></section><section className="id-face id-back"><h2>QR-код дійсний до {expiry}</h2><div className="flip-qr"><QRCodeSVG value={qr} size={336} minVersion={qrVersion} level="M" boostLevel={false}/></div><span className="flip-shade" aria-hidden="true"/></section></div></div>{actionsOpen&&<DocumentActions close={()=>setActionsOpen(false)} view={()=>{setActionsOpen(false);openDocument()}} choose={chooseAction}/>}</div>}
 
-function DocumentActions({close,view,pdf,choose}:{close:()=>void;view:()=>void;pdf:()=>void;choose:(message:string)=>void}){return <div className="document-actions-backdrop" role="presentation" onClick={close}><section className="document-actions" role="dialog" aria-modal="true" aria-label="Дії з документом" onClick={event=>event.stopPropagation()}><span className="document-actions-handle" aria-hidden="true"/><button onClick={view}><Info/><span>Переглянути документ</span></button><button onClick={pdf}><Download/><span>Завантажити PDF</span></button><button onClick={()=>choose('Демо-документ оновлено локально')}><RefreshCw/><span>Оновити документ</span></button></section></div>}
-
-function PdfPreview({profile,qr,close,notify}:{profile:Profile;qr:string;close:()=>void;notify:(value:string)=>void}){
-  const [searchOpen,setSearchOpen]=useState(false);
-  useEffect(()=>{const onKeyDown=(event:KeyboardEvent)=>{if(event.key==='Escape')close()};window.addEventListener('keydown',onKeyDown);return()=>window.removeEventListener('keydown',onKeyDown)},[close]);
-  const share=async()=>{try{if(navigator.share)await navigator.share({title:'Демонстраційний військово-обліковий документ',text:'ДЕМО — не є справжнім документом'});else{await navigator.clipboard.writeText('ДЕМО — не є справжнім документом');notify('Позначку демо скопійовано')}}catch{/* користувач скасував системне меню */}};
-  const PdfField=({label,children,className=''}:{label:string;children:ReactNode;className?:string})=><div className={`pdf-field ${className}`}><span>{label}</span><strong>{children}</strong></div>;
-  return <section className="pdf-preview" role="dialog" aria-modal="true" aria-label="Перегляд демонстраційного PDF">
-    <header className="pdf-preview-toolbar">
-      <div className="pdf-preview-title"><strong>Військово-обліковий документ</strong><ChevronDown aria-hidden="true"/></div>
-      <button onClick={close}>Done</button>
-    </header>
-    <div className={`pdf-preview-search${searchOpen?' is-open':''}`}>{searchOpen&&<><Search aria-hidden="true"/><input autoFocus aria-label="Пошук у документі" placeholder="Пошук"/><button onClick={()=>setSearchOpen(false)}>Скасувати</button></>}</div>
-    <div className="pdf-preview-counter"><span aria-hidden="true">▣</span> 1 из 1</div>
-    <div className="pdf-preview-scroll">
-      <article className="pdf-paper" aria-label="Демонстраційна сторінка PDF">
-        <div className="pdf-demo-stamp">ДЕМО · НЕ Є ДОКУМЕНТОМ</div>
-        <header className="pdf-paper-head">
-          <div><b>Резерв<span>+</span></b><small>Військово-обліковий документ<br/>Сформовано: 09.09.2026, 18:42</small></div>
-          <div className="pdf-paper-agency"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/><b>Міністерство<br/>оборони України</b></div>
-        </header>
-        <div className="pdf-paper-badge">Призовник</div>
-        <h1>{profile.lastName.toUpperCase()} {profile.firstName}<br/>{profile.middleName}</h1>
-        <div className="pdf-grid pdf-grid-three"><PdfField label="Дата народження">{uaDate(profile.birthDate)}</PdfField><PdfField label="Дійсний до *">09.09.2027</PdfField><PdfField label="РНОКПП">0000000000</PdfField></div>
-        <div className="pdf-grid pdf-grid-two"><PdfField label="Категорія обліку">Призовник</PdfField><PdfField label="Підстава зняття/виключення">—</PdfField></div>
-        <div className="pdf-rule"><PdfField label="ТЦК та СП">Навчальний міський територіальний центр комплектування та соціальної підтримки</PdfField></div>
-        <div className="pdf-grid pdf-grid-three pdf-rule"><PdfField label="Звання">—</PdfField><PdfField label="Номер в реєстрі Оберіг">DEMO23012024000004</PdfField><PdfField label="ВОС">—</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Тип відстрочки">—</PdfField><PdfField label="Відстрочка до">—</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Причина звернення до Нацполіції">—</PdfField><PdfField label="Дата звернення">—</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Постанова ВЛК">Придатний</PdfField><PdfField label="Дата ВЛК">23.01.2024</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Група інвалідності">—</PdfField><PdfField label="Діє до">—</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Причина інвалідності">—</PdfField></div>
-        <div className="pdf-contact pdf-rule">
-          <div><PdfField label="Адреса проживання">Україна, навчальна область,<br/>м. Демо, вул. Тестова, буд. 1</PdfField><PdfField label="Email">demo@example.com</PdfField></div>
-          <div><PdfField label="Телефон">+380000000000</PdfField><PdfField label="Дата уточнення даних">09.09.2026</PdfField></div>
-          <div className="pdf-qr"><DemoQr value={qr} size={336}/></div>
-        </div>
-        <footer>* Документ дійсний до зазначеної на ньому дати. Якщо вказані в ньому дані змінюються в Єдиному державному реєстрі призовників, військовозобов’язаних і резервістів «Оберіг», документ втрачає чинність. Завантажуйте мобільний застосунок Резерв+ та користуйтеся завжди актуальним електронним документом.</footer>
-      </article>
-    </div>
-    <footer className="pdf-preview-actions"><button onClick={share} aria-label="Поділитися"><Upload/></button><button onClick={()=>setSearchOpen(true)} aria-label="Пошук"><Search/></button></footer>
-  </section>
-}
+function DocumentActions({close,view,choose}:{close:()=>void;view:()=>void;choose:(message:string)=>void}){return <div className="document-actions-backdrop" role="presentation" onClick={close}><section className="document-actions" role="dialog" aria-modal="true" aria-label="Дії з документом" onClick={event=>event.stopPropagation()}><span className="document-actions-handle" aria-hidden="true"/><button onClick={view}><Info/><span>Переглянути документ</span></button><button onClick={()=>choose('Завантаження PDF недоступне у демонстраційній версії')}><Download/><span>Завантажити PDF</span></button><button onClick={()=>choose('Демо-документ оновлено локально')}><RefreshCw/><span>Оновити документ</span></button></section></div>}
 
 function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
   const marquee='ДЕМО • НЕ Є ДОКУМЕНТОМ • ДОКУМЕНТ ОНОВЛЕНО О 18:42 •';

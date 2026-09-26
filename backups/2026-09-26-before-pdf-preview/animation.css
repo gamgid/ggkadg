@@ -1,0 +1,960 @@
+.flip-shell{perspective:1100px;width:100%;height:min(58dvh,560px);min-height:470px}
+.flip-shell .id-card{height:100%;min-height:0;position:relative;overflow:visible;border:0;background:transparent;transform-style:preserve-3d;will-change:transform}
+.flip-shell .id-card.flipped{transform:rotateY(180deg)}
+.id-face{position:absolute;inset:0;border:1px solid #aaac96;border-radius:20px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.id-front{display:flex;flex-direction:column;background:var(--card)}
+.id-back{transform:rotateY(180deg);background:#fbfcfc;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:67px 27px 24px;text-align:center}
+.back-warning{margin:0;font-size:9px;font-weight:800;letter-spacing:.07em;color:#8f342e}
+.id-back h2{font-size:16px;margin:0 0 23px;font-weight:650}
+.flip-qr{width:100%;max-width:336px;padding:0;background:#fff}
+.flip-qr svg{display:block;width:100%;height:auto}
+.id-back .back-legal{margin-top:10px;font-size:8px;font-weight:800;line-height:1.45;letter-spacing:.035em;color:#983c34}
+@media(max-width:350px){.id-back{padding-inline:22px}.id-back h2{font-size:15px}.flip-qr{max-width:290px}}
+.status-strip{overflow:hidden;padding:4px 0;font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;font-weight:500;line-height:1.2;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.status-track{display:flex;width:max-content;animation:statusMarquee 9s linear infinite}
+.status-track span{flex:none;padding:0 40px 0 14px}
+@keyframes statusMarquee{to{transform:translateX(-50%)}}
+.services-screen h1{font-family:Inter,"Inter Regular",Arial,sans-serif;font-size:30px;font-weight:400}
+.services-screen .bare-list button{font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;font-weight:500;-webkit-font-smoothing:antialiased}
+.menu-screen h1{font-family:Inter,"Inter Regular",Arial,sans-serif;font-size:26px;font-weight:700;-webkit-font-smoothing:antialiased}
+.id-front .id-head h1,.id-front>label,.id-front>label b,.id-front .id-person small{font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.id-screen .screen-tools button{font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:500;-webkit-font-smoothing:antialiased}
+.id-front>label{padding:10px 17px 0;color:#55594e;font-size:12px;font-weight:600;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.id-front>label b{display:block;font-size:14px;font-weight:700;color:#191a16}
+.id-front .id-person small{font-weight:600}
+.id-front .id-person h2::first-line{text-transform:uppercase}
+.id-front .id-head h1,.id-front .id-person h2{font-weight:550}
+.id-front .id-person h2{font-family:"e-Ukraine",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.video-page{padding-top:max(39px,calc(env(safe-area-inset-top,0px) + 14px))}
+.sub-screen{padding-top:max(95px,calc(env(safe-area-inset-top,0px) + 36px))}
+.sub-screen .back{top:max(46px,calc(env(safe-area-inset-top,0px) + 12px))}
+html,body{min-height:100%;background:#e6e7cf}
+body{min-height:100vh;min-height:100svh;min-height:100dvh}
+.video-app{--nav-bottom:calc(14px - env(safe-area-inset-bottom,0px));min-height:100vh;min-height:100svh;min-height:100dvh;background:#e6e7cf}
+.video-nav{bottom:var(--nav-bottom);padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));border-radius:19px 19px 0 0}
+.video-watermark{bottom:74px}
+
+/* Fluid phone layout: compact Androids through large iPhones. */
+.video-app{--page-x:clamp(12px,4.45vw,20px);width:100%;max-width:450px;overflow-x:hidden}
+.video-page{padding-left:var(--page-x);padding-right:var(--page-x);padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+.screen-tools{min-width:0}
+.screen-tools button{max-width:100%;white-space:nowrap}
+.id-screen{display:flex;min-height:calc(100dvh - max(39px,calc(env(safe-area-inset-top,0px) + 14px)) - 88px - env(safe-area-inset-bottom,0px));flex-direction:column}
+.id-screen .flip-shell{margin-block:auto}
+.flip-shell{height:clamp(390px,calc(100dvh - 218px - env(safe-area-inset-top,0px)),530px);min-height:0}
+.id-head{padding-left:clamp(14px,4.2vw,17px);padding-right:clamp(14px,4.2vw,17px)}
+.id-head h1{font-size:clamp(22px,6.7vw,25px)}
+.id-front>label{padding-left:clamp(14px,4.2vw,17px);padding-right:clamp(14px,4.2vw,17px)}
+.id-person{padding-left:clamp(12px,3.8vw,14px);padding-right:clamp(12px,3.8vw,14px)}
+.id-person>div{min-width:0}
+.id-person h2{font-size:clamp(20px,6.15vw,23px);overflow-wrap:anywhere}
+.orange-circle{flex:0 0 auto}
+.card-space strong{font-size:clamp(13px,4.25vw,16px)}
+.id-back{padding:clamp(48px,7vh,67px) clamp(15px,6.15vw,27px) 20px}
+.id-back h2{font-size:clamp(14px,4.3vw,16px);margin-bottom:clamp(18px,3vh,23px)}
+.flip-qr{max-width:min(336px,100%)}
+.video-nav{width:min(410px,calc(100% - clamp(12px,4vw,30px)));grid-template-columns:repeat(4,minmax(0,1fr))}
+.video-nav button{min-width:0;padding-inline:1px}
+.video-nav button span{display:block;max-width:100%;font-size:clamp(8px,2.5vw,10px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.video-watermark{width:min(350px,calc(100% - clamp(42px,16vw,72px)));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plain-screen,.menu-screen,.jobs-screen,.intro-screen{min-height:calc(100dvh - 165px)}
+.plain-screen h1,.menu-screen h1,.jobs-screen h1,.intro-screen h1,.sub-screen h1{font-size:clamp(25px,7.5vw,28px)}
+.services-screen h1{font-size:clamp(27px,8vw,30px)}
+.bare-list button,.menu-row,.white-list button{min-width:0}
+.bare-list button span,.menu-row span,.white-list button{overflow-wrap:anywhere}
+.bare-list button span,.menu-row span{min-width:0;padding-right:8px}
+.sub-screen{padding-left:clamp(16px,5vw,22px);padding-right:clamp(16px,5vw,22px);padding-bottom:calc(35px + env(safe-area-inset-bottom,0px))}
+.qr-sheet{padding-left:clamp(14px,5.5vw,25px);padding-right:clamp(14px,5.5vw,25px);padding-bottom:calc(25px + env(safe-area-inset-bottom,0px))}
+.qr-box{max-width:100%}
+
+@media(max-width:359px){
+  .screen-tools button{padding:8px 10px}
+  .status-strip{font-size:13px}
+  .status-track span{padding-right:28px}
+  .id-person h2{line-height:.94}
+  .id-back{padding-inline:14px}
+  .video-nav{width:calc(100% - 10px)}
+}
+
+@media(max-height:650px){
+  .video-page{padding-bottom:84px}
+  .flip-shell{height:390px}
+  .screen-tools{height:36px;margin-bottom:8px}
+}
+
+/* Reference pass 1: geometry from the two supplied 552 x 1200 screenshots.
+   Demo branding and test data remain unchanged. Append-only, reversible override.
+   Target on a tall portrait screen: card x=5.45%, y=25%, height=53.75%.
+   Short screens use normal document scrolling instead of clipping the card. */
+html,body{background:#e1dfca}
+.video-app{
+  --bg:#e1dfca;
+  --card:#d4d3bd;
+  --ink:#10110d;
+  --orange:#ff8500;
+  --brown:#705014;
+  background:var(--bg);
+}
+.video-page:has(.id-screen){
+  padding-top:25dvh;
+  padding-left:5.45%;
+  padding-right:5.45%;
+  padding-bottom:calc(112px + env(safe-area-inset-bottom,0px));
+}
+.id-screen{min-height:0}
+.id-screen .screen-tools{
+  position:absolute;
+  top:max(72px,calc(env(safe-area-inset-top,0px) + 24px));
+  right:5.45%;
+  height:32px;
+  margin:0;
+}
+.id-screen .screen-tools button{
+  position:relative;
+  padding:6px 13px;
+  min-height:32px;
+  border-radius:24px;
+  background:#fafcf7;
+  color:#10110d;
+  font-size:16px;
+  line-height:20px;
+  font-weight:500;
+  gap:7px;
+}
+/* Keep a 44px touch area without making the visible pill too tall. */
+.id-screen .screen-tools button::before{content:"";position:absolute;inset:-6px 0}
+.id-screen .screen-tools svg{width:17px;height:17px;fill:currentColor}
+.id-screen .flip-shell{
+  height:clamp(430px,53.75dvh,620px);
+  min-height:0;
+  margin:0;
+}
+.id-screen .id-card,.id-screen .id-face{border-radius:9px}
+.id-screen .id-face{border-color:#999a85}
+.id-front .id-head{padding:23px 15px 5px}
+.id-front .id-head h1{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:22px;
+  line-height:1.15;
+  font-weight:600;
+}
+.id-front>label{
+  padding:10px 15px 0;
+  gap:5px;
+  color:#585a51;
+  font-size:16px;
+  line-height:1.2;
+  font-weight:400;
+}
+.id-front>label b{font-size:17px;font-weight:600}
+.id-front .shield{display:block;flex:0 0 auto;width:30px;height:36px;border-radius:0;background:transparent;color:inherit}
+.id-front .shield img{display:block;width:30px;height:36px;object-fit:contain}
+.id-front .card-space{min-height:40px}
+.id-front .status-strip{flex-shrink:0;padding:3px 0;font-size:16px;line-height:1.2}
+.id-front .id-person{
+  flex-shrink:0;
+  min-height:148px;
+  padding:30px 15px 14px;
+  gap:10px;
+}
+.id-front .id-person small{font-size:15px;line-height:1.2;font-weight:400}
+.id-front .id-person h2{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:23px;
+  line-height:1.1;
+  letter-spacing:0;
+  font-weight:500;
+  margin:8px 0 0;
+  overflow-wrap:anywhere;
+}
+.id-front .orange-circle{width:40px;height:40px}
+.video-nav{
+  bottom:0;
+  width:100%;
+  max-width:450px;
+  min-height:calc(49px + env(safe-area-inset-bottom,0px));
+  padding:6px 0 calc(4px + env(safe-area-inset-bottom,0px));
+  border:0;
+  border-radius:0;
+  background:#fbfcfc;
+  box-shadow:none;
+  backdrop-filter:none;
+  align-items:start;
+}
+.video-nav button{min-height:40px;gap:3px;color:#10110d}
+.video-nav svg{width:24px;height:24px}
+.video-nav button.active svg{width:24px;height:24px;padding:2px;border-radius:2px}
+.video-nav button span{font-size:12px;line-height:1.15}
+.video-watermark{
+  bottom:calc(57px + env(safe-area-inset-bottom,0px));
+  max-width:calc(100% - 48px);
+}
+.panel-open .video-watermark{bottom:max(10px,env(safe-area-inset-bottom,0px))}
+
+/* Avoid a tiny QR on the reverse side, but keep its warning text visible. */
+.id-back .flip-qr{min-height:0;flex-shrink:1;aspect-ratio:1;max-height:100%}
+.id-back .flip-qr svg{width:100%;height:100%;max-height:100%}
+.id-back .back-warning,.id-back h2,.id-back .back-legal{flex-shrink:0}
+
+@media(max-height:740px){
+  .video-page:has(.id-screen){padding-top:max(128px,calc(env(safe-area-inset-top,0px) + 76px))}
+  .id-screen .flip-shell{height:450px}
+}
+@media(max-width:359px){
+  .id-front .id-person{padding:20px 12px 12px;min-height:140px}
+  .id-front .id-person h2{font-size:21px;line-height:1.12}
+  .id-front .id-person small{font-size:12px}
+  .id-front>label{font-size:15px}
+  .video-nav button span{font-size:10px}
+}
+
+/* Standalone viewport fix, pass 2.
+   WebKit bug 254868 reports reduced viewport heights with viewport-fit=cover.
+   Use the large legacy vh only for an installed app, NOT for Safari tabs.
+   The fixed footer uses an explicit top anchor to avoid a reduced bottom edge.
+   Keep its safe-area padding: controls must stay above the home indicator.
+   Device verification is still required; no hard-coded iPhone pixel offset. */
+@media (display-mode:standalone){
+  html,body,.video-app{min-height:100vh}
+  .video-app{--standalone-nav-height:calc(49px + env(safe-area-inset-bottom,0px))}
+  .video-page,.sub-screen{min-height:100vh}
+  .video-page:has(.id-screen){padding-top:25vh}
+  .id-screen .flip-shell{height:clamp(430px,53.75vh,620px)}
+  .video-nav{
+    top:calc(100vh - var(--standalone-nav-height));
+    bottom:auto;
+    height:var(--standalone-nav-height);
+    min-height:var(--standalone-nav-height);
+  }
+  .video-app:not(.panel-open) .video-watermark{
+    top:calc(100vh - var(--standalone-nav-height) - 7px);
+    bottom:auto;
+    transform:translate(-50%,-100%);
+  }
+}
+@media (display-mode:standalone) and (max-height:740px){
+  .video-page:has(.id-screen){padding-top:max(128px,calc(env(safe-area-inset-top,0px) + 76px))}
+  .id-screen .flip-shell{height:450px}
+}
+
+/* Card typography pass 3. Only the front face; accepted shell/nav stay intact.
+   Approximation with the existing system font, not an embedded original font. */
+.id-front .id-head h1{font-weight:500}
+.id-front>label{padding-top:5px}
+/* Avoid inheriting the body's 1.5 line-height around the small profile label. */
+.id-front .id-person>div{line-height:1.2}
+.id-front .id-person h2{letter-spacing:.01em}
+.id-front .id-person .profile-surname{text-transform:uppercase}
+.id-front .orange-circle svg{width:24px;height:24px;stroke-linecap:butt}
+.id-front .orange-circle{border:0;color:#10110d;cursor:pointer;position:relative;z-index:2}
+.id-front .orange-circle::before{content:"";position:absolute;inset:-8px;border-radius:50%}
+.id-front .orange-circle:focus-visible{outline:2px solid #10110d;outline-offset:3px}
+
+/* Document actions opened by the orange plus. Geometry follows IMG_1595:
+   8px side inset, 220px sheet, 56px rows and the iPhone safe-area gap. */
+.document-actions-backdrop{
+  position:fixed;
+  z-index:70;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:0 8px env(safe-area-inset-bottom,0px);
+  background:rgba(0,0,0,.70);
+}
+.document-actions{
+  position:relative;
+  width:min(424px,100%);
+  height:220px;
+  padding:38px 18px 14px;
+  border-radius:16px;
+  background:#fbfcfc;
+  color:#000;
+  box-shadow:none;
+  animation:documentActionsUp .22s ease-out;
+}
+.document-actions-handle{
+  position:absolute;
+  top:16px;
+  left:50%;
+  width:40px;
+  height:4px;
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:#000;
+}
+.document-actions button{
+  width:100%;
+  height:56px;
+  padding:0 16px 0 8px;
+  border:0;
+  background:transparent;
+  color:inherit;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  text-align:left;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:20px;
+  font-weight:500;
+}
+.document-actions button svg{flex:0 0 20px;width:20px;height:20px;stroke-width:2}
+.document-actions button:active{opacity:.55}
+@keyframes documentActionsUp{from{transform:translateY(calc(100% + 16px))}to{transform:translateY(0)}}
+
+/* Scrollable document sheet calibrated against the stable 440x956 captures:
+   IMG_1609 is the top and IMG_1610 is the same sheet at its scroll limit. */
+@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Light.otf") format("opentype");font-style:normal;font-weight:300;font-display:swap}
+@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Medium.otf") format("opentype");font-style:normal;font-weight:500;font-display:swap}
+.document-open{overflow:hidden}
+.document-view-layer{
+  position:fixed;
+  z-index:75;
+  inset:0;
+  width:min(450px,100%);
+  margin:0 auto;
+  overflow:hidden;
+  pointer-events:none;
+}
+.document-view-backdrop-close{
+  position:absolute;
+  z-index:1;
+  inset:0;
+  width:100%;
+  padding:0;
+  border:0;
+  pointer-events:auto;
+  transition:background-color .12s linear;
+}
+.document-view{
+  position:absolute;
+  z-index:2;
+  top:62px;
+  left:0;
+  width:100%;
+  height:calc(100dvh - 62px);
+  margin:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  border-radius:22px 22px 0 0;
+  background:#e0dfcc;
+  color:#000;
+  font-family:"e-Ukraine",Arial,sans-serif;
+  scrollbar-width:none;
+  transition:transform .26s cubic-bezier(.22,.72,.2,1);
+  will-change:transform;
+  pointer-events:auto;
+}
+.flip-card.flipped .orange-circle{visibility:hidden;pointer-events:none}
+.document-view.is-dragging{transition:none}
+.document-view.is-closing{transition:transform .24s cubic-bezier(.4,0,1,1)}
+.document-view::-webkit-scrollbar{display:none}
+.document-view-grip{
+  position:sticky;
+  z-index:3;
+  top:0;
+  height:46px;
+  margin-bottom:-46px;
+  background:linear-gradient(#c5c4b3 0 10px,#e0dfcc 10px);
+  display:flex;
+  justify-content:center;
+  padding-top:18px;
+  touch-action:none;
+  cursor:grab;
+}
+.document-view-grip:active{cursor:grabbing}
+.document-view-grip span{width:36px;height:5px;border-radius:4px;background:#000}
+.document-view-content{padding-top:44px;padding-bottom:56px}
+.document-view-header{
+  min-height:80px;
+  padding:14px 24px 18px 27px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  touch-action:none;
+  user-select:none;
+}
+.document-view-header h1{margin:0;font-size:28px;line-height:34px;letter-spacing:-.35px;font-weight:400}
+.document-view-mark{
+  position:relative;
+  flex:0 0 32px;
+  width:32px;
+  height:38px;
+  padding:0;
+  border:0;
+  background:transparent;
+  display:grid;
+  place-items:center;
+  touch-action:manipulation;
+}
+.document-view-mark::before{content:"";position:absolute;width:52px;height:52px}
+.document-view-mark img{display:block;width:30px;height:36px;object-fit:contain}
+.document-view-marquee{
+  width:100%;
+  height:24px;
+  overflow:hidden;
+  background:#6b4b1a;
+  color:#c3b7a4;
+  white-space:nowrap;
+  font-size:13px;
+  line-height:24px;
+  font-weight:400;
+  letter-spacing:.02em;
+}
+.document-view-marquee-track{
+  display:flex;
+  width:max-content;
+  animation:documentViewMarquee 14s linear infinite;
+  will-change:transform;
+}
+.document-view-marquee-track span{flex:none;padding-right:30px}
+@keyframes documentViewMarquee{to{transform:translateX(-50%)}}
+.document-view-cards{padding:24px 24px 0;display:grid;gap:0}
+.document-view-card{
+  overflow:hidden;
+  padding:16px;
+  border:0;
+  border-radius:16px;
+  background:#fbfcfc;
+}
+.document-view-fact{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.document-view-fact small{color:#000;font-size:15px;line-height:18px;font-weight:300}
+.document-view-fact strong{color:#000;font-size:14px;line-height:17px;font-weight:500}
+.document-view-card-personal{height:253px;display:flex;flex-direction:column;align-items:flex-start}
+.document-view-name{font-size:21px;line-height:24px;font-weight:500;letter-spacing:-.25px}
+.document-view-register-status{margin-top:16px;font-size:15px;line-height:18px;font-weight:300}
+.document-view-card-personal .document-view-fact{margin-top:14px}
+.document-view-card-personal .document-view-fact:last-child{margin-top:15px}
+.document-view-card-medical{height:124px;margin-top:8px;padding:0}
+.document-view-medical-main{height:75px;padding:16px;border-bottom:1px solid #e0dfcc}
+.document-view-medical-date{height:49px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.document-view-medical-date span{font-size:14px;line-height:17px;font-weight:300}
+.document-view-medical-date strong{font-size:14px;line-height:17px;font-weight:500}
+.document-view-card-registration{height:241px;margin-top:8px;padding:0}
+.document-view-registration-office{height:109px;padding:16px;border-bottom:1px solid #e0dfcc}
+.document-view-register-meta{height:132px;padding:16px;display:grid;align-content:start;gap:16px}
+.document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:14px}
+.document-view-card-updated{height:66px;margin-top:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.document-view-card-updated span{font-size:14px;line-height:17px;font-weight:300}
+.document-view-card-updated strong{font-size:14px;line-height:17px;font-weight:500}
+@media(prefers-reduced-motion:reduce){.document-view-marquee-track{animation:none}}
+@media(max-width:360px){
+  .document-view-cards{padding-left:18px;padding-right:18px}
+  .document-view-header{padding-left:18px;padding-right:18px}
+}
+
+/* Bottom navigation reference pass. Keep the accepted panel bounds and
+   standalone safe-area anchoring; only icons and labels match the reference. */
+.video-nav button{
+  justify-content:flex-start;
+  gap:5px;
+  color:#11120f;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:500;
+}
+.video-nav .nav-icon{
+  display:grid;
+  place-items:center;
+  width:24px;
+  height:24px;
+}
+.video-nav .nav-icon svg{
+  width:22px;
+  height:22px;
+  padding:0;
+  background:transparent;
+  color:currentColor;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.video-nav .nav-label{
+  display:block;
+  max-width:100%;
+  overflow:visible;
+  color:inherit;
+  font-size:12px;
+  line-height:13px;
+  letter-spacing:0;
+  white-space:nowrap;
+  text-overflow:clip;
+}
+.video-nav button.active{font-weight:700;color:#080906}
+.video-nav .nav-glyph-document{width:20px;height:24px}
+.video-nav .nav-glyph-services{width:22px;height:24px}
+.video-nav .nav-glyph-jobs{width:20px;height:24px}
+.video-nav .nav-glyph-menu{width:20px;height:17px}
+.video-nav button.active .nav-icon svg{
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  color:#080906;
+}
+.video-nav button.active .nav-glyph-document{width:20px;height:24px}
+.video-nav button.active .nav-glyph-services{width:22px;height:24px}
+.video-nav button.active .nav-glyph-jobs{width:20px;height:24px}
+.video-nav button.active .nav-glyph-menu{width:20px;height:17px}
+.video-nav .nav-glyph-document:not(.nav-glyph-active) .nav-document-body{fill:none;stroke:currentColor;stroke-width:2}
+.video-nav .nav-glyph-document:not(.nav-glyph-active) .nav-document-lines{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square}
+.video-nav .nav-glyph-document.nav-glyph-active .nav-document-body{fill:currentColor;stroke:currentColor;stroke-width:2}
+.video-nav .nav-glyph-document.nav-glyph-active .nav-document-lines{fill:none;stroke:#fbfcfc;stroke-width:2;stroke-linecap:square}
+.video-nav .nav-glyph-services:not(.nav-glyph-active) rect{fill:none;stroke:currentColor;stroke-width:2}
+.video-nav .nav-glyph-services.nav-glyph-active rect{fill:currentColor;stroke:currentColor;stroke-width:2}
+.video-nav .nav-job-body{fill:none;stroke:currentColor;stroke-width:2}
+.video-nav .nav-job-diamond{fill:currentColor;stroke:none}
+.video-nav .nav-glyph-jobs.nav-glyph-active .nav-job-body{fill:currentColor;stroke:currentColor;stroke-width:2}
+.video-nav .nav-glyph-jobs.nav-glyph-active .nav-job-diamond{fill:#fbfcfc;stroke:none}
+.video-nav .nav-glyph-menu:not(.nav-glyph-active) rect{fill:currentColor;stroke:none}
+.video-nav .nav-glyph-menu.nav-glyph-active rect{fill:currentColor;stroke:none}
+@media(max-width:359px){
+  .video-nav .nav-icon{width:24px;height:24px}
+  .video-nav .nav-icon svg{max-width:none;max-height:none}
+  .video-nav .nav-label{font-size:11px;letter-spacing:0}
+}
+
+/* Services reference pass. The supplied 1320 x 2868 PNG is a 3x capture:
+   24px side insets, 65px rows, 1px separators and an eight-item list.
+   Navigation geometry and the persistent DEMO warning stay unchanged. */
+.video-app:has(.services-screen){background:#e0dfcc}
+.video-page:has(.services-screen){
+  padding-top:max(43px,calc(env(safe-area-inset-top,0px) + 18px));
+  padding-left:24px;
+  padding-right:24px;
+}
+.services-screen{color:#000}
+.services-screen h1{
+  margin:10px 0 30px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+  font-size:34px;
+  line-height:1.05;
+  font-weight:400;
+  letter-spacing:-.02em;
+}
+.services-screen .bare-list{display:grid}
+.services-screen .bare-list button{
+  min-height:65px;
+  padding:0;
+  border-bottom:1px solid #d5d3be;
+  color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+  font-size:18px;
+  line-height:1.2;
+  font-weight:600;
+}
+.services-screen .bare-list button:last-child{border-bottom:0}
+.services-screen .bare-list button span{padding-right:18px;overflow:visible;overflow-wrap:normal}
+.services-screen .bare-list button svg{
+  flex:0 0 auto;
+  width:17px;
+  height:17px;
+  stroke-width:2;
+}
+@media(max-width:359px){
+  .video-page:has(.services-screen){padding-left:20px;padding-right:20px}
+  .services-screen h1{font-size:32px}
+  .services-screen .bare-list button{font-size:15px}
+}
+
+/* Jobs reference flow: direction feed plus the full-screen "Нові контракти" layer. */
+.video-app:has(.jobs-screen),.video-app:has(.contracts-screen){background:#e0dfcc}
+.video-page:has(.jobs-screen){padding:56px 0 calc(67px + env(safe-area-inset-bottom,0px))}
+.jobs-screen{
+  min-height:calc(100dvh - 123px);
+  color:#050505;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+}
+.jobs-header{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 30px 0}
+.jobs-header h1{
+  margin:0 0 46px;
+  font-size:38px;
+  line-height:1.04;
+  font-weight:400;
+  letter-spacing:-.035em;
+}
+.jobs-header>button{
+  flex:0 0 auto;
+  width:54px;
+  height:54px;
+  margin-top:2px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#fff;
+  color:#050505;
+  display:grid;
+  place-items:center;
+}
+.jobs-header>button svg{width:26px;height:26px;stroke-width:2.5}
+.jobs-search{margin:-28px 30px 22px;height:48px;padding:0 12px;border-radius:16px;background:#fff;display:flex;align-items:center;gap:9px}
+.jobs-search>svg{width:20px;flex:0 0 auto}
+.jobs-search input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#111;font:500 16px inherit}
+.jobs-search button{width:32px;height:32px;padding:0;border:0;border-radius:50%;background:#eeeee8;display:grid;place-items:center}
+.jobs-search button svg{width:17px}
+.job-tabs{
+  display:flex;
+  gap:0;
+  width:100%;
+  padding:0 30px;
+  border-bottom:1px solid #878878;
+  overflow-x:auto;
+  scrollbar-width:none;
+  scroll-snap-type:x proximity;
+}
+.job-tabs::-webkit-scrollbar{display:none}
+.job-tabs button{
+  position:relative;
+  flex:0 0 auto;
+  min-height:48px;
+  padding:0 15px 13px;
+  border:0;
+  background:transparent;
+  color:#737469;
+  font:400 18px/1.05 inherit;
+  white-space:nowrap;
+  scroll-snap-align:center;
+}
+.job-tabs button:first-child{padding-left:6px}
+.job-tabs button.active{color:#050505;font-weight:500}
+.job-tabs button.active::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:#050505}
+.job-tabs button i{display:inline-block;width:8px;height:8px;margin:0 7px 2px 0;border-radius:50%;background:#ff8600}
+.job-card{
+  min-height:620px;
+  margin:20px 30px 0;
+  padding:31px 24px 25px;
+  border-radius:20px;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+}
+.job-card h2{margin:0;text-align:center;font-size:29px;line-height:1.1;font-weight:400}
+.reference-unit-art{
+  flex:1;
+  width:100%;
+  min-height:0;
+  padding:45px 10px 30px;
+  border:0;
+  background:transparent;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+}
+.reference-unit-art img{display:block;width:100%;max-width:350px;height:auto}
+.direction-it .reference-unit-art{justify-content:flex-start;padding:58px 36px 30px}
+.direction-it .reference-unit-art img{width:77px;max-width:none}
+.job-card>.orange-button{width:100%;min-height:62px;border-radius:32px;background:#ff8500;color:#090909;font-size:18px;font-weight:500}
+.interests-card{min-height:620px;padding:31px 24px}
+.interests-card h2{text-align:left;font-size:28px}
+.interests-card>div{display:flex;flex-wrap:wrap;gap:10px 8px;margin-top:27px}
+.interests-card>div button{min-height:46px;padding:9px 19px;border:0;border-radius:25px;background:#e1e0cf;color:#090909;font:500 18px/1.1 inherit}
+.interests-card>div button.selected{background:#171812;color:#fff}
+.answer-button{width:100%;min-height:62px;margin-top:auto;border:0;border-radius:32px;background:#ff8500;color:#111;font:500 18px inherit}
+.answer-button:disabled{background:#bdbdad;color:#68685f}
+.all-vacancies,.search-results{min-height:520px}
+.simple-vacancies{display:grid;margin-top:25px}
+.simple-vacancies button{min-height:72px;padding:11px 3px;border:0;border-bottom:1px solid #e0e0d8;background:transparent;color:#111;display:grid;grid-template-columns:1fr auto;text-align:left}
+.simple-vacancies b{font-size:17px;font-weight:600}
+.simple-vacancies small{grid-column:1;color:#6e7068;font-size:13px;margin-top:4px}
+.simple-vacancies svg{grid-column:2;grid-row:1/3;width:18px;align-self:center}
+.search-results>p{text-align:center;color:#737469;margin:auto}
+
+.video-page:has(.contracts-screen){padding:0}
+.contracts-screen{
+  position:fixed;
+  z-index:45;
+  inset:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(450px,100%);
+  padding:61px 24px calc(112px + env(safe-area-inset-bottom,0px));
+  background:#e0dfcc;
+  color:#050505;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+.contracts-back{width:36px;height:36px;margin-left:-4px;padding:0;border:0;border-radius:50%;background:#f0efe6;display:grid;place-items:center}
+.contracts-back svg{width:19px;height:19px;stroke-width:2.35}
+.contracts-screen>header h1{margin:5px 0 8px;font-size:38px;line-height:1.05;font-weight:400;letter-spacing:-.025em}
+.contracts-screen>header p{max-width:380px;margin:0 0 13px;font-size:18px;line-height:1.15;font-weight:500}
+.contract-types{display:grid;gap:8px}
+.contract-type{overflow:hidden;border-radius:20px;background:#fbfcfc}
+.contract-type>button{width:100%;min-height:72px;padding:12px 16px;border:0;background:#fbfcfc;color:#080808;display:flex;align-items:center;justify-content:space-between;text-align:left}
+.contract-type:first-child>button{min-height:96px}
+.contract-type>button span{display:flex;align-items:center;gap:14px;font-size:22px;line-height:1.03;font-weight:500}
+.contract-type>button svg{flex:0 0 auto;width:20px;height:20px;stroke-width:2.4}
+.contract-mark{flex:0 0 auto;width:17px;height:22px;object-fit:cover;transform:scale(1.9) translateX(1px)}
+.contract-type>p{margin:0;padding:0 20px 18px;color:#55584f;font-size:14px;line-height:1.3}
+.vacancy-count{display:flex;justify-content:space-between;align-items:center;margin:29px 0 17px;padding:0 2px;font-size:20px}
+.vacancy-count b{font-weight:500}
+.vacancy-list{display:grid;gap:8px}
+.vacancy-row{min-height:102px;padding:14px 16px;border-radius:20px;background:#fbfcfc;display:grid;grid-template-columns:24px 35px 1fr;align-items:center;gap:14px}
+.vacancy-row input{appearance:none;width:24px;height:24px;margin:0;border:2px solid #111;border-radius:6px;background:#fbfcfc;display:grid;place-items:center}
+.vacancy-row input:checked{background:#171812;border-color:#171812}
+.vacancy-row input:checked::after{content:"✓";color:#fff;font-size:19px;font-weight:700}
+.vacancy-shield{display:block;width:35px;height:auto;max-height:52px;object-fit:contain;background:#fbfcfc;transform:scale(1.32)}
+.vacancy-row>span{min-width:0;display:flex;flex-direction:column;gap:6px}
+.vacancy-row b{font-size:18px;line-height:1.12;font-weight:500}
+.vacancy-row small{font-size:14px;line-height:1.12}
+.contracts-action{position:fixed;z-index:2;left:50%;bottom:0;transform:translateX(-50%);width:min(450px,100%);padding:28px 24px calc(18px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,#e0dfcc 25%)}
+.contracts-action button{width:100%;min-height:64px;border:0;border-radius:32px;background:#ff8500;color:#111;font:500 18px inherit}
+.contracts-action button:disabled{background:#bcbaa9;color:#5d5c54}
+@media(max-width:359px){
+  .jobs-header{padding-inline:20px}.jobs-header h1{font-size:34px}.job-tabs{padding-inline:20px}.job-tabs button{font-size:16px}
+  .job-card{margin-inline:20px;padding-inline:18px}.reference-unit-art{padding-inline:4px}
+  .contracts-screen{padding-inline:18px}.contracts-action{padding-inline:18px}.contract-type>button span{font-size:19px}.vacancy-row{grid-template-columns:32px 44px 1fr;padding-inline:14px;gap:9px}.vacancy-row b{font-size:16px}
+}
+
+/* Jobs direction feed calibrated from IMG_1567 against the iPhone render IMG_1566. */
+.jobs-screen{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+.jobs-screen .jobs-header{padding:22px 24px 0}
+.jobs-screen .jobs-header h1{
+  margin:0 0 19px;
+  font-size:30px;
+  line-height:1;
+  font-weight:400;
+  letter-spacing:-.025em;
+  transform:translateY(2px) scaleX(1.07);
+  transform-origin:left center;
+}
+.jobs-screen .jobs-header>button{
+  width:46px;
+  height:46px;
+  margin-top:0;
+  background:#fbfcfc;
+}
+.jobs-screen .jobs-header>button svg{width:20px;height:20px;stroke-width:2.35}
+.jobs-screen .job-tabs{padding-inline:24px}
+.jobs-screen .job-tabs button{
+  display:block;
+  min-height:48px;
+  padding:17px 14px 0;
+  font-family:inherit;
+  font-size:16px;
+  font-weight:400;
+  line-height:1.05;
+}
+.jobs-screen .job-tabs button:first-child{padding-left:6px}
+.jobs-screen .job-tabs button.active{font-weight:500}
+.jobs-screen .units-card{
+  min-height:604px;
+  margin:16px 24px 0;
+  padding:24px 24px 23px;
+  border-radius:20px;
+  background:#fbfcfc;
+}
+.jobs-screen .units-card h2{
+  font-size:22px;
+  line-height:1.1;
+  font-weight:500;
+  transform:translateY(2px) scaleX(1.125);
+}
+.jobs-screen .reference-unit-art{padding:33px 6px 28px}
+.jobs-screen .reference-unit-art img{width:300px;max-width:100%}
+.jobs-screen .units-card>.orange-button{
+  min-height:64px;
+  border-radius:32px;
+  background:#fc8809;
+  font-size:17px;
+}
+.jobs-screen .units-card>.orange-button span{
+  display:inline-block;
+  transform:translateY(1px) scaleX(1.12);
+}
+
+/* Neighboring vacancy tabs from IMG_1576/IMG_1577. */
+.jobs-screen .interests-card{
+  height:604px;
+  min-height:604px;
+  margin:16px 24px 0;
+  padding:24px 24px 23px;
+  border-radius:20px;
+  background:#fbfcfc;
+  overflow:hidden;
+}
+.jobs-screen .interests-card h2{
+  flex:none;
+  font-size:22px;
+  line-height:1.1;
+  font-weight:500;
+  transform:translateY(2px) scaleX(1.08);
+  transform-origin:left center;
+}
+.jobs-screen .interests-card>div{
+  flex:1 1 auto;
+  min-height:0;
+  align-content:flex-start;
+  gap:8px;
+  margin-top:24px;
+  padding:0 0 34px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:none;
+  touch-action:pan-y;
+  -webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 32px),transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 32px),transparent 100%);
+}
+.jobs-screen .interests-card>div::-webkit-scrollbar{display:none}
+.jobs-screen .interests-card>div button{
+  flex:0 0 auto;
+  min-height:44px;
+  max-width:100%;
+  padding:8px 18px;
+  border-radius:22px;
+  font-size:17px;
+  line-height:1.1;
+  font-weight:500;
+  white-space:nowrap;
+}
+.jobs-screen .interests-card>.answer-button{
+  position:relative;
+  z-index:1;
+  flex:0 0 64px;
+  height:64px;
+  min-height:64px;
+  margin-top:0;
+  border-radius:32px;
+  font-size:17px;
+}
+.jobs-screen .interests-card>.answer-button:disabled{background:#bcbaa9;color:#5d5c54}
+.jobs-screen .units-card.direction-it .reference-unit-art{
+  justify-content:flex-start;
+  padding:58px 36px 30px;
+}
+.jobs-screen .units-card.direction-it .reference-unit-art img{
+  width:77px;
+  max-width:none;
+}
+@media(max-width:359px){
+  .jobs-screen .jobs-header{padding-inline:20px}
+  .jobs-screen .jobs-header h1{font-size:28px}
+  .jobs-screen .job-tabs{padding-inline:20px}
+  .jobs-screen .job-tabs button{font-size:15px}
+  .jobs-screen .units-card,.jobs-screen .interests-card{margin-inline:20px;padding-inline:18px}
+}
+
+/* Menu reference match — isolated from accepted ID, services and jobs screens. */
+.video-page:has(> .menu-screen){
+  min-height:100dvh;
+  padding:max(37px,calc(env(safe-area-inset-top,0px) + 12px)) 24px calc(108px + env(safe-area-inset-bottom,0px));
+  background:#e0dfcc;
+}
+.menu-screen{
+  min-height:calc(100dvh - 145px);
+  color:#11120f;
+  font-family:Inter,"Inter Regular",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+.menu-screen h1{
+  margin:9px 0 5px;
+  font-family:Inter,"Inter Regular",Arial,sans-serif;
+  font-size:30px;
+  font-weight:500;
+  line-height:1.1;
+  letter-spacing:-.025em;
+}
+.menu-screen>small{
+  display:block;
+  margin:0;
+  color:#777a70;
+  font-size:14px;
+  font-weight:500;
+  line-height:17px;
+}
+.menu-screen .menu-groups{
+  display:grid;
+  gap:8px;
+  margin-top:16px;
+}
+.menu-screen .menu-groups>div{
+  overflow:hidden;
+  border-radius:17px;
+  background:#fbfcfc;
+}
+.menu-screen .menu-row{
+  position:relative;
+  width:100%;
+  min-height:61px;
+  padding:0 20px;
+  border:0;
+  background:#fbfcfc;
+  color:#121310;
+  display:flex;
+  align-items:center;
+  gap:17px;
+  text-align:left;
+  font:600 17px/1.15 Inter,"Inter Regular",Arial,sans-serif;
+}
+.menu-screen .menu-row:not(:last-child):after{
+  content:"";
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:0;
+  height:1px;
+  background:#d8d9d2;
+}
+.menu-screen .menu-glyph{
+  flex:0 0 24px;
+  width:24px;
+  height:24px;
+  object-fit:contain;
+}
+.menu-screen .menu-row>span{flex:1}
+.menu-screen .menu-chevron{
+  flex:0 0 22px;
+  width:22px;
+  height:22px;
+}
+.menu-screen .menu-groups>div:nth-child(2) .menu-row{min-height:60px}
+.menu-screen .menu-single .menu-row{min-height:65px}
+.menu-screen .logout{
+  width:121px;
+  height:48px;
+  margin:22px auto 0;
+  padding:0;
+  border:0;
+  border-radius:24px;
+  background:#2c2b26;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font:600 17px/1 Inter,"Inter Regular",Arial,sans-serif;
+}
+.menu-screen .privacy{
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin:18px auto 0;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#171814;
+  text-align:center;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  font:600 13px/20px Inter,"Inter Regular",Arial,sans-serif;
+}
+@media(max-width:360px){
+  .video-page:has(> .menu-screen){padding-left:20px;padding-right:20px}
+  .menu-screen .menu-row{padding-left:18px;padding-right:17px;gap:13px;font-size:15px}
+  .menu-screen .privacy{font-size:11px}
+}
