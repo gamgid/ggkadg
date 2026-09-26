@@ -80,41 +80,73 @@ function DocumentActions({close,view,choose}:{close:()=>void;view:()=>void;choos
 
 function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
   const marquee='ДЕМО • НЕ Є ДОКУМЕНТОМ • ДОКУМЕНТ ОНОВЛЕНО О 18:42 •';
-  const dragStart=useRef<number|null>(null);
+  const closeRef=useRef(close);
+  closeRef.current=close;
+  const sheetRef=useRef<HTMLElement|null>(null);
+  const dragState=useRef<{pointerId:number;startY:number;lastY:number;lastTime:number;velocity:number}|null>(null);
   const dragOffsetRef=useRef(0);
+  const closeTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const [dragOffset,setDragOffset]=useState(0);
   const [dragging,setDragging]=useState(false);
+  const [closing,setClosing]=useState(false);
   useEffect(()=>{
-    const onKeyDown=(event:KeyboardEvent)=>{if(event.key==='Escape')close()};
+    const onKeyDown=(event:KeyboardEvent)=>{if(event.key==='Escape')closeRef.current()};
     window.addEventListener('keydown',onKeyDown);
-    return()=>window.removeEventListener('keydown',onKeyDown);
-  },[close]);
-  const startCloseDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{
-    dragStart.current=event.clientY;
+    return()=>{window.removeEventListener('keydown',onKeyDown);if(closeTimer.current)clearTimeout(closeTimer.current)};
+  },[]);
+  const closeWithAnimation=()=>{
+    if(closing)return;
+    dragState.current=null;
+    dragOffsetRef.current=Math.max(window.innerHeight,900);
+    setDragging(false);
+    setClosing(true);
+    setDragOffset(dragOffsetRef.current);
+    closeTimer.current=setTimeout(()=>closeRef.current(),260);
+  };
+  const startCloseDrag=(event:ReactPointerEvent<HTMLElement>)=>{
+    if(closing||event.button!==0||(sheetRef.current?.scrollTop??0)>1)return;
+    if((event.target as HTMLElement).closest('button'))return;
+    const now=performance.now();
+    dragState.current={pointerId:event.pointerId,startY:event.clientY,lastY:event.clientY,lastTime:now,velocity:0};
+    dragOffsetRef.current=0;
     setDragging(true);
     event.currentTarget.setPointerCapture(event.pointerId);
+    event.preventDefault();
   };
-  const moveCloseDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{
-    if(dragStart.current===null)return;
-    const nextOffset=Math.max(0,event.clientY-dragStart.current);
+  const moveCloseDrag=(event:ReactPointerEvent<HTMLElement>)=>{
+    const drag=dragState.current;
+    if(!drag||drag.pointerId!==event.pointerId)return;
+    const now=performance.now();
+    const elapsed=Math.max(1,now-drag.lastTime);
+    const instantVelocity=(event.clientY-drag.lastY)/elapsed;
+    drag.velocity=drag.velocity*.55+instantVelocity*.45;
+    drag.lastY=event.clientY;
+    drag.lastTime=now;
+    const nextOffset=Math.max(0,event.clientY-drag.startY);
     dragOffsetRef.current=nextOffset;
     setDragOffset(nextOffset);
+    event.preventDefault();
   };
-  const finishCloseDrag=()=>{
-    const shouldClose=dragOffsetRef.current>=72;
-    dragStart.current=null;
+  const finishCloseDrag=(event:ReactPointerEvent<HTMLElement>,cancelled=false)=>{
+    const drag=dragState.current;
+    if(!drag||drag.pointerId!==event.pointerId)return;
+    const offset=dragOffsetRef.current;
+    const distanceThreshold=Math.max(96,window.innerHeight*.12);
+    const shouldClose=!cancelled&&(offset>=distanceThreshold||(offset>=28&&drag.velocity>=.65));
+    dragState.current=null;
     dragOffsetRef.current=0;
     setDragging(false);
-    setDragOffset(0);
-    if(shouldClose)close();
+    if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);
+    if(shouldClose)closeWithAnimation();else setDragOffset(0);
   };
+  const dragHandlers={onPointerDown:startCloseDrag,onPointerMove:moveCloseDrag,onPointerUp:(event:ReactPointerEvent<HTMLElement>)=>finishCloseDrag(event),onPointerCancel:(event:ReactPointerEvent<HTMLElement>)=>finishCloseDrag(event,true)};
   const Fact=({label,children}:{label:string;children:ReactNode})=><div className="document-view-fact"><small>{label}</small><strong>{children}</strong></div>;
-  return <><button className="document-view-backdrop-close" onClick={close} aria-label="Закрити документ"/><section className={`document-view${dragging?' is-dragging':''}`} style={{transform:`translateY(${dragOffset}px)`}} aria-label="Демонстраційний військово-обліковий документ">
-    <div className="document-view-grip" role="button" tabIndex={0} aria-label="Потягніть вниз, щоб закрити" onPointerDown={startCloseDrag} onPointerMove={moveCloseDrag} onPointerUp={finishCloseDrag} onPointerCancel={finishCloseDrag} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();close()}}}><span/></div>
+  return <><button className="document-view-backdrop-close" onClick={closeWithAnimation} aria-label="Закрити документ"/><section ref={sheetRef} className={`document-view${dragging?' is-dragging':''}${closing?' is-closing':''}`} style={{transform:`translateY(${dragOffset}px)`}} aria-label="Демонстраційний військово-обліковий документ">
+    <div className="document-view-grip" role="button" tabIndex={0} aria-label="Потягніть вниз, щоб закрити" {...dragHandlers} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();closeWithAnimation()}}}><span/></div>
     <div className="document-view-content">
-      <header className="document-view-header">
+      <header className="document-view-header" {...dragHandlers}>
         <h1>Резерв ID</h1>
-        <button className="document-view-mark" onClick={close} aria-label="Закрити документ">
+        <button className="document-view-mark" onClick={closeWithAnimation} aria-label="Закрити документ">
           <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/>
         </button>
       </header>

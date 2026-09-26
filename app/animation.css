@@ -305,6 +305,9 @@ html,body{background:#e1dfca}
 
 /* Scrollable document sheet calibrated against the stable 440x956 captures:
    IMG_1609 is the top and IMG_1610 is the same sheet at its scroll limit. */
+@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Light.otf") format("opentype");font-style:normal;font-weight:300;font-display:swap}
+@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Medium.otf") format("opentype");font-style:normal;font-weight:500;font-display:swap}
 .document-open{overflow:hidden;background:#000}
 .document-open .video-watermark{display:none}
 .document-view-backdrop-close{position:fixed;z-index:1;inset:0 0 auto;width:100%;height:62px;padding:0;border:0;background:#000}
@@ -320,11 +323,13 @@ html,body{background:#e1dfca}
   border-radius:22px 22px 0 0;
   background:#e0dfcc;
   color:#000;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+  font-family:"e-Ukraine",Arial,sans-serif;
   scrollbar-width:none;
-  transition:transform .2s ease-out;
+  transition:transform .26s cubic-bezier(.22,.72,.2,1);
+  will-change:transform;
 }
 .document-view.is-dragging{transition:none}
+.document-view.is-closing{transition:transform .24s cubic-bezier(.4,0,1,1)}
 .document-view::-webkit-scrollbar{display:none}
 .document-view-grip{
   position:sticky;
@@ -349,8 +354,10 @@ html,body{background:#e1dfca}
   align-items:flex-start;
   justify-content:space-between;
   gap:18px;
+  touch-action:none;
+  user-select:none;
 }
-.document-view-header h1{margin:0;font-size:28px;line-height:34px;letter-spacing:-.35px;font-weight:500}
+.document-view-header h1{margin:0;font-size:28px;line-height:34px;letter-spacing:-.35px;font-weight:400}
 .document-view-mark{
   position:relative;
   flex:0 0 32px;
@@ -374,7 +381,7 @@ html,body{background:#e1dfca}
   white-space:nowrap;
   font-size:13px;
   line-height:24px;
-  font-weight:500;
+  font-weight:400;
   letter-spacing:.02em;
 }
 .document-view-marquee-track{
@@ -398,24 +405,24 @@ html,body{background:#e1dfca}
   flex-direction:column;
   gap:7px;
 }
-.document-view-fact small{color:#000;font-size:15px;line-height:18px;font-weight:400}
+.document-view-fact small{color:#000;font-size:15px;line-height:18px;font-weight:300}
 .document-view-fact strong{color:#000;font-size:14px;line-height:17px;font-weight:500}
 .document-view-card-personal{height:253px;display:flex;flex-direction:column;align-items:flex-start}
 .document-view-name{font-size:21px;line-height:24px;font-weight:500;letter-spacing:-.25px}
-.document-view-register-status{margin-top:16px;font-size:15px;line-height:18px;font-weight:400}
+.document-view-register-status{margin-top:16px;font-size:15px;line-height:18px;font-weight:300}
 .document-view-card-personal .document-view-fact{margin-top:14px}
 .document-view-card-personal .document-view-fact:last-child{margin-top:15px}
 .document-view-card-medical{height:124px;margin-top:8px;padding:0}
 .document-view-medical-main{height:75px;padding:16px;border-bottom:1px solid #e0dfcc}
 .document-view-medical-date{height:49px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.document-view-medical-date span{font-size:14px;line-height:17px;font-weight:400}
+.document-view-medical-date span{font-size:14px;line-height:17px;font-weight:300}
 .document-view-medical-date strong{font-size:14px;line-height:17px;font-weight:500}
 .document-view-card-registration{height:241px;margin-top:8px;padding:0}
 .document-view-registration-office{height:109px;padding:16px;border-bottom:1px solid #e0dfcc}
 .document-view-register-meta{height:132px;padding:16px;display:grid;align-content:start;gap:16px}
 .document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:14px}
 .document-view-card-updated{height:66px;margin-top:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.document-view-card-updated span{font-size:14px;line-height:17px;font-weight:400}
+.document-view-card-updated span{font-size:14px;line-height:17px;font-weight:300}
 .document-view-card-updated strong{font-size:14px;line-height:17px;font-weight:500}
 @media(prefers-reduced-motion:reduce){.document-view-marquee-track{animation:none}}
 @media(max-width:360px){
