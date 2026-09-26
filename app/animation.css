@@ -317,7 +317,7 @@ html,body{background:#e1dfca}
   border-radius:22px 22px 0 0;
   background:#e0dfcc;
   color:#000;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+  font-family:"e-Ukraine",Arial,Helvetica,sans-serif;
   scrollbar-width:none;
 }
 .document-view::-webkit-scrollbar{display:none}
@@ -346,8 +346,8 @@ html,body{background:#e1dfca}
   margin:0;
   font-size:28px;
   line-height:34px;
-  letter-spacing:-.55px;
-  font-weight:500;
+  letter-spacing:-.35px;
+  font-weight:600;
 }
 .document-view-mark{
   flex:0 0 32px;
@@ -397,27 +397,29 @@ html,body{background:#e1dfca}
   color:#000;
   font-size:15px;
   line-height:18px;
-  font-weight:400;
+  font-weight:600;
 }
 .document-view-fact strong{
   color:#000;
   font-size:14px;
   line-height:17px;
-  font-weight:400;
+  font-weight:600;
 }
 .document-view-card-personal{height:253px;display:flex;flex-direction:column;align-items:flex-start}
-.document-view-name{font-size:21px;line-height:24px;font-weight:500;letter-spacing:-.25px}
-.document-view-register-status{margin-top:13px;font-size:15px;line-height:18px;font-weight:400}
+.document-view-name{font-size:21px;line-height:24px;font-weight:600;letter-spacing:-.25px}
+.document-view-register-status{margin-top:16px;font-size:15px;line-height:18px;font-weight:600}
 .document-view-card-personal .document-view-fact{margin-top:14px}
-.document-view-card-personal .document-view-fact:last-child{margin-top:12px}
-.document-view-card-status-main{height:74px;margin-top:8px}
-.document-view-card-status-note{height:49px;margin-top:1px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.document-view-card-status-note span,.document-view-card-status-note strong{font-size:14px;line-height:17px;font-weight:400}
-.document-view-card-specialty{height:108px;margin-top:8px}
-.document-view-card-register-meta{height:132px;margin-top:1px;display:grid;align-content:start;gap:19px}
-.document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:18px}
+.document-view-card-personal .document-view-fact:last-child{margin-top:15px}
+.document-view-card-medical{height:124px;margin-top:8px;padding:0}
+.document-view-medical-main{height:75px;padding:16px;border-bottom:1px solid #e0dfcc}
+.document-view-medical-date{height:49px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.document-view-medical-date span,.document-view-medical-date strong{font-size:14px;line-height:17px;font-weight:600}
+.document-view-card-registration{height:241px;margin-top:8px;padding:0}
+.document-view-registration-office{height:109px;padding:16px;border-bottom:1px solid #e0dfcc}
+.document-view-register-meta{height:132px;padding:16px;display:grid;align-content:start;gap:16px}
+.document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:14px}
 .document-view-card-updated{height:66px;margin-top:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.document-view-card-updated span,.document-view-card-updated strong{font-size:14px;line-height:17px;font-weight:400}
+.document-view-card-updated span,.document-view-card-updated strong{font-size:14px;line-height:17px;font-weight:600}
 @media(prefers-reduced-motion:reduce){.document-view-marquee-track{animation:none}}
 @media(max-width:360px){
   .document-view-cards{padding-left:18px;padding-right:18px}

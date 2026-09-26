@@ -102,18 +102,22 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
           <Fact label="Дата народження">{uaDate(profile.birthDate)}</Fact>
           <Fact label="РНОКПП">0000000000</Fact>
         </section>
-        <section className="document-view-card document-view-card-status-main">
-          <Fact label="Постанова ВЛК">Придатний</Fact>
+        <section className="document-view-card document-view-card-medical">
+          <div className="document-view-medical-main">
+            <Fact label="Постанова ВЛК">Придатний</Fact>
+          </div>
+          <div className="document-view-medical-date">
+            <span>Дата ВЛК:</span><strong>23.01.2024</strong>
+          </div>
         </section>
-        <section className="document-view-card document-view-card-status-note">
-          <span>Дата ВЛК:</span><strong>23.01.2024</strong>
-        </section>
-        <section className="document-view-card document-view-card-specialty">
-          <Fact label="ТЦК та СП">Навчальний об'єднаний міський<br/>територіальний центр комплектування та<br/>соціальної підтримки</Fact>
-        </section>
-        <section className="document-view-card document-view-card-register-meta">
-          <Fact label="Категорія обліку">Призовник</Fact>
-          <Fact label="Номер в реєстрі Оберіг">DEMO23012024000004</Fact>
+        <section className="document-view-card document-view-card-registration">
+          <div className="document-view-registration-office">
+            <Fact label="ТЦК та СП">Навчальний об'єднаний міський<br/>територіальний центр комплектування та<br/>соціальної підтримки</Fact>
+          </div>
+          <div className="document-view-register-meta">
+            <Fact label="Категорія обліку">Призовник</Fact>
+            <Fact label="Номер в реєстрі Оберіг">DEMO23012024000004</Fact>
+          </div>
         </section>
         <section className="document-view-card document-view-card-office">
           <Fact label="Телефон">+380 00 000 0000</Fact>
