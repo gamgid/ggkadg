@@ -1034,7 +1034,6 @@ html,body{background:#e1dfca}
 .pdf-field span{color:#8b8b8b;font-size:6px;font-weight:400}
 .pdf-field strong{font-size:7px;line-height:1.09;font-weight:700;overflow-wrap:anywhere}
 .pdf-rule{border-bottom:1px solid #3a3a3a;padding-bottom:7px;margin-bottom:7px}
-.pdf-ruleless{border-bottom:0}
 .pdf-lines{display:grid;grid-template-columns:3fr 1fr;gap:11px;min-height:26px}
 .pdf-contact{display:grid;grid-template-columns:1.35fr .72fr .93fr;gap:13px;min-height:144px;border-bottom:0;margin:0;padding-top:1px}
 .pdf-contact>div:not(.pdf-qr){display:flex;flex-direction:column;gap:35px}

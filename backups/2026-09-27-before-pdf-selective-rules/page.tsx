@@ -105,11 +105,11 @@ function PdfPreview({profile,qr,close,notify}:{profile:Profile;qr:string;close:(
         <div className="pdf-grid pdf-grid-three"><PdfField label="Дата народження">{uaDate(profile.birthDate)}</PdfField><PdfField label="Дійсний до *">09.09.2027</PdfField><PdfField label="РНОКПП">0000000000</PdfField></div>
         <div className="pdf-grid pdf-grid-two"><PdfField label="Категорія обліку">Призовник</PdfField><PdfField label="Підстава зняття/виключення">—</PdfField></div>
         <div className="pdf-rule"><PdfField label="ТЦК та СП">Навчальний міський територіальний центр комплектування та соціальної підтримки</PdfField></div>
-        <div className="pdf-grid pdf-grid-three pdf-rule pdf-ruleless"><PdfField label="Звання">—</PdfField><PdfField label="Номер в реєстрі Оберіг">DEMO23012024000004</PdfField><PdfField label="ВОС">—</PdfField></div>
+        <div className="pdf-grid pdf-grid-three pdf-rule"><PdfField label="Звання">—</PdfField><PdfField label="Номер в реєстрі Оберіг">DEMO23012024000004</PdfField><PdfField label="ВОС">—</PdfField></div>
         <div className="pdf-rule pdf-lines"><PdfField label="Тип відстрочки">—</PdfField><PdfField label="Відстрочка до">—</PdfField></div>
         <div className="pdf-rule pdf-lines"><PdfField label="Причина звернення до Нацполіції">—</PdfField><PdfField label="Дата звернення">—</PdfField></div>
         <div className="pdf-rule pdf-lines"><PdfField label="Постанова ВЛК">Придатний</PdfField><PdfField label="Дата ВЛК">23.01.2024</PdfField></div>
-        <div className="pdf-rule pdf-ruleless pdf-lines"><PdfField label="Група інвалідності">—</PdfField><PdfField label="Діє до">—</PdfField></div>
+        <div className="pdf-rule pdf-lines"><PdfField label="Група інвалідності">—</PdfField><PdfField label="Діє до">—</PdfField></div>
         <div className="pdf-rule pdf-lines"><PdfField label="Причина інвалідності">—</PdfField></div>
         <div className="pdf-contact pdf-rule">
           <div><PdfField label="Адреса проживання">Україна, навчальна область,<br/>м. Демо, вул. Тестова, буд. 1</PdfField><PdfField label="Email">demo@example.com</PdfField></div>
