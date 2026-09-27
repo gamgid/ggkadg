@@ -303,42 +303,6 @@ html,body{background:#e1dfca}
 .document-actions button:active{opacity:.55}
 @keyframes documentActionsUp{from{transform:translateY(calc(100% + 16px))}to{transform:translateY(0)}}
 
-/* Confirmation shown by the third document action (IMG_1628/IMG_1629).
-   Updating remains a no-op; Cancel only closes this local dialog. */
-.update-document-backdrop{
-  position:fixed;
-  z-index:72;
-  inset:0 auto 0 50%;
-  width:min(450px,100%);
-  transform:translateX(-50%);
-  background:rgba(0,0,0,.30);
-}
-.update-document-dialog{
-  position:absolute;
-  top:50%;
-  left:23px;
-  right:23px;
-  width:auto;
-  height:313px;
-  padding:86px 24px 0;
-  transform:translateY(-50%);
-  border-radius:22px;
-  background:#fbfcfc;
-  color:#000;
-  font-family:"e-Ukraine",Arial,sans-serif;
-  overflow:hidden;
-  animation:updateDocumentIn .22s ease-out;
-}
-.update-document-info{position:absolute;top:29px;left:0;right:0;text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:31px;line-height:34px;font-style:italic;font-weight:700}
-.update-document-dialog p{position:absolute;top:84px;left:24px;right:24px;margin:0;text-align:center;font-size:16px;line-height:20px;font-weight:300;letter-spacing:0}
-.update-document-buttons{position:absolute;left:24px;right:24px;top:177px;display:grid}
-.update-document-buttons button{width:100%;border:0;font-size:16px;line-height:20px;font-weight:500}
-.update-document-primary{height:64px;border-radius:32px!important;background:#fc8809;color:#11130f}
-.update-document-secondary{height:64px;background:transparent;color:#11130f}
-.update-document-primary:active{opacity:1}
-.update-document-secondary:active{opacity:.55}
-@keyframes updateDocumentIn{from{transform:translateY(-50%) scale(.96);opacity:0}to{transform:translateY(-50%) scale(1);opacity:1}}
-
 /* Scrollable document sheet calibrated against the stable 440x956 captures:
    IMG_1609 is the top and IMG_1610 is the same sheet at its scroll limit. */
 @font-face{font-family:"e-Ukraine";src:url("https://raw.githubusercontent.com/bennetfabian/e-Ukraine/d6e8c6adb3fee6eb81c25de1da2106c9432a01aa/e-Ukraine-Light.otf") format("opentype");font-style:normal;font-weight:300;font-display:swap}
