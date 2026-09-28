@@ -1153,3 +1153,15 @@ html,body{background:#e1dfca}
 }
 
 .editor-note{margin:-16px 0 20px;color:#6f7168;font-size:11px;line-height:1.35}
+
+/* Remote 1/0 presentation switch. Both modes keep the demo notice visible. */
+.watermark-disclaimer{display:flex;flex-direction:column;gap:6px;margin-top:14px;padding:13px;border-radius:12px;background:#fff7e8;color:#4b3a22;font-size:12px;line-height:1.35}
+.watermark-disclaimer b{font-size:13px}
+.watermark-large .video-watermark{padding:6px 11px;font-size:10px;letter-spacing:.09em}
+.watermark-compact .video-watermark{padding:4px 9px;font-size:7px;letter-spacing:.06em}
+.watermark-large .card-space strong{font-size:clamp(15px,4.8vw,19px);font-weight:800;color:#7a30283d}
+.watermark-compact .card-space strong{font-size:clamp(10px,3.1vw,12px);font-weight:700;color:#7a30282b}
+.watermark-large .document-view-marquee{height:27px;font-size:15px;line-height:27px;font-weight:600}
+.watermark-compact .document-view-marquee{height:21px;font-size:11px;line-height:21px}
+.watermark-large .pdf-demo-stamp{font-size:8px;font-weight:900;letter-spacing:.8px}
+.watermark-compact .pdf-demo-stamp{font-size:5px;font-weight:800;letter-spacing:.45px}
