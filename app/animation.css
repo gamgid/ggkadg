@@ -1107,6 +1107,13 @@ html,body{background:#e1dfca}
   -webkit-font-smoothing:antialiased;
   touch-action:manipulation;
 }
+.app-flow-stack{position:relative;width:100%;max-width:450px;min-height:100vh;min-height:100svh;min-height:100dvh;margin:0 auto;overflow:hidden;background:#e1e0ce}
+.app-flow-stack>.entry-flow,.app-flow-stack>.video-app{margin:0 auto}
+.app-flow-stack.is-transitioning>.entry-flow,.app-flow-stack.is-transitioning>.video-app{position:absolute;inset:0;width:100%;min-height:100%}
+.app-flow-stack.is-transitioning>.entry-flow{z-index:1;animation:pinScreenOut 340ms cubic-bezier(.22,.72,.2,1) both}
+.app-flow-stack.is-transitioning>.flow-main{z-index:2;animation:mainScreenIn 340ms cubic-bezier(.22,.72,.2,1) both;box-shadow:-12px 0 28px rgba(18,18,15,.12)}
+@keyframes pinScreenOut{from{transform:translateX(0)}to{transform:translateX(-28%)}}
+@keyframes mainScreenIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
 .launch-screen{display:block;background:#22211e;color:#e1dfcc}
 .launch-identity{position:absolute;top:41.42%;left:0;width:100%;text-align:center}
 .launch-emblem{display:block;width:206.67px;height:164px;margin:0 auto;object-fit:contain}
@@ -1142,4 +1149,5 @@ html,body{background:#e1dfca}
 }
 @media(prefers-reduced-motion:reduce){
   .pin-dots span{transition-duration:1ms}
+  .app-flow-stack.is-transitioning>.entry-flow,.app-flow-stack.is-transitioning>.flow-main{animation-duration:1ms;box-shadow:none}
 }

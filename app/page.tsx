@@ -32,15 +32,15 @@ const qrExpiryDate=()=>{const date=new Date();date.setFullYear(date.getFullYear(
 const DemoQr=({value,size}:{value:string;size:number})=><QRCodeSVG value={value} size={size} minVersion={qrVersion} level="M" boostLevel={false}/>;
 
 export default function HomePage(){
-  const [ready,setReady]=useState(false),[flowComplete,setFlowComplete]=useState(false),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
+  const [ready,setReady]=useState(false),[flowPhase,setFlowPhase]=useState<'entry'|'transitioning'|'complete'>('entry'),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
   useEffect(()=>{const saved=storageService.load<Stored>();if(saved){const injectedV2Profile=saved.profile?.firstName==='Марія'&&saved.profile?.lastName==='Приклад'&&saved.profile?.middleName==='Андріївна';setProfile(injectedV2Profile?baseProfile:(saved.profile||baseProfile));setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setProfile({...baseProfile,id:`DEMO-${String(crypto.getRandomValues(new Uint32Array(1))[0]).slice(0,8)}`});setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});setReady(true)},[]);
   useEffect(()=>{if(ready)storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready]);
   useEffect(()=>{const id=setInterval(()=>setSeconds(s=>{if(s<=1){setQr(makeQr());return 180}return s-1}),1000);return()=>clearInterval(id)},[]);
   const regenerate=()=>{setQr(makeQr());setSeconds(180);setNotice('Новий тестовий QR створено')};
   const copyDeviceNumber=async()=>{try{await navigator.clipboard.writeText(profile.id);setNotice('Номер демо-пристрою скопійовано')}catch{setNotice('Не вдалося скопіювати номер пристрою')}};
-  const completeFlow=useCallback(()=>setFlowComplete(true),[]);
-  if(!flowComplete)return <EntryFlow onComplete={completeFlow}/>;
-  return <main className={`video-app ${animations?'':'no-motion'} ${panel?'panel-open':''} ${documentOpen?'document-open':''}`}>
+  const completeFlow=useCallback(()=>setFlowPhase(value=>value==='entry'?'transitioning':value),[]);
+  useEffect(()=>{if(flowPhase!=='transitioning')return;const id=window.setTimeout(()=>setFlowPhase('complete'),340);return()=>window.clearTimeout(id)},[flowPhase]);
+  const app=<main className={`video-app flow-main ${flowPhase==='transitioning'?'is-entering':''} ${animations?'':'no-motion'} ${panel?'panel-open':''} ${documentOpen?'document-open':''}`}>
     <div className="video-watermark">ДЕМО / ПАРОДІЯ — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
     {panel?<SubPanel panel={panel} close={()=>setPanel(null)} profile={profile} setProfile={setProfile} animations={animations} setAnimations={setAnimations} openQr={()=>setQrOpen(true)}/>:<>
       <section className="video-page">
@@ -56,9 +56,13 @@ export default function HomePage(){
     {qrOpen&&<QrSheet value={qr} seconds={seconds} regenerate={regenerate} close={()=>setQrOpen(false)}/>} 
     {notice&&<div className="toast" onAnimationEnd={()=>setNotice(null)}>{notice}</div>}
   </main>;
+  return <div className={`app-flow-stack ${flowPhase==='transitioning'?'is-transitioning':''}`}>
+    {flowPhase!=='complete'&&<EntryFlow onComplete={completeFlow} exiting={flowPhase==='transitioning'}/>} 
+    {flowPhase!=='entry'&&app}
+  </div>;
 }
 
-function EntryFlow({onComplete}:{onComplete:()=>void}){
+function EntryFlow({onComplete,exiting}:{onComplete:()=>void;exiting:boolean}){
   const [stage,setStage]=useState<'launch'|'pin'>('launch');
   const [pinLength,setPinLength]=useState(0);
   const [pressed,setPressed]=useState<number|null>(null);
@@ -80,7 +84,7 @@ function EntryFlow({onComplete}:{onComplete:()=>void}){
 
   if(stage==='launch')return <main className="entry-flow launch-screen" aria-label="Запуск демонстраційного застосунку"><div className="launch-identity"><img className="launch-emblem" src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/launch-emblem.png`} alt="Міністерство оборони України"/></div></main>;
 
-  return <main className="entry-flow auth-flow">
+  return <main className={`entry-flow auth-flow ${exiting?'is-exiting':''}`}>
     <section className="pin-screen" aria-label="Введення демонстраційного коду">
       <h1>Код для входу</h1>
       <div className="pin-dots" aria-label={`Введено ${pinLength} із 4 символів`}>{[0,1,2,3].map(index=><span key={index} className={index<pinLength?'filled':''}/>)}</div>
