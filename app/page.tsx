@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Download, Headphones, Info, Plus, QrCode, RefreshCw, Search, Settings, ShieldCheck, Upload, X } from 'lucide-react';
+import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Headphones, Plus, QrCode, Search, Settings, ShieldCheck, Upload, X } from 'lucide-react';
 import { storageService } from '../src/services/storageService';
-import { createCardFlip } from '../src/animation/cardFlip.mjs';
 
 type Tab = 'id' | 'services' | 'jobs' | 'menu';
 type Panel = 'settings' | 'faq' | 'support' | 'notifications' | 'profile' | null;
@@ -12,7 +11,7 @@ type JobDirection = 'drones' | 'contract' | 'it' | 'new' | 'for-you' | 'all';
 type Profile = { id:string; firstName:string; lastName:string; middleName:string; birthDate:string; phone:string; email:string; city:string; status:string; updatedAt:string; photo?:string };
 type Stored = { profile:Profile; qr:string; animations:boolean; notices:string[] };
 
-const baseProfile:Profile={id:'DEMO-57392817',firstName:'Тестовий',lastName:'Демо',middleName:'Профіль',birthDate:'2000-01-01',phone:'+380 00 000 00 00',email:'demo@example.com',city:'Київ',status:'Демонстраційний статус',updatedAt:'09.09.2026'};
+const baseProfile:Profile={id:'DEMO-57392817',firstName:'Марія',lastName:'Приклад',middleName:'Андріївна',birthDate:'1998-04-12',phone:'+380 00 000 00 00',email:'demo@example.com',city:'Київ',status:'Демонстраційний статус',updatedAt:'28.09.2026'};
 const services=[
   'Виправити дані онлайн',
   'Електронна черга в ТЦК та СП',
@@ -32,18 +31,19 @@ const qrExpiryDate=()=>{const date=new Date();date.setFullYear(date.getFullYear(
 const DemoQr=({value,size}:{value:string;size:number})=><QRCodeSVG value={value} size={size} minVersion={qrVersion} level="M" boostLevel={false}/>;
 
 export default function HomePage(){
-  const [ready,setReady]=useState(false),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
-  useEffect(()=>{const saved=storageService.load<Stored>();if(saved){setProfile(saved.profile||baseProfile);setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setProfile({...baseProfile,id:`DEMO-${String(crypto.getRandomValues(new Uint32Array(1))[0]).slice(0,8)}`});setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});const id=setTimeout(()=>setReady(true),850);return()=>clearTimeout(id)},[]);
+  const [ready,setReady]=useState(false),[flowComplete,setFlowComplete]=useState(false),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
+  useEffect(()=>{const saved=storageService.load<Stored>();setProfile(baseProfile);if(saved){setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else setQr(makeQr());navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});setReady(true)},[]);
   useEffect(()=>{if(ready)storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready]);
   useEffect(()=>{const id=setInterval(()=>setSeconds(s=>{if(s<=1){setQr(makeQr());return 180}return s-1}),1000);return()=>clearInterval(id)},[]);
   const regenerate=()=>{setQr(makeQr());setSeconds(180);setNotice('Новий тестовий QR створено')};
   const copyDeviceNumber=async()=>{try{await navigator.clipboard.writeText(profile.id);setNotice('Номер демо-пристрою скопійовано')}catch{setNotice('Не вдалося скопіювати номер пристрою')}};
-  if(!ready)return <main className="video-app splash-v"><div className="splash-mark">D</div><h1>Облік DEMO</h1><p>Демонстраційна пародія</p></main>;
+  const completeFlow=useCallback(()=>setFlowComplete(true),[]);
+  if(!flowComplete)return <EntryFlow onComplete={completeFlow}/>;
   return <main className={`video-app ${animations?'':'no-motion'} ${panel?'panel-open':''} ${documentOpen?'document-open':''}`}>
     <div className="video-watermark">ДЕМО / ПАРОДІЯ — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
     {panel?<SubPanel panel={panel} close={()=>setPanel(null)} profile={profile} setProfile={setProfile} animations={animations} setAnimations={setAnimations} openQr={()=>setQrOpen(true)}/>:<>
       <section className="video-page">
-        {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')} openDocument={()=>setDocumentOpen(true)} openPdf={()=>setPdfOpen(true)}/>} 
+        {tab==='id'&&<IdScreen profile={profile}/>} 
         {tab==='services'&&<ServicesScreen setNotice={setNotice}/>} 
         {tab==='jobs'&&<JobsScreen contractsOpen={jobsContractsOpen} closeContracts={()=>setJobsContractsOpen(false)} setNotice={setNotice}/>} 
         {tab==='menu'&&<MenuScreen open={setPanel} openQr={()=>setQrOpen(true)} copyDeviceNumber={copyDeviceNumber} notify={setNotice}/>} 
@@ -57,30 +57,53 @@ export default function HomePage(){
   </main>;
 }
 
-function IdScreen({profile,qr,openMessages,openDocument,openPdf}:{profile:Profile;qr:string;seconds:number;openMessages:()=>void;openDocument:()=>void;openPdf:()=>void}){
-  const [flipped,setFlipped]=useState(false);
-  const [isTurning,setIsTurning]=useState(false);
-  const [actionsOpen,setActionsOpen]=useState(false);
-  const [updateDocumentOpen,setUpdateDocumentOpen]=useState(false);
-  const cardRef=useRef<HTMLDivElement|null>(null);
-  const flipRef=useRef<ReturnType<typeof createCardFlip>|null>(null);
-  const expiry=qrExpiryDate(),status='Демо-статус  •  Оновлено о 18:42';
+function EntryFlow({onComplete}:{onComplete:()=>void}){
+  const [stage,setStage]=useState<'launch'|'pin'|'loading'>('launch');
+  const [pinLength,setPinLength]=useState(0);
+  const [pressed,setPressed]=useState<number|null>(null);
+  const [sliding,setSliding]=useState(false);
 
-  useEffect(()=>{
-    if(!cardRef.current)return;
-    const controller=createCardFlip(cardRef.current,{
-      onChange:state=>{setFlipped(state.flipped);setIsTurning(state.busy)},
-    });
-    flipRef.current=controller;
-    return ()=>{controller.dispose();flipRef.current=null};
-  },[]);
+  useEffect(()=>{if(stage!=='launch')return;const id=window.setTimeout(()=>setStage('pin'),2200);return()=>window.clearTimeout(id)},[stage]);
+  useEffect(()=>{if(stage!=='loading')return;const id=window.setTimeout(onComplete,1050);return()=>window.clearTimeout(id)},[stage,onComplete]);
+  useEffect(()=>{if(stage!=='pin')return;const onKeyDown=(event:KeyboardEvent)=>{if(/^\d$/.test(event.key))enterDigit(Number(event.key));if(event.key==='Backspace')setPinLength(value=>Math.max(0,value-1))};window.addEventListener('keydown',onKeyDown);return()=>window.removeEventListener('keydown',onKeyDown)});
 
-  const flip=()=>flipRef.current?.flip();
-  return <div className="id-screen"><header className="screen-tools"><span/><button onClick={openMessages}>Сповіщення <Bell/></button></header><div className="flip-shell"><div ref={cardRef} className={`id-card flip-card${flipped?' flipped':''}`} role="button" tabIndex={0} onClick={flip} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();flip()}}} aria-disabled={isTurning} aria-busy={isTurning} aria-label={flipped?'Повернутися до демо-документа':'Показати тестовий QR'}><section className="id-face id-front"><div className="id-head"><h1>Резерв ID</h1><span className="shield" aria-hidden="true"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/></span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space"><strong>ДЕМО — НЕ Є ДОКУМЕНТОМ</strong></div><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційний профіль</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" role="button" tabIndex={flipped?-1:0} aria-hidden={flipped} aria-label="Відкрити дії з документом" onClick={event=>{event.stopPropagation();setActionsOpen(true)}} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();setActionsOpen(true)}}}><Plus strokeWidth={3.5}/></span></div><span className="flip-shade" aria-hidden="true"/></section><section className="id-face id-back"><h2>QR-код дійсний до {expiry}</h2><div className="flip-qr"><DemoQr value={qr} size={336}/></div><span className="flip-shade" aria-hidden="true"/></section></div></div>{actionsOpen&&<DocumentActions close={()=>setActionsOpen(false)} view={()=>{setActionsOpen(false);openDocument()}} pdf={()=>{setActionsOpen(false);openPdf()}} update={()=>{setActionsOpen(false);setUpdateDocumentOpen(true)}}/>}{updateDocumentOpen&&<UpdateDocumentDialog close={()=>setUpdateDocumentOpen(false)}/>}</div>}
+  const enterDigit=(digit:number)=>{
+    if(sliding||pinLength>=4)return;
+    setPressed(digit);
+    window.setTimeout(()=>setPressed(null),110);
+    const next=pinLength+1;
+    setPinLength(next);
+    if(next===4){window.setTimeout(()=>{setSliding(true);window.setTimeout(()=>setStage('loading'),320)},120)}
+  };
+  const erase=()=>{if(!sliding)setPinLength(value=>Math.max(0,value-1))};
+  const keys=[1,2,3,4,5,6,7,8,9];
 
-function DocumentActions({close,view,pdf,update}:{close:()=>void;view:()=>void;pdf:()=>void;update:()=>void}){return <div className="document-actions-backdrop" role="presentation" onClick={close}><section className="document-actions" role="dialog" aria-modal="true" aria-label="Дії з документом" onClick={event=>event.stopPropagation()}><span className="document-actions-handle" aria-hidden="true"/><button onClick={view}><Info/><span>Переглянути документ</span></button><button onClick={pdf}><Download/><span>Завантажити PDF</span></button><button onClick={update}><RefreshCw/><span>Оновити документ</span></button></section></div>}
+  if(stage==='launch')return <main className="entry-flow launch-screen" aria-label="Запуск демонстраційного застосунку"><div className="launch-identity"><svg className="launch-emblem" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6v36M21 17c0 9 3 17 11 25 8-8 11-16 11-25M14 27c5 1 10 5 18 15 8-10 13-14 18-15M22 47h20M27 53h10"/></svg><p>Міністерство<br/>оборони<br/>України</p><small>ДЕМО</small></div></main>;
 
-function UpdateDocumentDialog({close}:{close:()=>void}){return <div className="update-document-backdrop"><section className="update-document-dialog" role="dialog" aria-modal="true" aria-describedby="update-document-description"><span className="update-document-info" aria-hidden="true">i</span><p id="update-document-description">Поки генеруватиметься нова версія<br/>документу, деякі послуги можуть бути<br/>недоступні</p><div className="update-document-buttons"><button type="button" className="update-document-primary">Оновити</button><button type="button" className="update-document-secondary" onClick={close}>Скасувати</button></div></section></div>}
+  return <main className={`entry-flow auth-flow${sliding||stage==='loading'?' is-loading':''}`}>
+    <section className="pin-screen" aria-label="Введення демонстраційного коду">
+      <h1>Код для входу</h1>
+      <div className="pin-dots" aria-label={`Введено ${pinLength} із 4 символів`}>{[0,1,2,3].map(index=><span key={index} className={index<pinLength?'filled':''}/>)}</div>
+      <div className="numeric-keypad">
+        {keys.map(digit=><button key={digit} type="button" className={pressed===digit?'pressed':''} onPointerDown={()=>setPressed(digit)} onPointerCancel={()=>setPressed(null)} onPointerUp={()=>setPressed(null)} onClick={()=>enterDigit(digit)} aria-label={`Цифра ${digit}`}>{digit}</button>)}
+        <span aria-hidden="true"/>
+        <button type="button" className={pressed===0?'pressed':''} onPointerDown={()=>setPressed(0)} onPointerCancel={()=>setPressed(null)} onPointerUp={()=>setPressed(null)} onClick={()=>enterDigit(0)} aria-label="Цифра 0">0</button>
+        <button type="button" className="pin-erase" onClick={erase} aria-label="Видалити останній символ"><span>×</span></button>
+      </div>
+      <button type="button" className="pin-forgot">Не пам’ятаю код для входу</button>
+      <div className="entry-demo-label">Демонстраційний режим · код не зберігається</div>
+    </section>
+    <section className="loading-screen" aria-label="Завантаження демонстраційних даних" aria-live="polite">
+      <div className="loading-hud"><span className="loading-spinner"/></div>
+      <p>Зачекайте, отримуємо<br/>інформацію з реєстру</p>
+      <small>ДЕМО · без підключення до реєстру</small>
+    </section>
+  </main>;
+}
+
+function IdScreen({profile}:{profile:Profile}){
+  const status='Документ оновлено о 13:10  •  28.09.2026  •  ';
+  return <div className="id-screen reserve-static-screen"><div className="flip-shell"><div className="id-card static-id-card"><section className="id-face id-front"><div className="id-head"><h1>Резерв ID</h1><span className="shield" aria-hidden="true"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/></span></div><label>Дата народження:<b>{uaDate(profile.birthDate)}</b></label><div className="card-space" aria-hidden="true"/><div className="status-strip"><div className="status-track"><span>{status}</span><span aria-hidden="true">{status}</span></div></div><div className="id-person"><div><small>Демонстраційна категорія</small><h2><span className="profile-surname">{profile.lastName}</span><br/>{profile.firstName}<br/>{profile.middleName}</h2></div><span className="orange-circle" aria-hidden="true"><Plus strokeWidth={3.5}/></span></div></section></div></div></div>}
 
 function PdfPreview({profile,qr,close,notify}:{profile:Profile;qr:string;close:()=>void;notify:(value:string)=>void}){
   const [searchOpen,setSearchOpen]=useState(false);
@@ -333,7 +356,7 @@ function NavGlyph({id,active}:{id:Tab;active:boolean}){
 
 function BottomNav({tab,setTab}:{tab:Tab;setTab:(t:Tab)=>void}){const tabs=[['id','Резерв ID'],['services','Сервіси'],['jobs','Вакансії'],['menu','Меню']] as const;return <nav className="video-nav" aria-label="Основна навігація">{tabs.map(([id,label])=>{const active=tab===id;return <button key={id} className={active?'active':''} onClick={()=>setTab(id)} aria-current={active?'page':undefined}><span className="nav-icon"><NavGlyph id={id} active={active}/></span><span className="nav-label">{label}</span></button>})}</nav>}
 
-function SubPanel({panel,close,profile,setProfile,animations,setAnimations,openQr}:{panel:Exclude<Panel,null>;close:()=>void;profile:Profile;setProfile:(p:Profile)=>void;animations:boolean;setAnimations:(v:boolean)=>void;openQr:()=>void}){if(panel==='profile')return <ProfileEditor profile={profile} save={p=>{setProfile({...p,updatedAt:new Date().toLocaleDateString('uk-UA')});close()}} close={close}/>;const titles={settings:'Налаштування',faq:'Питання та відповіді',support:'Служба підтримки',notifications:'Повідомлення'};return <section className="sub-screen"><button className="back" onClick={close}><ChevronLeft/></button><h1>{titles[panel]}</h1>{panel==='settings'&&<div className="settings-card"><Row icon={ShieldCheck} title="Змінити код для входу"/><Toggle title="Використовувати Face ID" value/><Toggle title="Отримувати демо-сповіщення" value={false}/><Toggle title="Перевіряти QR офлайн" value={false}/><Toggle title="Анімації" value={animations} change={()=>setAnimations(!animations)}/><button className="menu-row" onClick={openQr}><QrCode/><span>Згенерувати новий QR</span><ChevronRight/></button></div>}{panel==='faq'&&<div className="white-list">{questions.map(q=><button key={q}>{q}<ChevronRight/></button>)}</div>}{panel==='support'&&<><p>Маєте додаткові питання про демонстраційний застосунок? Напишіть нам — без передавання персональних даних.</p><div className="support-card"><Headphones/><b>Демо-чат підтримки</b></div><button className="copy-device"><Copy/> Копіювати номер демо-пристрою</button></>}{panel==='notifications'&&<div className="white-list notices">{messages.map((m,i)=><button key={m}><Bell/><span><b>{m}</b><small>{i===0?'Сьогодні, 12:40':'09.09.2026, 09:00'}</small></span></button>)}</div>}</section>}
+function SubPanel({panel,close,profile,setProfile,animations,setAnimations,openQr}:{panel:Exclude<Panel,null>;close:()=>void;profile:Profile;setProfile:(p:Profile)=>void;animations:boolean;setAnimations:(v:boolean)=>void;openQr:()=>void}){if(panel==='profile')return <ProfileEditor profile={profile} save={p=>{setProfile({...p,updatedAt:new Date().toLocaleDateString('uk-UA')});close()}} close={close}/>;const titles={settings:'Налаштування',faq:'Питання та відповіді',support:'Служба підтримки',notifications:'Повідомлення'};return <section className="sub-screen"><button className="back" onClick={close}><ChevronLeft/></button><h1>{titles[panel]}</h1>{panel==='settings'&&<div className="settings-card"><Row icon={ShieldCheck} title="Змінити код для входу"/><Toggle title="Отримувати демо-сповіщення" value={false}/><Toggle title="Перевіряти QR офлайн" value={false}/><Toggle title="Анімації" value={animations} change={()=>setAnimations(!animations)}/><button className="menu-row" onClick={openQr}><QrCode/><span>Згенерувати новий QR</span><ChevronRight/></button></div>}{panel==='faq'&&<div className="white-list">{questions.map(q=><button key={q}>{q}<ChevronRight/></button>)}</div>}{panel==='support'&&<><p>Маєте додаткові питання про демонстраційний застосунок? Напишіть нам — без передавання персональних даних.</p><div className="support-card"><Headphones/><b>Демо-чат підтримки</b></div><button className="copy-device"><Copy/> Копіювати номер демо-пристрою</button></>}{panel==='notifications'&&<div className="white-list notices">{messages.map((m,i)=><button key={m}><Bell/><span><b>{m}</b><small>{i===0?'Сьогодні, 12:40':'09.09.2026, 09:00'}</small></span></button>)}</div>}</section>}
 
 function Toggle({title,value,change}:{title:string;value:boolean;change?:()=>void}){return <button className="menu-row" onClick={change}><span>{title}</span><i className={`toggle ${value?'on':''}`}/></button>}
 
