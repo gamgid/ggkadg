@@ -1139,19 +1139,6 @@ html,body{background:#e1dfca}
 .loading-screen small{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-size:8px;font-weight:700;letter-spacing:.08em;white-space:nowrap;opacity:.48}
 @keyframes entrySpinner{to{transform:rotate(360deg)}}
 
-/* Final frame: fixed front face only. There is intentionally no card flip. */
-.video-app{--bg:#e2dfce;--card:#d8d2c0;background:#e2dfce}
-.reserve-static-screen .flip-shell{perspective:none}
-.reserve-static-screen .static-id-card{overflow:hidden;border:1px solid #999a85;border-radius:9px;background:#d8d2c0;transform:none;transform-style:flat;will-change:auto}
-.reserve-static-screen .id-face{border:0;border-radius:8px;backface-visibility:visible;-webkit-backface-visibility:visible}
-.reserve-static-screen .card-space{flex:1;min-height:140px}
-.reserve-static-screen .status-strip{background:#6f4e16;color:#f8f5e9}
-.reserve-static-screen .status-track{animation-duration:11.5s}
-.reserve-static-screen .status-track span{padding-right:46px}
-.reserve-static-screen .orange-circle{cursor:default}
-.reserve-static-screen .orange-circle::before{display:none}
-.video-watermark{pointer-events:none}
-
 @media(max-width:380px){
   .numeric-keypad{left:9%;width:82%}
   .numeric-keypad>button:not(.pin-erase){width:76px;height:76px;line-height:76px}
