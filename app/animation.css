@@ -1151,3 +1151,5 @@ html,body{background:#e1dfca}
   .pin-dots span{transition-duration:1ms}
   .app-flow-stack.is-transitioning>.entry-flow,.app-flow-stack.is-transitioning>.flow-main{animation-duration:1ms;box-shadow:none}
 }
+
+.editor-note{margin:-16px 0 20px;color:#6f7168;font-size:11px;line-height:1.35}

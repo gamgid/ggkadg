@@ -9,10 +9,10 @@ import { createCardFlip } from '../src/animation/cardFlip.mjs';
 type Tab = 'id' | 'services' | 'jobs' | 'menu';
 type Panel = 'settings' | 'faq' | 'support' | 'notifications' | 'profile' | null;
 type JobDirection = 'drones' | 'contract' | 'it' | 'new' | 'for-you' | 'all';
-type Profile = { id:string; firstName:string; lastName:string; middleName:string; birthDate:string; phone:string; email:string; city:string; status:string; updatedAt:string; photo?:string };
+type Profile = { id:string; firstName:string; lastName:string; middleName:string; birthDate:string; phone:string; email:string; address:string; taxId:string; status:string; updatedAt:string; photo?:string };
 type Stored = { profile:Profile; qr:string; animations:boolean; notices:string[] };
 
-const baseProfile:Profile={id:'DEMO-57392817',firstName:'Тестовий',lastName:'Демо',middleName:'Профіль',birthDate:'2000-01-01',phone:'+380 00 000 00 00',email:'demo@example.com',city:'Київ',status:'Демонстраційний статус',updatedAt:'09.09.2026'};
+const baseProfile:Profile={id:'DEMO-57392817',firstName:'Тестовий',lastName:'Демо',middleName:'Профіль',birthDate:'2000-01-01',phone:'+380 00 000 00 00',email:'demo@example.com',address:'Україна, навчальна область, м. Демо, вул. Тестова, буд. 1',taxId:'0000000000',status:'Демонстраційний статус',updatedAt:'09.09.2026'};
 const services=[
   'Виправити дані онлайн',
   'Електронна черга в ТЦК та СП',
@@ -33,7 +33,7 @@ const DemoQr=({value,size}:{value:string;size:number})=><QRCodeSVG value={value}
 
 export default function HomePage(){
   const [ready,setReady]=useState(false),[flowPhase,setFlowPhase]=useState<'entry'|'transitioning'|'complete'>('entry'),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[notice,setNotice]=useState<string|null>(null);
-  useEffect(()=>{const saved=storageService.load<Stored>();if(saved){const injectedV2Profile=saved.profile?.firstName==='Марія'&&saved.profile?.lastName==='Приклад'&&saved.profile?.middleName==='Андріївна';setProfile(injectedV2Profile?baseProfile:(saved.profile||baseProfile));setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setProfile({...baseProfile,id:`DEMO-${String(crypto.getRandomValues(new Uint32Array(1))[0]).slice(0,8)}`});setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});setReady(true)},[]);
+  useEffect(()=>{const saved=storageService.load<Stored>();if(saved){const injectedV2Profile=saved.profile?.firstName==='Марія'&&saved.profile?.lastName==='Приклад'&&saved.profile?.middleName==='Андріївна';const savedProfile=saved.profile as (Partial<Profile>&{city?:string})|undefined;setProfile(injectedV2Profile?baseProfile:{...baseProfile,...savedProfile,address:savedProfile?.address||savedProfile?.city||baseProfile.address});setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setProfile({...baseProfile,id:`DEMO-${String(crypto.getRandomValues(new Uint32Array(1))[0]).slice(0,8)}`});setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});setReady(true)},[]);
   useEffect(()=>{if(ready)storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready]);
   useEffect(()=>{const id=setInterval(()=>setSeconds(s=>{if(s<=1){setQr(makeQr());return 180}return s-1}),1000);return()=>clearInterval(id)},[]);
   const regenerate=()=>{setQr(makeQr());setSeconds(180);setNotice('Новий тестовий QR створено')};
@@ -42,7 +42,7 @@ export default function HomePage(){
   useEffect(()=>{if(flowPhase!=='transitioning')return;const id=window.setTimeout(()=>setFlowPhase('complete'),340);return()=>window.clearTimeout(id)},[flowPhase]);
   const app=<main className={`video-app flow-main ${flowPhase==='transitioning'?'is-entering':''} ${animations?'':'no-motion'} ${panel?'panel-open':''} ${documentOpen?'document-open':''}`}>
     <div className="video-watermark">ДЕМО / ПАРОДІЯ — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
-    {panel?<SubPanel panel={panel} close={()=>setPanel(null)} profile={profile} setProfile={setProfile} animations={animations} setAnimations={setAnimations} openQr={()=>setQrOpen(true)}/>:<>
+    {panel?<SubPanel panel={panel} close={()=>setPanel(panel==='profile'?'settings':null)} openProfile={()=>setPanel('profile')} profile={profile} setProfile={setProfile} animations={animations} setAnimations={setAnimations} openQr={()=>setQrOpen(true)}/>:<>
       <section className="video-page">
         {tab==='id'&&<IdScreen profile={profile} qr={qr} seconds={seconds} openMessages={()=>setPanel('notifications')} openDocument={()=>setDocumentOpen(true)} openPdf={()=>setPdfOpen(true)}/>} 
         {tab==='services'&&<ServicesScreen setNotice={setNotice}/>} 
@@ -106,7 +106,7 @@ function IdScreen({profile,qr,openMessages,openDocument,openPdf}:{profile:Profil
   const [updateDocumentOpen,setUpdateDocumentOpen]=useState(false);
   const cardRef=useRef<HTMLDivElement|null>(null);
   const flipRef=useRef<ReturnType<typeof createCardFlip>|null>(null);
-  const expiry=qrExpiryDate(),status='Демо-статус  •  Оновлено о 18:42';
+  const expiry=qrExpiryDate(),status=`${profile.status}  •  Оновлено ${profile.updatedAt}`;
 
   useEffect(()=>{
     if(!cardRef.current)return;
@@ -140,12 +140,12 @@ function PdfPreview({profile,qr,close,notify}:{profile:Profile;qr:string;close:(
       <article className="pdf-paper" aria-label="Демонстраційна сторінка PDF">
         <div className="pdf-demo-stamp">ДЕМО · НЕ Є ДОКУМЕНТОМ</div>
         <header className="pdf-paper-head">
-          <div><b>Резерв<span>+</span></b><small>Військово-обліковий документ<br/>Сформовано: 09.09.2026, 18:42</small></div>
+          <div><b>Резерв<span>+</span></b><small>Військово-обліковий документ<br/>Сформовано: {profile.updatedAt}, 18:42</small></div>
           <div className="pdf-paper-agency"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/><b>Міністерство<br/>оборони України</b></div>
         </header>
         <div className="pdf-paper-badge">Призовник</div>
         <h1>{profile.lastName.toUpperCase()} {profile.firstName}<br/>{profile.middleName}</h1>
-        <div className="pdf-grid pdf-grid-three"><PdfField label="Дата народження">{uaDate(profile.birthDate)}</PdfField><PdfField label="Дійсний до *">09.09.2027</PdfField><PdfField label="РНОКПП">0000000000</PdfField></div>
+        <div className="pdf-grid pdf-grid-three"><PdfField label="Дата народження">{uaDate(profile.birthDate)}</PdfField><PdfField label="Дійсний до *">09.09.2027</PdfField><PdfField label="РНОКПП">{profile.taxId}</PdfField></div>
         <div className="pdf-grid pdf-grid-two"><PdfField label="Категорія обліку">Призовник</PdfField><PdfField label="Підстава зняття/виключення">—</PdfField></div>
         <div className="pdf-rule"><PdfField label="ТЦК та СП">Навчальний міський територіальний центр комплектування та соціальної підтримки</PdfField></div>
         <div className="pdf-grid pdf-grid-three pdf-rule pdf-ruleless"><PdfField label="Звання">—</PdfField><PdfField label="Номер в реєстрі Оберіг">DEMO23012024000004</PdfField><PdfField label="ВОС">—</PdfField></div>
@@ -155,8 +155,8 @@ function PdfPreview({profile,qr,close,notify}:{profile:Profile;qr:string;close:(
         <div className="pdf-rule pdf-ruleless pdf-lines"><PdfField label="Група інвалідності">—</PdfField><PdfField label="Діє до">—</PdfField></div>
         <div className="pdf-rule pdf-lines"><PdfField label="Причина інвалідності">—</PdfField></div>
         <div className="pdf-contact pdf-rule">
-          <div><PdfField label="Адреса проживання">Україна, навчальна область,<br/>м. Демо, вул. Тестова, буд. 1</PdfField><PdfField label="Email">demo@example.com</PdfField></div>
-          <div><PdfField label="Телефон">+380000000000</PdfField><PdfField label="Дата уточнення даних">09.09.2026</PdfField></div>
+          <div><PdfField label="Адреса проживання">{profile.address}</PdfField><PdfField label="Email">{profile.email}</PdfField></div>
+          <div><PdfField label="Телефон">{profile.phone}</PdfField><PdfField label="Дата уточнення даних">{profile.updatedAt}</PdfField></div>
           <div className="pdf-qr"><DemoQr value={qr} size={336}/></div>
         </div>
         <footer>* Документ дійсний до зазначеної на ньому дати. Якщо вказані в ньому дані змінюються в Єдиному державному реєстрі призовників, військовозобов’язаних і резервістів «Оберіг», документ втрачає чинність. Завантажуйте мобільний застосунок Резерв+ та користуйтеся завжди актуальним електронним документом.</footer>
@@ -249,7 +249,7 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
           <div className="document-view-name">{profile.lastName.toUpperCase()}<br/>{profile.firstName}<br/>{profile.middleName}</div>
           <div className="document-view-register-status">Призовник</div>
           <Fact label="Дата народження">{uaDate(profile.birthDate)}</Fact>
-          <Fact label="РНОКПП">0000000000</Fact>
+          <Fact label="РНОКПП">{profile.taxId}</Fact>
         </section>
         <section className="document-view-card document-view-card-medical">
           <div className="document-view-medical-main">
@@ -269,8 +269,8 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
           </div>
         </section>
         <section className="document-view-card document-view-card-office">
-          <Fact label="Телефон">+380 00 000 0000</Fact>
-          <Fact label="Адреса проживання">Україна, навчальна область, м Демо, вул.<br/>Тестова, буд. 1, кв. 1</Fact>
+          <Fact label="Телефон">{profile.phone}</Fact>
+          <Fact label="Адреса проживання">{profile.address}</Fact>
         </section>
         <section className="document-view-card document-view-card-updated">
           <span>Дата останнього<br/>уточнення даних:</span><strong>{profile.updatedAt}</strong>
@@ -375,10 +375,10 @@ function NavGlyph({id,active}:{id:Tab;active:boolean}){
 
 function BottomNav({tab,setTab}:{tab:Tab;setTab:(t:Tab)=>void}){const tabs=[['id','Резерв ID'],['services','Сервіси'],['jobs','Вакансії'],['menu','Меню']] as const;return <nav className="video-nav" aria-label="Основна навігація">{tabs.map(([id,label])=>{const active=tab===id;return <button key={id} className={active?'active':''} onClick={()=>setTab(id)} aria-current={active?'page':undefined}><span className="nav-icon"><NavGlyph id={id} active={active}/></span><span className="nav-label">{label}</span></button>})}</nav>}
 
-function SubPanel({panel,close,profile,setProfile,animations,setAnimations,openQr}:{panel:Exclude<Panel,null>;close:()=>void;profile:Profile;setProfile:(p:Profile)=>void;animations:boolean;setAnimations:(v:boolean)=>void;openQr:()=>void}){if(panel==='profile')return <ProfileEditor profile={profile} save={p=>{setProfile({...p,updatedAt:new Date().toLocaleDateString('uk-UA')});close()}} close={close}/>;const titles={settings:'Налаштування',faq:'Питання та відповіді',support:'Служба підтримки',notifications:'Повідомлення'};return <section className="sub-screen"><button className="back" onClick={close}><ChevronLeft/></button><h1>{titles[panel]}</h1>{panel==='settings'&&<div className="settings-card"><Row icon={ShieldCheck} title="Змінити код для входу"/><Toggle title="Отримувати демо-сповіщення" value={false}/><Toggle title="Перевіряти QR офлайн" value={false}/><Toggle title="Анімації" value={animations} change={()=>setAnimations(!animations)}/><button className="menu-row" onClick={openQr}><QrCode/><span>Згенерувати новий QR</span><ChevronRight/></button></div>}{panel==='faq'&&<div className="white-list">{questions.map(q=><button key={q}>{q}<ChevronRight/></button>)}</div>}{panel==='support'&&<><p>Маєте додаткові питання про демонстраційний застосунок? Напишіть нам — без передавання персональних даних.</p><div className="support-card"><Headphones/><b>Демо-чат підтримки</b></div><button className="copy-device"><Copy/> Копіювати номер демо-пристрою</button></>}{panel==='notifications'&&<div className="white-list notices">{messages.map((m,i)=><button key={m}><Bell/><span><b>{m}</b><small>{i===0?'Сьогодні, 12:40':'09.09.2026, 09:00'}</small></span></button>)}</div>}</section>}
+function SubPanel({panel,close,openProfile,profile,setProfile,animations,setAnimations,openQr}:{panel:Exclude<Panel,null>;close:()=>void;openProfile:()=>void;profile:Profile;setProfile:(p:Profile)=>void;animations:boolean;setAnimations:(v:boolean)=>void;openQr:()=>void}){if(panel==='profile')return <ProfileEditor profile={profile} save={p=>{setProfile({...p,updatedAt:new Date().toLocaleDateString('uk-UA')});close()}} close={close}/>;const titles={settings:'Налаштування',faq:'Питання та відповіді',support:'Служба підтримки',notifications:'Повідомлення'};return <section className="sub-screen"><button className="back" onClick={close}><ChevronLeft/></button><h1>{titles[panel]}</h1>{panel==='settings'&&<div className="settings-card"><Row icon={Settings} title="Дані профілю" onClick={openProfile}/><Row icon={ShieldCheck} title="Змінити код для входу"/><Toggle title="Отримувати демо-сповіщення" value={false}/><Toggle title="Перевіряти QR офлайн" value={false}/><Toggle title="Анімації" value={animations} change={()=>setAnimations(!animations)}/><button className="menu-row" onClick={openQr}><QrCode/><span>Згенерувати новий QR</span><ChevronRight/></button></div>}{panel==='faq'&&<div className="white-list">{questions.map(q=><button key={q}>{q}<ChevronRight/></button>)}</div>}{panel==='support'&&<><p>Маєте додаткові питання про демонстраційний застосунок? Напишіть нам — без передавання персональних даних.</p><div className="support-card"><Headphones/><b>Демо-чат підтримки</b></div><button className="copy-device"><Copy/> Копіювати номер демо-пристрою</button></>}{panel==='notifications'&&<div className="white-list notices">{messages.map((m,i)=><button key={m}><Bell/><span><b>{m}</b><small>{i===0?'Сьогодні, 12:40':'09.09.2026, 09:00'}</small></span></button>)}</div>}</section>}
 
 function Toggle({title,value,change}:{title:string;value:boolean;change?:()=>void}){return <button className="menu-row" onClick={change}><span>{title}</span><i className={`toggle ${value?'on':''}`}/></button>}
 
-function ProfileEditor({profile,save,close}:{profile:Profile;save:(p:Profile)=>void;close:()=>void}){const[p,setP]=useState(profile),set=(k:keyof Profile,v:string)=>setP({...p,[k]:v}),photo=(file?:File)=>{if(!file)return;const reader=new FileReader();reader.onload=()=>set('photo',String(reader.result));reader.readAsDataURL(file)};return <form className="sub-screen editor" onSubmit={e=>{e.preventDefault();save(p)}}><button type="button" className="back" onClick={close}><ChevronLeft/></button><h1>Демо-профіль</h1><label className="photo-picker">{p.photo?<img src={p.photo} alt="Фото профілю"/>:<span><Upload/></span>}<b>Змінити фото</b><input type="file" accept="image/*" onChange={e=>photo(e.target.files?.[0])}/></label>{([['lastName','Прізвище'],['firstName','Ім’я'],['middleName','По батькові'],['birthDate','Дата народження'],['phone','Телефон'],['email','Email'],['city','Місто']] as const).map(([key,label])=><label className="edit-field" key={key}><span>{label}</span><input type={key==='birthDate'?'date':'text'} value={p[key]||''} onChange={e=>set(key,e.target.value)}/></label>)}<label className="edit-field"><span>Демонстраційний статус</span><select value={p.status} onChange={e=>set('status',e.target.value)}><option>Демонстраційний статус</option><option>Дані уточнено</option><option>Очікує оновлення</option></select></label><button className="orange-button">Зберегти локально</button></form>}
+function ProfileEditor({profile,save,close}:{profile:Profile;save:(p:Profile)=>void;close:()=>void}){const[p,setP]=useState(profile),set=(k:keyof Profile,v:string)=>setP({...p,[k]:v}),photo=(file?:File)=>{if(!file)return;const reader=new FileReader();reader.onload=()=>set('photo',String(reader.result));reader.readAsDataURL(file)};const submit=()=>save({...p,lastName:p.lastName.trim(),firstName:p.firstName.trim(),middleName:p.middleName.trim(),phone:p.phone.trim(),email:p.email.trim(),address:p.address.trim(),taxId:p.taxId.trim()});return <form className="sub-screen editor" onSubmit={e=>{e.preventDefault();submit()}}><button type="button" className="back" onClick={close}><ChevronLeft/></button><h1>Дані профілю</h1><p className="editor-note">Зміни зберігаються лише на цьому пристрої та використовуються в усіх демо-екранах і PDF.</p><label className="photo-picker">{p.photo?<img src={p.photo} alt="Фото профілю"/>:<span><Upload/></span>}<b>Змінити фото</b><input type="file" accept="image/*" onChange={e=>photo(e.target.files?.[0])}/></label>{([['lastName','Прізвище','text'],['firstName','Ім’я','text'],['middleName','По батькові','text'],['birthDate','Дата народження','date'],['taxId','РНОКПП','text'],['phone','Телефон','tel'],['email','Email','email'],['address','Адреса проживання','text']] as const).map(([key,label,type])=><label className="edit-field" key={key}><span>{label}</span><input required type={type} inputMode={key==='taxId'?'numeric':undefined} maxLength={key==='taxId'?10:160} value={p[key]||''} onChange={e=>set(key,e.target.value)}/></label>)}<label className="edit-field"><span>Демонстраційний статус</span><select value={p.status} onChange={e=>set('status',e.target.value)}><option>Демонстраційний статус</option><option>Дані уточнено</option><option>Очікує оновлення</option></select></label><button className="orange-button">Зберегти локально</button></form>}
 
 function QrSheet({value,seconds,regenerate,close}:{value:string;seconds:number;regenerate:()=>void;close:()=>void}){const timer=`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;return <div className="sheet-back" onClick={close}><section className="qr-sheet" onClick={e=>e.stopPropagation()}><button className="sheet-close" onClick={close}><X/></button><p>ТЕСТОВИЙ QR — НЕ ДЛЯ ПЕРЕВІРКИ</p><h1>Демо-код</h1><div className="qr-box"><QRCodeSVG value={value} size={218} minVersion={qrVersion} level="M" boostLevel={false}/></div><code>{value}</code><small>QR оновиться через {timer}</small><strong>ТЕСТОВИЙ QR<br/>НЕ ПІДТВЕРДЖУЄ ОСОБУ<br/>НЕ МАЄ ЮРИДИЧНОЇ СИЛИ</strong><button className="orange-button" onClick={regenerate}>Оновити QR</button></section></div>}
