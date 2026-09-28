@@ -325,16 +325,16 @@ html,body{background:#e1dfca}
   border-radius:22px;
   background:#fbfcfc;
   color:#000;
-  font-family:"e-Ukraine",Arial,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
   overflow:hidden;
   animation:updateDocumentIn .22s ease-out;
 }
-.update-document-info{position:absolute;top:29px;left:0;right:0;text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:31px;line-height:34px;font-style:italic;font-weight:700}
-.update-document-dialog p{position:absolute;top:84px;left:24px;right:24px;margin:0;text-align:center;font-size:16px;line-height:20px;font-weight:300;letter-spacing:0}
+.update-document-info{position:absolute;top:31px;left:0;right:0;text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:31px;line-height:34px;font-style:italic;font-weight:700}
+.update-document-dialog p{position:absolute;top:86px;left:24px;right:24px;margin:0;text-align:center;font-size:16px;line-height:20px;font-weight:400;letter-spacing:0}
 .update-document-buttons{position:absolute;left:24px;right:24px;top:177px;display:grid}
-.update-document-buttons button{width:100%;border:0;font-size:16px;line-height:20px;font-weight:500}
+.update-document-buttons button{width:100%;border:0;font-family:inherit;font-size:16px;line-height:20px;font-weight:400}
 .update-document-primary{height:64px;border-radius:32px!important;background:#fc8809;color:#11130f}
-.update-document-secondary{height:64px;background:transparent;color:#11130f}
+.update-document-secondary{height:56px;background:transparent;color:#11130f}
 .update-document-primary:active{opacity:1}
 .update-document-secondary:active{opacity:.55}
 @keyframes updateDocumentIn{from{transform:translateY(-50%) scale(.96);opacity:0}to{transform:translateY(-50%) scale(1);opacity:1}}
