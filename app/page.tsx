@@ -9,10 +9,25 @@ import { createCardFlip } from '../src/animation/cardFlip.mjs';
 type Tab = 'id' | 'services' | 'jobs' | 'menu';
 type Panel = 'settings' | 'faq' | 'support' | 'notifications' | 'profile' | null;
 type JobDirection = 'drones' | 'contract' | 'it' | 'new' | 'for-you' | 'all';
-type Profile = { id:string; firstName:string; lastName:string; middleName:string; birthDate:string; phone:string; email:string; address:string; taxId:string; status:string; updatedAt:string; photo?:string };
+type Profile = {
+  id:string; firstName:string; lastName:string; middleName:string; birthDate:string;
+  phone:string; email:string; address:string; taxId:string; status:string; updatedAt:string; photo?:string;
+  documentGeneratedAt:string; documentValidUntil:string; accountCategory:string; removalReason:string;
+  tcc:string; rank:string; oberihNumber:string; vos:string; deferralType:string; deferralUntil:string;
+  policeReason:string; policeRequestDate:string; vlkDecision:string; vlkDate:string;
+  disabilityGroup:string; disabilityUntil:string; disabilityReason:string; dataClarifiedAt:string;
+};
 type Stored = { profile:Profile; qr:string; animations:boolean; notices:string[] };
 
-const baseProfile:Profile={id:'DEMO-57392817',firstName:'Тестовий',lastName:'Демо',middleName:'Профіль',birthDate:'2000-01-01',phone:'+380 00 000 00 00',email:'demo@example.com',address:'Україна, навчальна область, м. Демо, вул. Тестова, буд. 1',taxId:'0000000000',status:'Демонстраційний статус',updatedAt:'09.09.2026'};
+const baseProfile:Profile={
+  id:'DEMO-57392817',firstName:'Тестовий',lastName:'Демо',middleName:'Профіль',birthDate:'2000-01-01',
+  phone:'+380 00 000 00 00',email:'demo@example.com',address:'Україна, навчальна область, м. Демо, вул. Тестова, буд. 1',
+  taxId:'0000000000',status:'Демонстраційний статус',updatedAt:'09.09.2026',
+  documentGeneratedAt:'09.09.2026, 18:42',documentValidUntil:'09.09.2027',accountCategory:'Призовник',removalReason:'—',
+  tcc:'Навчальний міський територіальний центр комплектування та соціальної підтримки',rank:'—',
+  oberihNumber:'DEMO23012024000004',vos:'—',deferralType:'—',deferralUntil:'—',policeReason:'—',policeRequestDate:'—',
+  vlkDecision:'Придатний',vlkDate:'23.01.2024',disabilityGroup:'—',disabilityUntil:'—',disabilityReason:'—',dataClarifiedAt:'09.09.2026'
+};
 const services=[
   'Виправити дані онлайн',
   'Електронна черга в ТЦК та СП',
@@ -140,23 +155,23 @@ function PdfPreview({profile,qr,close,notify}:{profile:Profile;qr:string;close:(
       <article className="pdf-paper" aria-label="Демонстраційна сторінка PDF">
         <div className="pdf-demo-stamp">ДЕМО · НЕ Є ДОКУМЕНТОМ</div>
         <header className="pdf-paper-head">
-          <div><b>Резерв<span>+</span></b><small>Військово-обліковий документ<br/>Сформовано: {profile.updatedAt}, 18:42</small></div>
+          <div><b>Резерв<span>+</span></b><small>Військово-обліковий документ<br/>Сформовано: {profile.documentGeneratedAt}</small></div>
           <div className="pdf-paper-agency"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/reserve-id-mark.png`} alt=""/><b>Міністерство<br/>оборони України</b></div>
         </header>
-        <div className="pdf-paper-badge">Призовник</div>
+        <div className="pdf-paper-badge">{profile.accountCategory}</div>
         <h1>{profile.lastName.toUpperCase()} {profile.firstName}<br/>{profile.middleName}</h1>
-        <div className="pdf-grid pdf-grid-three"><PdfField label="Дата народження">{uaDate(profile.birthDate)}</PdfField><PdfField label="Дійсний до *">09.09.2027</PdfField><PdfField label="РНОКПП">{profile.taxId}</PdfField></div>
-        <div className="pdf-grid pdf-grid-two"><PdfField label="Категорія обліку">Призовник</PdfField><PdfField label="Підстава зняття/виключення">—</PdfField></div>
-        <div className="pdf-rule"><PdfField label="ТЦК та СП">Навчальний міський територіальний центр комплектування та соціальної підтримки</PdfField></div>
-        <div className="pdf-grid pdf-grid-three pdf-rule pdf-ruleless"><PdfField label="Звання">—</PdfField><PdfField label="Номер в реєстрі Оберіг">DEMO23012024000004</PdfField><PdfField label="ВОС">—</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Тип відстрочки">—</PdfField><PdfField label="Відстрочка до">—</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Причина звернення до Нацполіції">—</PdfField><PdfField label="Дата звернення">—</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Постанова ВЛК">Придатний</PdfField><PdfField label="Дата ВЛК">23.01.2024</PdfField></div>
-        <div className="pdf-rule pdf-ruleless pdf-lines"><PdfField label="Група інвалідності">—</PdfField><PdfField label="Діє до">—</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Причина інвалідності">—</PdfField></div>
+        <div className="pdf-grid pdf-grid-three"><PdfField label="Дата народження">{uaDate(profile.birthDate)}</PdfField><PdfField label="Дійсний до *">{profile.documentValidUntil}</PdfField><PdfField label="РНОКПП">{profile.taxId}</PdfField></div>
+        <div className="pdf-grid pdf-grid-two"><PdfField label="Категорія обліку">{profile.accountCategory}</PdfField><PdfField label="Підстава зняття/виключення">{profile.removalReason}</PdfField></div>
+        <div className="pdf-rule"><PdfField label="ТЦК та СП">{profile.tcc}</PdfField></div>
+        <div className="pdf-grid pdf-grid-three pdf-rule pdf-ruleless"><PdfField label="Звання">{profile.rank}</PdfField><PdfField label="Номер в реєстрі Оберіг">{profile.oberihNumber}</PdfField><PdfField label="ВОС">{profile.vos}</PdfField></div>
+        <div className="pdf-rule pdf-lines"><PdfField label="Тип відстрочки">{profile.deferralType}</PdfField><PdfField label="Відстрочка до">{profile.deferralUntil}</PdfField></div>
+        <div className="pdf-rule pdf-lines"><PdfField label="Причина звернення до Нацполіції">{profile.policeReason}</PdfField><PdfField label="Дата звернення">{profile.policeRequestDate}</PdfField></div>
+        <div className="pdf-rule pdf-lines"><PdfField label="Постанова ВЛК">{profile.vlkDecision}</PdfField><PdfField label="Дата ВЛК">{profile.vlkDate}</PdfField></div>
+        <div className="pdf-rule pdf-ruleless pdf-lines"><PdfField label="Група інвалідності">{profile.disabilityGroup}</PdfField><PdfField label="Діє до">{profile.disabilityUntil}</PdfField></div>
+        <div className="pdf-rule pdf-lines"><PdfField label="Причина інвалідності">{profile.disabilityReason}</PdfField></div>
         <div className="pdf-contact pdf-rule">
           <div><PdfField label="Адреса проживання">{profile.address}</PdfField><PdfField label="Email">{profile.email}</PdfField></div>
-          <div><PdfField label="Телефон">{profile.phone}</PdfField><PdfField label="Дата уточнення даних">{profile.updatedAt}</PdfField></div>
+          <div><PdfField label="Телефон">{profile.phone}</PdfField><PdfField label="Дата уточнення даних">{profile.dataClarifiedAt}</PdfField></div>
           <div className="pdf-qr"><DemoQr value={qr} size={336}/></div>
         </div>
         <footer>* Документ дійсний до зазначеної на ньому дати. Якщо вказані в ньому дані змінюються в Єдиному державному реєстрі призовників, військовозобов’язаних і резервістів «Оберіг», документ втрачає чинність. Завантажуйте мобільний застосунок Резерв+ та користуйтеся завжди актуальним електронним документом.</footer>
@@ -247,25 +262,25 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
       <div className="document-view-cards">
         <section className="document-view-card document-view-card-personal">
           <div className="document-view-name">{profile.lastName.toUpperCase()}<br/>{profile.firstName}<br/>{profile.middleName}</div>
-          <div className="document-view-register-status">Призовник</div>
+          <div className="document-view-register-status">{profile.accountCategory}</div>
           <Fact label="Дата народження">{uaDate(profile.birthDate)}</Fact>
           <Fact label="РНОКПП">{profile.taxId}</Fact>
         </section>
         <section className="document-view-card document-view-card-medical">
           <div className="document-view-medical-main">
-            <Fact label="Постанова ВЛК">Придатний</Fact>
+            <Fact label="Постанова ВЛК">{profile.vlkDecision}</Fact>
           </div>
           <div className="document-view-medical-date">
-            <span>Дата ВЛК:</span><strong>23.01.2024</strong>
+            <span>Дата ВЛК:</span><strong>{profile.vlkDate}</strong>
           </div>
         </section>
         <section className="document-view-card document-view-card-registration">
           <div className="document-view-registration-office">
-            <Fact label="ТЦК та СП">Навчальний об'єднаний міський<br/>територіальний центр комплектування та<br/>соціальної підтримки</Fact>
+            <Fact label="ТЦК та СП">{profile.tcc}</Fact>
           </div>
           <div className="document-view-register-meta">
-            <Fact label="Категорія обліку">Призовник</Fact>
-            <Fact label="Номер в реєстрі Оберіг">DEMO23012024000004</Fact>
+            <Fact label="Категорія обліку">{profile.accountCategory}</Fact>
+            <Fact label="Номер в реєстрі Оберіг">{profile.oberihNumber}</Fact>
           </div>
         </section>
         <section className="document-view-card document-view-card-office">
@@ -273,7 +288,7 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
           <Fact label="Адреса проживання">{profile.address}</Fact>
         </section>
         <section className="document-view-card document-view-card-updated">
-          <span>Дата останнього<br/>уточнення даних:</span><strong>{profile.updatedAt}</strong>
+          <span>Дата останнього<br/>уточнення даних:</span><strong>{profile.dataClarifiedAt}</strong>
         </section>
       </div>
     </div>
@@ -379,6 +394,39 @@ function SubPanel({panel,close,openProfile,profile,setProfile,animations,setAnim
 
 function Toggle({title,value,change}:{title:string;value:boolean;change?:()=>void}){return <button className="menu-row" onClick={change}><span>{title}</span><i className={`toggle ${value?'on':''}`}/></button>}
 
-function ProfileEditor({profile,save,close}:{profile:Profile;save:(p:Profile)=>void;close:()=>void}){const[p,setP]=useState(profile),set=(k:keyof Profile,v:string)=>setP({...p,[k]:v}),photo=(file?:File)=>{if(!file)return;const reader=new FileReader();reader.onload=()=>set('photo',String(reader.result));reader.readAsDataURL(file)};const submit=()=>save({...p,lastName:p.lastName.trim(),firstName:p.firstName.trim(),middleName:p.middleName.trim(),phone:p.phone.trim(),email:p.email.trim(),address:p.address.trim(),taxId:p.taxId.trim()});return <form className="sub-screen editor" onSubmit={e=>{e.preventDefault();submit()}}><button type="button" className="back" onClick={close}><ChevronLeft/></button><h1>Дані профілю</h1><p className="editor-note">Зміни зберігаються лише на цьому пристрої та використовуються в усіх демо-екранах і PDF.</p><label className="photo-picker">{p.photo?<img src={p.photo} alt="Фото профілю"/>:<span><Upload/></span>}<b>Змінити фото</b><input type="file" accept="image/*" onChange={e=>photo(e.target.files?.[0])}/></label>{([['lastName','Прізвище','text'],['firstName','Ім’я','text'],['middleName','По батькові','text'],['birthDate','Дата народження','date'],['taxId','РНОКПП','text'],['phone','Телефон','tel'],['email','Email','email'],['address','Адреса проживання','text']] as const).map(([key,label,type])=><label className="edit-field" key={key}><span>{label}</span><input required type={type} inputMode={key==='taxId'?'numeric':undefined} maxLength={key==='taxId'?10:160} value={p[key]||''} onChange={e=>set(key,e.target.value)}/></label>)}<label className="edit-field"><span>Демонстраційний статус</span><select value={p.status} onChange={e=>set('status',e.target.value)}><option>Демонстраційний статус</option><option>Дані уточнено</option><option>Очікує оновлення</option></select></label><button className="orange-button">Зберегти локально</button></form>}
+function ProfileEditor({profile,save,close}:{profile:Profile;save:(p:Profile)=>void;close:()=>void}){
+  const[p,setP]=useState(profile);
+  const set=(key:keyof Profile,value:string)=>setP({...p,[key]:value});
+  const photo=(file?:File)=>{if(!file)return;const reader=new FileReader();reader.onload=()=>set('photo',String(reader.result));reader.readAsDataURL(file)};
+  const personalFields=[
+    ['lastName','Прізвище','text'],['firstName','Ім’я','text'],['middleName','По батькові','text'],
+    ['birthDate','Дата народження','date'],['taxId','РНОКПП','text'],['phone','Телефон','tel'],
+    ['email','Email','email'],['address','Адреса проживання','text']
+  ] as const;
+  const documentFields=[
+    ['documentGeneratedAt','Сформовано'],['documentValidUntil','Дійсний до'],['accountCategory','Категорія обліку'],
+    ['removalReason','Підстава зняття/виключення'],['tcc','ТЦК та СП'],['rank','Звання'],
+    ['oberihNumber','Номер в реєстрі Оберіг'],['vos','ВОС'],['deferralType','Тип відстрочки'],
+    ['deferralUntil','Відстрочка до'],['policeReason','Причина звернення до Нацполіції'],
+    ['policeRequestDate','Дата звернення'],['vlkDecision','Постанова ВЛК'],['vlkDate','Дата ВЛК'],
+    ['disabilityGroup','Група інвалідності'],['disabilityUntil','Інвалідність діє до'],
+    ['disabilityReason','Причина інвалідності'],['dataClarifiedAt','Дата уточнення даних']
+  ] as const;
+  const field=(key:keyof Profile,label:string,type='text')=><label className="edit-field" key={key}><span>{label}</span><input required type={type} inputMode={key==='taxId'?'numeric':undefined} maxLength={key==='taxId'?10:240} value={p[key]||''} onChange={event=>set(key,event.target.value)}/></label>;
+  const submit=()=>{const clean={...p};for(const key of [...personalFields.map(item=>item[0]),...documentFields.map(item=>item[0])])clean[key]=clean[key].trim();save(clean)};
+  return <form className="sub-screen editor" onSubmit={event=>{event.preventDefault();submit()}}>
+    <button type="button" className="back" onClick={close}><ChevronLeft/></button>
+    <h1>Дані профілю</h1>
+    <p className="editor-note">Зміни зберігаються лише на цьому пристрої та використовуються в усіх демо-екранах і PDF.</p>
+    <label className="photo-picker">{p.photo?<img src={p.photo} alt="Фото профілю"/>:<span><Upload/></span>}<b>Змінити фото</b><input type="file" accept="image/*" onChange={event=>photo(event.target.files?.[0])}/></label>
+    <h2 className="editor-section-title">Особисті та контактні дані</h2>
+    {personalFields.map(([key,label,type])=>field(key,label,type))}
+    <label className="edit-field"><span>Демонстраційний статус</span><select value={p.status} onChange={event=>set('status',event.target.value)}><option>Демонстраційний статус</option><option>Дані уточнено</option><option>Очікує оновлення</option></select></label>
+    <h2 className="editor-section-title">Дані військового обліку та PDF</h2>
+    <p className="editor-section-note">Для порожнього значення можна вказати тире — воно так само з’явиться в документі.</p>
+    {documentFields.map(([key,label])=>field(key,label))}
+    <button className="orange-button">Зберегти локально</button>
+  </form>
+}
 
 function QrSheet({value,seconds,regenerate,close}:{value:string;seconds:number;regenerate:()=>void;close:()=>void}){const timer=`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;return <div className="sheet-back" onClick={close}><section className="qr-sheet" onClick={e=>e.stopPropagation()}><button className="sheet-close" onClick={close}><X/></button><p>ТЕСТОВИЙ QR — НЕ ДЛЯ ПЕРЕВІРКИ</p><h1>Демо-код</h1><div className="qr-box"><QRCodeSVG value={value} size={218} minVersion={qrVersion} level="M" boostLevel={false}/></div><code>{value}</code><small>QR оновиться через {timer}</small><strong>ТЕСТОВИЙ QR<br/>НЕ ПІДТВЕРДЖУЄ ОСОБУ<br/>НЕ МАЄ ЮРИДИЧНОЇ СИЛИ</strong><button className="orange-button" onClick={regenerate}>Оновити QR</button></section></div>}
