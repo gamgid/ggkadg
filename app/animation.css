@@ -330,6 +330,7 @@ html,body{background:#e1dfca}
   animation:updateDocumentIn .22s ease-out;
 }
 .update-document-info{position:absolute;top:31px;left:0;right:0;text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:31px;line-height:34px;font-style:italic;font-weight:700}
+.update-document-info::before{content:"";position:absolute;top:-6px;left:50%;width:46px;height:46px;box-sizing:border-box;transform:translateX(-50%);border:2px solid rgba(0,0,0,.4);border-radius:50%;pointer-events:none}
 .update-document-dialog p{position:absolute;top:85px;left:24px;right:24px;margin:0;text-align:center;font-size:16px;line-height:17px;font-weight:450;letter-spacing:0;transform:scaleX(1.05);transform-origin:50% 0}
 .update-document-buttons{position:absolute;left:24px;right:24px;top:177px;display:grid}
 .update-document-buttons button{width:100%;border:0;font-family:"e-Ukraine",Arial,sans-serif;font-size:16px;line-height:20px;font-weight:400;transform:translateY(-1px)}
