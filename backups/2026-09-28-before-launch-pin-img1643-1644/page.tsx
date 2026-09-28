@@ -79,7 +79,7 @@ function EntryFlow({onComplete}:{onComplete:()=>void}){
   const erase=()=>{if(!sliding)setPinLength(value=>Math.max(0,value-1))};
   const keys=[1,2,3,4,5,6,7,8,9];
 
-  if(stage==='launch')return <main className="entry-flow launch-screen" aria-label="Запуск демонстраційного застосунку"><div className="launch-identity"><img className="launch-emblem" src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/launch-emblem.png`} alt="Міністерство оборони України"/></div></main>;
+  if(stage==='launch')return <main className="entry-flow launch-screen" aria-label="Запуск демонстраційного застосунку"><div className="launch-identity"><svg className="launch-emblem" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6v36M21 17c0 9 3 17 11 25 8-8 11-16 11-25M14 27c5 1 10 5 18 15 8-10 13-14 18-15M22 47h20M27 53h10"/></svg><p>Міністерство<br/>оборони<br/>України</p><small>ДЕМО</small></div></main>;
 
   return <main className={`entry-flow auth-flow${sliding||stage==='loading'?' is-loading':''}`}>
     <section className="pin-screen" aria-label="Введення демонстраційного коду">
@@ -92,6 +92,7 @@ function EntryFlow({onComplete}:{onComplete:()=>void}){
         <button type="button" className="pin-erase" onClick={erase} aria-label="Видалити останній символ"><span>×</span></button>
       </div>
       <button type="button" className="pin-forgot">Не пам’ятаю код для входу</button>
+      <div className="entry-demo-label">Демонстраційний режим · код не зберігається</div>
     </section>
     <section className="loading-screen" aria-label="Завантаження демонстраційних даних" aria-live="polite">
       <div className="loading-hud"><span className="loading-spinner"/></div>
