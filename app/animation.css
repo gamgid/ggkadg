@@ -1157,11 +1157,11 @@ html,body{background:#e1dfca}
 /* Remote 1/0 presentation switch. Both modes keep the demo notice visible. */
 .watermark-disclaimer{display:flex;flex-direction:column;gap:6px;margin-top:14px;padding:13px;border-radius:12px;background:#fff7e8;color:#4b3a22;font-size:12px;line-height:1.35}
 .watermark-disclaimer b{font-size:13px}
-.watermark-large .video-watermark{padding:6px 11px;font-size:10px;letter-spacing:.09em}
-.watermark-compact .video-watermark{padding:4px 9px;font-size:7px;letter-spacing:.06em}
-.watermark-large .card-space strong{font-size:clamp(15px,4.8vw,19px);font-weight:800;color:#7a30283d}
-.watermark-compact .card-space strong{font-size:clamp(10px,3.1vw,12px);font-weight:700;color:#7a30282b}
-.watermark-large .document-view-marquee{height:27px;font-size:15px;line-height:27px;font-weight:600}
-.watermark-compact .document-view-marquee{height:21px;font-size:11px;line-height:21px}
-.watermark-large .pdf-demo-stamp{font-size:8px;font-weight:900;letter-spacing:.8px}
-.watermark-compact .pdf-demo-stamp{font-size:5px;font-weight:800;letter-spacing:.45px}
+.watermark-large .video-watermark{padding:8px 12px;font-size:14px;letter-spacing:.09em}
+.watermark-compact .video-watermark{padding:3px 8px;font-size:6px;letter-spacing:.05em}
+.watermark-large .card-space strong{font-size:clamp(23px,7vw,28px);font-weight:900;color:#7a302852}
+.watermark-compact .card-space strong{font-size:clamp(9px,2.8vw,11px);font-weight:700;color:#7a302829}
+.watermark-large .document-view-marquee{height:32px;font-size:20px;line-height:32px;font-weight:700}
+.watermark-compact .document-view-marquee{height:19px;font-size:9px;line-height:19px}
+.watermark-large .pdf-demo-stamp{font-size:11px;font-weight:900;letter-spacing:1px}
+.watermark-compact .pdf-demo-stamp{font-size:5px;font-weight:800;letter-spacing:.4px}

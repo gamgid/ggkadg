@@ -1,10 +1,12 @@
-# Удалённый переключатель водяного знака
+# Визуал для каждого профиля
 
-Приложение читает одну строку `public.app_config` в Supabase:
+Приложение читает отдельную строку `public.profile_visuals` для ID текущего демонстрационного профиля:
 
 - `watermark_mode = 1` — крупная отметка;
 - `watermark_mode = 0` — компактная отметка;
-- если база или сеть недоступна — автоматически используется `1`.
+- если строки для профиля нет, база или сеть недоступна — автоматически используется `1`.
+
+Имя человека в привязке не используется: оно может измениться. Стабильным ключом служит локальный ID вида `DEMO-12345678`, который показан в настройках приложения.
 
 Оба режима оставляют на карточке, полном просмотре и PDF видимое предупреждение, что это демонстрация, а не официальный документ.
 
@@ -13,39 +15,50 @@
 В Supabase откройте **SQL Editor**, создайте новый запрос и выполните:
 
 ```sql
-create table if not exists public.app_config (
-  id text primary key,
+create table if not exists public.profile_visuals (
+  profile_id text primary key,
   watermark_mode smallint not null default 1 check (watermark_mode in (0, 1)),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  check (profile_id like 'DEMO-%')
 );
 
-alter table public.app_config enable row level security;
+alter table public.profile_visuals enable row level security;
 
-drop policy if exists "public read main app config" on public.app_config;
+drop policy if exists "public read profile visuals" on public.profile_visuals;
 
-create policy "public read main app config"
-on public.app_config for select
+create policy "public read profile visuals"
+on public.profile_visuals for select
 to anon
-using (id = 'main');
+using (profile_id like 'DEMO-%');
+```
 
-insert into public.app_config (id, watermark_mode)
-values ('main', 1)
-on conflict (id) do update
+Политика разрешает приложению только чтение DEMO-настроек. Публичную запись не включайте. Старая строка `app_config/main` больше не используется; удалять её необязательно.
+
+## 2. Добавление людей
+
+Для каждого профиля добавьте отдельную строку. Подставьте ID, показанный в **Меню → Налаштування → Демонстраційний режим**:
+
+```sql
+insert into public.profile_visuals (profile_id, watermark_mode)
+values
+  ('DEMO-12345678', 1),
+  ('DEMO-87654321', 0)
+on conflict (profile_id) do update
 set watermark_mode = excluded.watermark_mode,
     updated_at = now();
 ```
 
-Политика разрешает приложению только чтение строки `main`. Публичную запись не включайте.
+В примере у первого человека крупный визуал, у второго — компактный. Замените примерные ID на реальные ID профилей.
 
-## 2. Подключение к публикации
+## 3. Подключение к публикации
 
-В репозитории GitHub откройте **Settings → Secrets and variables → Actions → New repository secret** и создайте:
+Существующие секреты GitHub остаются теми же:
 
 - `NEXT_PUBLIC_SUPABASE_URL` — Project URL из Supabase;
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — только публичный `anon` key.
 
-Никогда не используйте здесь `service_role` key. После добавления значений повторно запустите **Actions → Publish demo to Pages → Run workflow**.
+Никогда не используйте здесь `service_role` key. После публикации обновлённого кода дополнительные секреты не нужны.
 
-## 3. Как менять размер
+## 4. Как менять визуал человека
 
-В Supabase откройте **Table Editor → app_config → main**, измените `watermark_mode` на `1` или `0` и сохраните. При следующем полном открытии приложения значение загрузится из базы. Если веб-приложение уже открыто, закройте его и откройте снова.
+В Supabase откройте **Table Editor → profile_visuals**, найдите строку по `profile_id`, измените `watermark_mode` на `1` или `0` и сохраните. Открытое приложение перечитает значение при возвращении на экран, фокусе окна или автоматически в течение 30 секунд.

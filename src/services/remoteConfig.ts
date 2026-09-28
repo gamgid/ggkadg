@@ -1,17 +1,20 @@
 export type WatermarkMode = 0 | 1;
 
 const DEFAULT_WATERMARK_MODE:WatermarkMode=1;
-const CONFIG_ID='main';
 
-export async function loadWatermarkMode():Promise<WatermarkMode>{
+export async function loadWatermarkMode(profileId:string):Promise<WatermarkMode>{
   const projectUrl=process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/,'');
   const anonKey=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if(!projectUrl||!anonKey)return DEFAULT_WATERMARK_MODE;
+  const normalizedProfileId=profileId.trim();
+  if(!projectUrl||!anonKey||!normalizedProfileId)return DEFAULT_WATERMARK_MODE;
 
   const controller=new AbortController();
-  const timeout=window.setTimeout(()=>controller.abort(),3500);
+  // A free Supabase project can need a few seconds to wake up after inactivity.
+  // Keep the safe fallback, but do not abandon a valid request too early.
+  const timeout=window.setTimeout(()=>controller.abort(),10000);
   try{
-    const response=await fetch(`${projectUrl}/rest/v1/app_config?select=watermark_mode&id=eq.${CONFIG_ID}&limit=1`,{
+    const query=new URLSearchParams({select:'watermark_mode',profile_id:`eq.${normalizedProfileId}`,limit:'1'});
+    const response=await fetch(`${projectUrl}/rest/v1/profile_visuals?${query.toString()}`,{
       headers:{apikey:anonKey,Authorization:`Bearer ${anonKey}`},
       cache:'no-store',
       signal:controller.signal,
