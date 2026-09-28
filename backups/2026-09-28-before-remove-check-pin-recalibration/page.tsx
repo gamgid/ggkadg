@@ -59,28 +59,29 @@ export default function HomePage(){
 }
 
 function EntryFlow({onComplete}:{onComplete:()=>void}){
-  const [stage,setStage]=useState<'launch'|'pin'>('launch');
+  const [stage,setStage]=useState<'launch'|'pin'|'loading'>('launch');
   const [pinLength,setPinLength]=useState(0);
   const [pressed,setPressed]=useState<number|null>(null);
-  const completingRef=useRef(false);
+  const [sliding,setSliding]=useState(false);
 
   useEffect(()=>{if(stage!=='launch')return;const id=window.setTimeout(()=>setStage('pin'),2200);return()=>window.clearTimeout(id)},[stage]);
+  useEffect(()=>{if(stage!=='loading')return;const id=window.setTimeout(onComplete,1050);return()=>window.clearTimeout(id)},[stage,onComplete]);
   useEffect(()=>{if(stage!=='pin')return;const onKeyDown=(event:KeyboardEvent)=>{if(/^\d$/.test(event.key))enterDigit(Number(event.key));if(event.key==='Backspace')setPinLength(value=>Math.max(0,value-1))};window.addEventListener('keydown',onKeyDown);return()=>window.removeEventListener('keydown',onKeyDown)});
 
   const enterDigit=(digit:number)=>{
-    if(completingRef.current||pinLength>=4)return;
+    if(sliding||pinLength>=4)return;
     setPressed(digit);
     window.setTimeout(()=>setPressed(null),110);
     const next=pinLength+1;
     setPinLength(next);
-    if(next===4){completingRef.current=true;window.setTimeout(onComplete,120)}
+    if(next===4){window.setTimeout(()=>{setSliding(true);window.setTimeout(()=>setStage('loading'),320)},120)}
   };
-  const erase=()=>{if(!completingRef.current)setPinLength(value=>Math.max(0,value-1))};
+  const erase=()=>{if(!sliding)setPinLength(value=>Math.max(0,value-1))};
   const keys=[1,2,3,4,5,6,7,8,9];
 
   if(stage==='launch')return <main className="entry-flow launch-screen" aria-label="Запуск демонстраційного застосунку"><div className="launch-identity"><img className="launch-emblem" src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/launch-emblem.png`} alt="Міністерство оборони України"/></div></main>;
 
-  return <main className="entry-flow auth-flow">
+  return <main className={`entry-flow auth-flow${sliding||stage==='loading'?' is-loading':''}`}>
     <section className="pin-screen" aria-label="Введення демонстраційного коду">
       <h1>Код для входу</h1>
       <div className="pin-dots" aria-label={`Введено ${pinLength} із 4 символів`}>{[0,1,2,3].map(index=><span key={index} className={index<pinLength?'filled':''}/>)}</div>
@@ -91,6 +92,11 @@ function EntryFlow({onComplete}:{onComplete:()=>void}){
         <button type="button" className="pin-erase" onClick={erase} aria-label="Видалити останній символ"><span>×</span></button>
       </div>
       <button type="button" className="pin-forgot">Не пам’ятаю код для входу</button>
+    </section>
+    <section className="loading-screen" aria-label="Завантаження демонстраційних даних" aria-live="polite">
+      <div className="loading-hud"><span className="loading-spinner"/></div>
+      <p>Зачекайте, отримуємо<br/>інформацію з реєстру</p>
+      <small>ДЕМО · без підключення до реєстру</small>
     </section>
   </main>;
 }
