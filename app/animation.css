@@ -1155,9 +1155,6 @@ html,body{background:#e1dfca}
 .editor-note{margin:-16px 0 20px;color:#6f7168;font-size:11px;line-height:1.35}
 
 /* Remote 1/0 presentation switch. Both modes keep the demo notice visible. */
-.watermark-disclaimer{display:flex;flex-direction:column;gap:6px;margin-top:14px;padding:13px;border-radius:12px;background:#fff7e8;color:#4b3a22;font-size:12px;line-height:1.35}
-.watermark-disclaimer b{font-size:13px}
-.watermark-connection{overflow-wrap:anywhere}
 .watermark-large .video-watermark{padding:8px 12px;font-size:14px;letter-spacing:.09em}
 .watermark-compact .video-watermark{padding:3px 8px;font-size:6px;letter-spacing:.05em}
 .watermark-large .card-space strong{font-size:clamp(23px,7vw,28px);font-weight:900;color:#7a302852}
