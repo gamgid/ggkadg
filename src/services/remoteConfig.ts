@@ -1,12 +1,28 @@
 export type WatermarkMode = 0 | 1;
+export type RemoteConfigStatus =
+  | 'ok'
+  | 'missing-config'
+  | 'not-found'
+  | 'http-error'
+  | 'timeout'
+  | 'network-error'
+  | 'invalid-data';
+
+export type RemoteConfigResult = {
+  mode: WatermarkMode;
+  status: RemoteConfigStatus;
+  httpStatus?: number;
+};
 
 const DEFAULT_WATERMARK_MODE:WatermarkMode=1;
 
-export async function loadWatermarkMode(profileId:string):Promise<WatermarkMode>{
+export async function loadWatermarkMode(profileId:string):Promise<RemoteConfigResult>{
   const projectUrl=process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/,'');
   const anonKey=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const normalizedProfileId=profileId.trim();
-  if(!projectUrl||!anonKey||!normalizedProfileId)return DEFAULT_WATERMARK_MODE;
+  if(!projectUrl||!anonKey||!normalizedProfileId){
+    return {mode:DEFAULT_WATERMARK_MODE,status:'missing-config'};
+  }
 
   const controller=new AbortController();
   // A free Supabase project can need a few seconds to wake up after inactivity.
@@ -19,11 +35,20 @@ export async function loadWatermarkMode(profileId:string):Promise<WatermarkMode>
       cache:'no-store',
       signal:controller.signal,
     });
-    if(!response.ok)return DEFAULT_WATERMARK_MODE;
+    if(!response.ok){
+      return {mode:DEFAULT_WATERMARK_MODE,status:'http-error',httpStatus:response.status};
+    }
     const rows=await response.json() as Array<{watermark_mode?:unknown}>;
-    return rows[0]?.watermark_mode===0?0:DEFAULT_WATERMARK_MODE;
-  }catch{
-    return DEFAULT_WATERMARK_MODE;
+    if(rows.length===0)return {mode:DEFAULT_WATERMARK_MODE,status:'not-found'};
+    if(rows[0]?.watermark_mode!==0&&rows[0]?.watermark_mode!==1){
+      return {mode:DEFAULT_WATERMARK_MODE,status:'invalid-data'};
+    }
+    return {mode:rows[0].watermark_mode,status:'ok'};
+  }catch(error){
+    return {
+      mode:DEFAULT_WATERMARK_MODE,
+      status:error instanceof DOMException&&error.name==='AbortError'?'timeout':'network-error',
+    };
   }finally{
     window.clearTimeout(timeout);
   }

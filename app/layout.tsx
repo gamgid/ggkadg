@@ -17,5 +17,12 @@ export const metadata: Metadata = {
   openGraph: { title: 'Облік DEMO', description: 'Демонстраційна пародія — не є документом', images: [`${basePath}/icon-512.png`] },
   twitter: { card: 'summary', title: 'Облік DEMO', description: 'Демонстраційна пародія — не є документом', images: [`${basePath}/icon-512.png`] },
 };
-export const viewport: Viewport = { themeColor: '#243d31', width: 'device-width', initialScale: 1, viewportFit: 'cover' };
+export const viewport: Viewport = {
+  themeColor: '#243d31',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+};
 export default function RootLayout({ children }: { children: React.ReactNode }) { return <html lang="uk"><body>{children}</body></html>; }

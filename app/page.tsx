@@ -49,6 +49,22 @@ const DemoQr=({value,size}:{value:string;size:number})=><QRCodeSVG value={value}
 
 export default function HomePage(){
   const [ready,setReady]=useState(false),[flowPhase,setFlowPhase]=useState<'entry'|'transitioning'|'complete'>('entry'),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[watermarkMode,setWatermarkMode]=useState<WatermarkMode>(1),[notice,setNotice]=useState<string|null>(null);
+  useEffect(()=>{
+    const nonPassive={passive:false} as const;
+    const preventGesture=(event:Event)=>event.preventDefault();
+    const preventMultiTouch=(event:TouchEvent)=>{if(event.touches.length>1)event.preventDefault()};
+    const preventWheelZoom=(event:WheelEvent)=>{if(event.ctrlKey||event.metaKey)event.preventDefault()};
+    document.addEventListener('gesturestart',preventGesture,nonPassive);
+    document.addEventListener('gesturechange',preventGesture,nonPassive);
+    document.addEventListener('touchmove',preventMultiTouch,nonPassive);
+    window.addEventListener('wheel',preventWheelZoom,nonPassive);
+    return()=>{
+      document.removeEventListener('gesturestart',preventGesture);
+      document.removeEventListener('gesturechange',preventGesture);
+      document.removeEventListener('touchmove',preventMultiTouch);
+      window.removeEventListener('wheel',preventWheelZoom);
+    };
+  },[]);
   useEffect(()=>{const saved=storageService.load<Stored>();if(saved){const injectedV2Profile=saved.profile?.firstName==='Марія'&&saved.profile?.lastName==='Приклад'&&saved.profile?.middleName==='Андріївна';const savedProfile=saved.profile as (Partial<Profile>&{city?:string})|undefined;setProfile(injectedV2Profile?baseProfile:{...baseProfile,...savedProfile,address:savedProfile?.address||savedProfile?.city||baseProfile.address});setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setProfile({...baseProfile,id:`DEMO-${String(crypto.getRandomValues(new Uint32Array(1))[0]).slice(0,8)}`});setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});setReady(true)},[]);
   useEffect(()=>{if(ready)storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready]);
   useEffect(()=>{
@@ -57,8 +73,11 @@ export default function HomePage(){
     let requestSequence=0;
     const refresh=()=>{
       const sequence=++requestSequence;
-      loadWatermarkMode(profile.id).then(mode=>{
-        if(active&&sequence===requestSequence)setWatermarkMode(mode);
+      loadWatermarkMode(profile.id).then(result=>{
+        if(active&&sequence===requestSequence){
+          setWatermarkMode(result.mode);
+          document.documentElement.dataset.remoteConfigStatus=result.status;
+        }
       });
     };
     const refreshWhenVisible=()=>{if(document.visibilityState==='visible')refresh()};
