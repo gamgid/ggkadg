@@ -55,9 +55,11 @@ set watermark_mode = excluded.watermark_mode,
 Существующие секреты GitHub остаются теми же:
 
 - `NEXT_PUBLIC_SUPABASE_URL` — Project URL из Supabase;
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — только публичный `anon` key.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — публичный **Publishable key** (`sb_publishable_…`) или старый публичный `anon` key.
 
 Никогда не используйте здесь `service_role` key. После публикации обновлённого кода дополнительные секреты не нужны.
+
+Приложение отправляет публичный ключ только в заголовке `apikey`. Новый Publishable key не является JWT, поэтому его нельзя дублировать в `Authorization: Bearer` — Supabase отклонит такой запрос как `Invalid JWT`.
 
 ## 4. Как менять визуал человека
 

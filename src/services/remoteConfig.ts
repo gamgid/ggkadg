@@ -18,9 +18,9 @@ const DEFAULT_WATERMARK_MODE:WatermarkMode=1;
 
 export async function loadWatermarkMode(profileId:string):Promise<RemoteConfigResult>{
   const projectUrl=process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/,'');
-  const anonKey=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const apiKey=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const normalizedProfileId=profileId.trim();
-  if(!projectUrl||!anonKey||!normalizedProfileId){
+  if(!projectUrl||!apiKey||!normalizedProfileId){
     return {mode:DEFAULT_WATERMARK_MODE,status:'missing-config'};
   }
 
@@ -31,7 +31,11 @@ export async function loadWatermarkMode(profileId:string):Promise<RemoteConfigRe
   try{
     const query=new URLSearchParams({select:'watermark_mode',profile_id:`eq.${normalizedProfileId}`,limit:'1'});
     const response=await fetch(`${projectUrl}/rest/v1/profile_visuals?${query.toString()}`,{
-      headers:{apikey:anonKey,Authorization:`Bearer ${anonKey}`},
+      // Publishable keys are API keys, not JWTs. Sending one as a Bearer
+      // token makes Supabase reject the request with "Invalid JWT".
+      // The apikey header works with both current publishable keys and the
+      // legacy JWT-based anon keys for unauthenticated RLS reads.
+      headers:{apikey:apiKey},
       cache:'no-store',
       signal:controller.signal,
     });
