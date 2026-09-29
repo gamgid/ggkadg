@@ -1,8 +1,13 @@
 export type WatermarkMode = 0 | 1;
 export type RemoteConfigStatus =
+  | 'checking'
   | 'ok'
   | 'missing-config'
   | 'not-found'
+  | 'unauthorized'
+  | 'forbidden'
+  | 'missing-table'
+  | 'rate-limited'
   | 'http-error'
   | 'timeout'
   | 'network-error'
@@ -12,6 +17,7 @@ export type RemoteConfigResult = {
   mode: WatermarkMode;
   status: RemoteConfigStatus;
   httpStatus?: number;
+  errorCode?: string;
 };
 
 const DEFAULT_WATERMARK_MODE:WatermarkMode=1;
@@ -40,7 +46,18 @@ export async function loadWatermarkMode(profileId:string):Promise<RemoteConfigRe
       signal:controller.signal,
     });
     if(!response.ok){
-      return {mode:DEFAULT_WATERMARK_MODE,status:'http-error',httpStatus:response.status};
+      let errorCode:string|undefined;
+      try{
+        const body=await response.json() as {code?:unknown};
+        if(typeof body.code==='string'&&/^[A-Za-z0-9_-]{1,40}$/.test(body.code))errorCode=body.code;
+      }catch{}
+      const status:RemoteConfigStatus=
+        response.status===401?'unauthorized':
+        response.status===403?'forbidden':
+        response.status===429?'rate-limited':
+        response.status===404||errorCode==='PGRST205'||errorCode==='42P01'?'missing-table':
+        'http-error';
+      return {mode:DEFAULT_WATERMARK_MODE,status,httpStatus:response.status,errorCode};
     }
     const rows=await response.json() as Array<{watermark_mode?:unknown}>;
     if(rows.length===0)return {mode:DEFAULT_WATERMARK_MODE,status:'not-found'};

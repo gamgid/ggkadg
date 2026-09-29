@@ -1157,14 +1157,7 @@ html,body{background:#e1dfca}
 /* Remote 1/0 presentation switch. Both modes keep the demo notice visible. */
 .watermark-disclaimer{display:flex;flex-direction:column;gap:6px;margin-top:14px;padding:13px;border-radius:12px;background:#fff7e8;color:#4b3a22;font-size:12px;line-height:1.35}
 .watermark-disclaimer b{font-size:13px}
-.watermark-disclaimer::after{content:'Підключення: перевіряється.'}
-html[data-remote-config-status='ok'] .watermark-disclaimer::after{content:'Підключення: синхронізовано.'}
-html[data-remote-config-status='missing-config'] .watermark-disclaimer::after{content:'Підключення: параметри Supabase відсутні у збірці.'}
-html[data-remote-config-status='not-found'] .watermark-disclaimer::after{content:'Підключення: профіль не знайдено в Supabase.'}
-html[data-remote-config-status='http-error'] .watermark-disclaimer::after{content:'Підключення: Supabase відхилив запит.'}
-html[data-remote-config-status='timeout'] .watermark-disclaimer::after{content:'Підключення: Supabase не відповів вчасно.'}
-html[data-remote-config-status='network-error'] .watermark-disclaimer::after{content:'Підключення: немає з’єднання із Supabase.'}
-html[data-remote-config-status='invalid-data'] .watermark-disclaimer::after{content:'Підключення: неправильне значення в Supabase.'}
+.watermark-connection{overflow-wrap:anywhere}
 .watermark-large .video-watermark{padding:8px 12px;font-size:14px;letter-spacing:.09em}
 .watermark-compact .video-watermark{padding:3px 8px;font-size:6px;letter-spacing:.05em}
 .watermark-large .card-space strong{font-size:clamp(23px,7vw,28px);font-weight:900;color:#7a302852}
