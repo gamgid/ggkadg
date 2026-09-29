@@ -7,6 +7,7 @@ export type RemoteConfigStatus =
   | 'unauthorized'
   | 'forbidden'
   | 'missing-table'
+  | 'invalid-url'
   | 'rate-limited'
   | 'http-error'
   | 'timeout'
@@ -22,8 +23,21 @@ export type RemoteConfigResult = {
 
 const DEFAULT_WATERMARK_MODE:WatermarkMode=1;
 
+function normalizeProjectUrl(value:string|undefined):string|undefined{
+  if(!value)return undefined;
+  try{
+    const url=new URL(value.trim());
+    if(url.protocol!=='https:'&&url.protocol!=='http:')return undefined;
+    // GitHub Secret should contain the Project URL, but accepting a copied
+    // REST endpoint as well prevents /rest/v1/rest/v1/... and PGRST125.
+    return url.origin;
+  }catch{
+    return undefined;
+  }
+}
+
 export async function loadWatermarkMode(profileId:string):Promise<RemoteConfigResult>{
-  const projectUrl=process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/,'');
+  const projectUrl=normalizeProjectUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
   const apiKey=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const normalizedProfileId=profileId.trim();
   if(!projectUrl||!apiKey||!normalizedProfileId){
@@ -55,7 +69,8 @@ export async function loadWatermarkMode(profileId:string):Promise<RemoteConfigRe
         response.status===401?'unauthorized':
         response.status===403?'forbidden':
         response.status===429?'rate-limited':
-        response.status===404||errorCode==='PGRST205'||errorCode==='42P01'?'missing-table':
+        errorCode==='PGRST125'?'invalid-url':
+        errorCode==='PGRST205'||errorCode==='42P01'?'missing-table':
         'http-error';
       return {mode:DEFAULT_WATERMARK_MODE,status,httpStatus:response.status,errorCode};
     }

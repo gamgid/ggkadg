@@ -54,7 +54,7 @@ set watermark_mode = excluded.watermark_mode,
 
 Существующие секреты GitHub остаются теми же:
 
-- `NEXT_PUBLIC_SUPABASE_URL` — Project URL из Supabase;
+- `NEXT_PUBLIC_SUPABASE_URL` — Project URL из Supabase вида `https://PROJECT_REF.supabase.co` (без `/rest/v1`);
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — публичный **Publishable key** (`sb_publishable_…`) или старый публичный `anon` key.
 
 Никогда не используйте здесь `service_role` key. После публикации обновлённого кода дополнительные секреты не нужны.
