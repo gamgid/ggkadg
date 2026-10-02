@@ -1,0 +1,5 @@
+[functions.telegram-visual-bot]
+verify_jwt = false
+
+[functions.telegram-profile-auth]
+verify_jwt = false

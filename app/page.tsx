@@ -6,6 +6,7 @@ import { Bell, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Download
 import { storageService } from '../src/services/storageService';
 import { createCardFlip } from '../src/animation/cardFlip.mjs';
 import { loadWatermarkMode, type WatermarkMode } from '../src/services/remoteConfig';
+import { clearProfileSession, exchangeTelegramCode, loadProfileSession, resumeProfileSession } from '../src/services/profileAuth';
 
 type Tab = 'id' | 'services' | 'jobs' | 'menu';
 type Panel = 'settings' | 'faq' | 'support' | 'notifications' | 'profile' | null;
@@ -48,7 +49,7 @@ const qrExpiryDate=()=>{const date=new Date();date.setFullYear(date.getFullYear(
 const DemoQr=({value,size}:{value:string;size:number})=><QRCodeSVG value={value} size={size} minVersion={qrVersion} level="M" boostLevel={false}/>;
 
 export default function HomePage(){
-  const [ready,setReady]=useState(false),[flowPhase,setFlowPhase]=useState<'entry'|'transitioning'|'complete'>('entry'),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[watermarkMode,setWatermarkMode]=useState<WatermarkMode>(1),[notice,setNotice]=useState<string|null>(null);
+  const [ready,setReady]=useState(false),[authState,setAuthState]=useState<'checking'|'needs-code'|'authenticated'>('checking'),[flowPhase,setFlowPhase]=useState<'entry'|'transitioning'|'complete'>('entry'),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[watermarkMode,setWatermarkMode]=useState<WatermarkMode>(1),[notice,setNotice]=useState<string|null>(null);
   useEffect(()=>{
     const nonPassive={passive:false} as const;
     const preventGesture=(event:Event)=>event.preventDefault();
@@ -65,8 +66,8 @@ export default function HomePage(){
       window.removeEventListener('wheel',preventWheelZoom);
     };
   },[]);
-  useEffect(()=>{const saved=storageService.load<Stored>();if(saved){const injectedV2Profile=saved.profile?.firstName==='Марія'&&saved.profile?.lastName==='Приклад'&&saved.profile?.middleName==='Андріївна';const savedProfile=saved.profile as (Partial<Profile>&{city?:string})|undefined;setProfile(injectedV2Profile?baseProfile:{...baseProfile,...savedProfile,address:savedProfile?.address||savedProfile?.city||baseProfile.address});setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setProfile({...baseProfile,id:`DEMO-${String(crypto.getRandomValues(new Uint32Array(1))[0]).slice(0,8)}`});setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});setReady(true)},[]);
-  useEffect(()=>{if(ready)storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready]);
+  useEffect(()=>{let active=true;const saved=storageService.load<Stored>();let restoredProfile=baseProfile;if(saved){const injectedV2Profile=saved.profile?.firstName==='Марія'&&saved.profile?.lastName==='Приклад'&&saved.profile?.middleName==='Андріївна';const savedProfile=saved.profile as (Partial<Profile>&{city?:string})|undefined;restoredProfile=injectedV2Profile?baseProfile:{...baseProfile,...savedProfile,address:savedProfile?.address||savedProfile?.city||baseProfile.address};setProfile(restoredProfile);setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});setReady(true);const session=loadProfileSession();if(!session){setAuthState('needs-code');return()=>{active=false}}resumeProfileSession(session).then(profileId=>{if(!active)return;setProfile(current=>current.id===profileId?current:{...baseProfile,id:profileId});setAuthState('authenticated');setFlowPhase('complete')}).catch(()=>{if(!active)return;clearProfileSession();setAuthState('needs-code')});return()=>{active=false}},[]);
+  useEffect(()=>{if(ready&&authState==='authenticated')storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready,authState]);
   useEffect(()=>{
     if(!ready)return;
     let active=true;
@@ -95,7 +96,7 @@ export default function HomePage(){
   useEffect(()=>{const id=setInterval(()=>setSeconds(s=>{if(s<=1){setQr(makeQr());return 180}return s-1}),1000);return()=>clearInterval(id)},[]);
   const regenerate=()=>{setQr(makeQr());setSeconds(180);setNotice('Новий тестовий QR створено')};
   const copyDeviceNumber=async()=>{try{await navigator.clipboard.writeText(profile.id);setNotice('Номер демо-пристрою скопійовано')}catch{setNotice('Не вдалося скопіювати номер пристрою')}};
-  const completeFlow=useCallback(()=>setFlowPhase(value=>value==='entry'?'transitioning':value),[]);
+  const completeFlow=useCallback((profileId:string)=>{setProfile(current=>current.id===profileId?current:{...baseProfile,id:profileId});setAuthState('authenticated');setFlowPhase(value=>value==='entry'?'transitioning':value)},[]);
   useEffect(()=>{if(flowPhase!=='transitioning')return;const id=window.setTimeout(()=>setFlowPhase('complete'),340);return()=>window.clearTimeout(id)},[flowPhase]);
   const app=<main className={`video-app flow-main watermark-${watermarkMode===1?'large':'compact'} ${flowPhase==='transitioning'?'is-entering':''} ${animations?'':'no-motion'} ${panel?'panel-open':''} ${documentOpen?'document-open':''}`}>
     <div className="video-watermark">ДЕМО / ПАРОДІЯ — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
@@ -114,45 +115,34 @@ export default function HomePage(){
     {notice&&<div className="toast" onAnimationEnd={()=>setNotice(null)}>{notice}</div>}
   </main>;
   return <div className={`app-flow-stack ${flowPhase==='transitioning'?'is-transitioning':''}`}>
-    {flowPhase!=='complete'&&<EntryFlow onComplete={completeFlow} exiting={flowPhase==='transitioning'}/>} 
+    {flowPhase!=='complete'&&<EntryFlow onComplete={completeFlow} exiting={flowPhase==='transitioning'} checking={authState==='checking'}/>} 
     {flowPhase!=='entry'&&app}
   </div>;
 }
 
-function EntryFlow({onComplete,exiting}:{onComplete:()=>void;exiting:boolean}){
-  const [stage,setStage]=useState<'launch'|'pin'>('launch');
-  const [pinLength,setPinLength]=useState(0);
-  const [pressed,setPressed]=useState<number|null>(null);
-  const completingRef=useRef(false);
+function EntryFlow({onComplete,exiting,checking}:{onComplete:(profileId:string)=>void;exiting:boolean;checking:boolean}){
+  const [stage,setStage]=useState<'launch'|'login'>('launch');
+  const [code,setCode]=useState('');
+  const [submitting,setSubmitting]=useState(false);
+  const [error,setError]=useState<string|null>(null);
 
-  useEffect(()=>{if(stage!=='launch')return;const id=window.setTimeout(()=>setStage('pin'),2200);return()=>window.clearTimeout(id)},[stage]);
-  useEffect(()=>{if(stage!=='pin')return;const onKeyDown=(event:KeyboardEvent)=>{if(/^\d$/.test(event.key))enterDigit(Number(event.key));if(event.key==='Backspace')setPinLength(value=>Math.max(0,value-1))};window.addEventListener('keydown',onKeyDown);return()=>window.removeEventListener('keydown',onKeyDown)});
+  useEffect(()=>{if(stage!=='launch'||checking)return;const id=window.setTimeout(()=>setStage('login'),900);return()=>window.clearTimeout(id)},[stage,checking]);
+  const formatCode=(value:string)=>{const clean=value.toUpperCase().replace(/[^A-Z2-9]/g,'').slice(0,8);return clean.length>4?`${clean.slice(0,4)}-${clean.slice(4)}`:clean};
+  const submit=async()=>{if(submitting||!/^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(code))return;setSubmitting(true);setError(null);try{const session=await exchangeTelegramCode(code);onComplete(session.profileId)}catch(reason){const message=reason instanceof Error?reason.message:'';setError(message==='code-expired'||message==='invalid-code'?'ID недійсний або вже використаний. Отримайте новий у боті.':'Не вдалося увійти. Перевірте інтернет і спробуйте ще раз.');setSubmitting(false)}};
 
-  const enterDigit=(digit:number)=>{
-    if(completingRef.current||pinLength>=4)return;
-    setPressed(digit);
-    window.setTimeout(()=>setPressed(null),110);
-    const next=pinLength+1;
-    setPinLength(next);
-    if(next===4){completingRef.current=true;window.setTimeout(onComplete,120)}
-  };
-  const erase=()=>{if(!completingRef.current)setPinLength(value=>Math.max(0,value-1))};
-  const keys=[1,2,3,4,5,6,7,8,9];
+  if(stage==='launch')return <main className="entry-flow launch-screen" aria-label="Запуск демонстраційного застосунку"><div className="launch-identity"><img className="launch-emblem" src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/launch-emblem.png`} alt="Демонстраційний застосунок"/></div></main>;
 
-  if(stage==='launch')return <main className="entry-flow launch-screen" aria-label="Запуск демонстраційного застосунку"><div className="launch-identity"><img className="launch-emblem" src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/launch-emblem.png`} alt="Міністерство оборони України"/></div></main>;
-
-  return <main className={`entry-flow auth-flow ${exiting?'is-exiting':''}`}>
-    <section className="pin-screen" aria-label="Введення демонстраційного коду">
-      <h1>Код для входу</h1>
-      <div className="pin-dots" aria-label={`Введено ${pinLength} із 4 символів`}>{[0,1,2,3].map(index=><span key={index} className={index<pinLength?'filled':''}/>)}</div>
-      <div className="numeric-keypad">
-        {keys.map(digit=><button key={digit} type="button" className={pressed===digit?'pressed':''} onPointerDown={()=>setPressed(digit)} onPointerCancel={()=>setPressed(null)} onPointerUp={()=>setPressed(null)} onClick={()=>enterDigit(digit)} aria-label={`Цифра ${digit}`}>{digit}</button>)}
-        <span aria-hidden="true"/>
-        <button type="button" className={pressed===0?'pressed':''} onPointerDown={()=>setPressed(0)} onPointerCancel={()=>setPressed(null)} onPointerUp={()=>setPressed(null)} onClick={()=>enterDigit(0)} aria-label="Цифра 0">0</button>
-        <button type="button" className="pin-erase" onClick={erase} aria-label="Видалити останній символ"><span>×</span></button>
-      </div>
-      <button type="button" className="pin-forgot">Не пам’ятаю код для входу</button>
-    </section>
+  return <main className={`entry-flow auth-flow telegram-login-flow ${exiting?'is-exiting':''}`}>
+    <form className="telegram-login-card" onSubmit={event=>{event.preventDefault();void submit()}}>
+      <p className="telegram-login-kicker">Перший вхід</p>
+      <h1>Введіть ID із Telegram</h1>
+      <p className="telegram-login-help">Відкрийте бота, натисніть Start і введіть отриманий одноразовий ID.</p>
+      <label htmlFor="telegram-login-code">ID для входу</label>
+      <input id="telegram-login-code" value={code} onChange={event=>{setCode(formatCode(event.target.value));setError(null)}} placeholder="ABCD-EFGH" autoCapitalize="characters" autoCorrect="off" spellCheck={false} inputMode="text" maxLength={9} disabled={submitting} autoFocus/>
+      {error&&<p className="telegram-login-error" role="alert">{error}</p>}
+      <button type="submit" disabled={submitting||!/^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(code)}>{submitting?'Входимо…':'Увійти'}</button>
+      <small>Після першого входу цей пристрій запам’ятає профіль.</small>
+    </form>
   </main>;
 }
 

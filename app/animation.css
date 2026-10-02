@@ -1152,6 +1152,22 @@ html,body{background:#e1dfca}
   .app-flow-stack.is-transitioning>.entry-flow,.app-flow-stack.is-transitioning>.flow-main{animation-duration:1ms;box-shadow:none}
 }
 
+/* First sign-in through a short-lived ID issued by the Telegram bot. */
+.telegram-login-flow{display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 28px) 22px calc(env(safe-area-inset-bottom,0px) + 28px)}
+.telegram-login-card{width:100%;max-width:370px;padding:30px 24px 24px;border:1px solid #c5c5b4;border-radius:22px;background:#f7f7ed;box-shadow:0 16px 42px rgba(32,32,24,.09)}
+.telegram-login-kicker{margin:0 0 10px;color:#706f62;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.telegram-login-card h1{margin:0;font-size:29px;line-height:1.12;font-weight:500;letter-spacing:-.02em}
+.telegram-login-help{margin:15px 0 25px;color:#5c5d54;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;line-height:1.4}
+.telegram-login-card label{display:block;margin:0 0 8px;color:#34352f;font-size:13px;font-weight:600}
+.telegram-login-card input{display:block;width:100%;height:58px;padding:0 14px;border:1.5px solid #a7a798;border-radius:13px;outline:0;background:#fff;color:#181817;font-family:ui-monospace,"SFMono-Regular",Menlo,monospace;font-size:25px;line-height:58px;font-weight:700;letter-spacing:.08em;text-align:center;text-transform:uppercase}
+.telegram-login-card input:focus{border-color:#181817;box-shadow:0 0 0 3px rgba(24,24,23,.1)}
+.telegram-login-card input::placeholder{color:#aaa99d}
+.telegram-login-card>button{width:100%;min-height:52px;margin-top:17px;border:0;border-radius:13px;background:#181817;color:#fff;font-size:17px;font-weight:600}
+.telegram-login-card>button:disabled{opacity:.42}
+.telegram-login-card small{display:block;margin-top:14px;color:#74746b;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:12px;line-height:1.4;text-align:center}
+.telegram-login-error{margin:10px 0 -3px;color:#9e3129;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;line-height:1.35}
+@media(max-width:350px){.telegram-login-flow{padding-inline:14px}.telegram-login-card{padding:25px 18px 20px}.telegram-login-card h1{font-size:25px}.telegram-login-card input{font-size:22px}}
+
 .editor-note{margin:-16px 0 20px;color:#6f7168;font-size:11px;line-height:1.35}
 
 /* Remote 1/0 presentation switch. Both modes keep the demo notice visible. */
