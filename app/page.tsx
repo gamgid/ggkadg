@@ -66,7 +66,7 @@ export default function HomePage(){
       window.removeEventListener('wheel',preventWheelZoom);
     };
   },[]);
-  useEffect(()=>{let active=true;const saved=storageService.load<Stored>();let restoredProfile=baseProfile;if(saved){const injectedV2Profile=saved.profile?.firstName==='Марія'&&saved.profile?.lastName==='Приклад'&&saved.profile?.middleName==='Андріївна';const savedProfile=saved.profile as (Partial<Profile>&{city?:string})|undefined;restoredProfile=injectedV2Profile?baseProfile:{...baseProfile,...savedProfile,address:savedProfile?.address||savedProfile?.city||baseProfile.address};setProfile(restoredProfile);setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});setReady(true);const session=loadProfileSession();if(!session){setAuthState('needs-code');return()=>{active=false}}resumeProfileSession(session).then(profileId=>{if(!active)return;setProfile(current=>current.id===profileId?current:{...baseProfile,id:profileId});setAuthState('authenticated');setFlowPhase('complete')}).catch(()=>{if(!active)return;clearProfileSession();setAuthState('needs-code')});return()=>{active=false}},[]);
+  useEffect(()=>{let active=true;const saved=storageService.load<Stored>();let restoredProfile=baseProfile;if(saved){const injectedV2Profile=saved.profile?.firstName==='Марія'&&saved.profile?.lastName==='Приклад'&&saved.profile?.middleName==='Андріївна';const savedProfile=saved.profile as (Partial<Profile>&{city?:string})|undefined;restoredProfile=injectedV2Profile?baseProfile:{...baseProfile,...savedProfile,address:savedProfile?.address||savedProfile?.city||baseProfile.address};setProfile(restoredProfile);setQr(saved.qr||makeQr());setAnimations(saved.animations!==false)}else{setQr(makeQr())}navigator.serviceWorker?.register(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/sw.js`, {scope: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/`}).catch(()=>{});setReady(true);const session=loadProfileSession();if(!session){setAuthState('needs-code');return()=>{active=false}}resumeProfileSession(session).then(profileId=>{if(!active)return;setProfile(current=>current.id===profileId?current:{...baseProfile,id:profileId});setAuthState('authenticated')}).catch(()=>{if(!active)return;clearProfileSession();setAuthState('needs-code')});return()=>{active=false}},[]);
   useEffect(()=>{if(ready&&authState==='authenticated')storageService.save<Stored>({profile,qr,animations,notices:messages})},[profile,qr,animations,ready,authState]);
   useEffect(()=>{
     if(!ready)return;
@@ -115,22 +115,45 @@ export default function HomePage(){
     {notice&&<div className="toast" onAnimationEnd={()=>setNotice(null)}>{notice}</div>}
   </main>;
   return <div className={`app-flow-stack ${flowPhase==='transitioning'?'is-transitioning':''}`}>
-    {flowPhase!=='complete'&&<EntryFlow onComplete={completeFlow} exiting={flowPhase==='transitioning'} checking={authState==='checking'}/>} 
+    {flowPhase!=='complete'&&<EntryFlow onComplete={completeFlow} exiting={flowPhase==='transitioning'} authState={authState} profileId={profile.id}/>} 
     {flowPhase!=='entry'&&app}
   </div>;
 }
 
-function EntryFlow({onComplete,exiting,checking}:{onComplete:(profileId:string)=>void;exiting:boolean;checking:boolean}){
-  const [stage,setStage]=useState<'launch'|'login'>('launch');
+function EntryFlow({onComplete,exiting,authState,profileId}:{onComplete:(profileId:string)=>void;exiting:boolean;authState:'checking'|'needs-code'|'authenticated';profileId:string}){
+  const [stage,setStage]=useState<'launch'|'login'|'pin'>('launch');
   const [code,setCode]=useState('');
   const [submitting,setSubmitting]=useState(false);
   const [error,setError]=useState<string|null>(null);
+  const [pendingProfileId,setPendingProfileId]=useState<string|null>(null);
+  const [pinLength,setPinLength]=useState(0);
+  const [pressed,setPressed]=useState<number|null>(null);
+  const completingRef=useRef(false);
 
-  useEffect(()=>{if(stage!=='launch'||checking)return;const id=window.setTimeout(()=>setStage('login'),900);return()=>window.clearTimeout(id)},[stage,checking]);
+  useEffect(()=>{if(stage!=='launch'||authState==='checking')return;const id=window.setTimeout(()=>{if(authState==='authenticated'){setPendingProfileId(profileId);setStage('pin')}else setStage('login')},900);return()=>window.clearTimeout(id)},[stage,authState,profileId]);
+  useEffect(()=>{if(stage!=='pin')return;const onKeyDown=(event:KeyboardEvent)=>{if(/^\d$/.test(event.key))enterDigit(Number(event.key));if(event.key==='Backspace')setPinLength(value=>Math.max(0,value-1))};window.addEventListener('keydown',onKeyDown);return()=>window.removeEventListener('keydown',onKeyDown)});
   const formatCode=(value:string)=>{const clean=value.toUpperCase().replace(/[^A-Z2-9]/g,'').slice(0,8);return clean.length>4?`${clean.slice(0,4)}-${clean.slice(4)}`:clean};
-  const submit=async()=>{if(submitting||!/^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(code))return;setSubmitting(true);setError(null);try{const session=await exchangeTelegramCode(code);onComplete(session.profileId)}catch(reason){const message=reason instanceof Error?reason.message:'';setError(message==='code-expired'||message==='invalid-code'?'ID недійсний або вже використаний. Отримайте новий у боті.':'Не вдалося увійти. Перевірте інтернет і спробуйте ще раз.');setSubmitting(false)}};
+  const submit=async()=>{if(submitting||!/^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(code))return;setSubmitting(true);setError(null);try{const session=await exchangeTelegramCode(code);setPendingProfileId(session.profileId);setPinLength(0);setStage('pin')}catch(reason){const message=reason instanceof Error?reason.message:'';setError(message==='code-expired'||message==='invalid-code'?'ID недійсний або вже використаний. Отримайте новий у боті.':'Не вдалося увійти. Перевірте інтернет і спробуйте ще раз.');setSubmitting(false)}};
+  const enterDigit=(digit:number)=>{if(completingRef.current||pinLength>=4)return;setPressed(digit);window.setTimeout(()=>setPressed(null),110);const next=pinLength+1;setPinLength(next);if(next===4){completingRef.current=true;window.setTimeout(()=>onComplete(pendingProfileId||profileId),120)}};
+  const erase=()=>{if(!completingRef.current)setPinLength(value=>Math.max(0,value-1))};
+  const useAnotherCode=()=>{clearProfileSession();completingRef.current=false;setPendingProfileId(null);setPinLength(0);setCode('');setSubmitting(false);setError(null);setStage('login')};
+  const keys=[1,2,3,4,5,6,7,8,9];
 
   if(stage==='launch')return <main className="entry-flow launch-screen" aria-label="Запуск демонстраційного застосунку"><div className="launch-identity"><img className="launch-emblem" src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/launch-emblem.png`} alt="Демонстраційний застосунок"/></div></main>;
+
+  if(stage==='pin')return <main className={`entry-flow auth-flow ${exiting?'is-exiting':''}`}>
+    <section className="pin-screen" aria-label="Введення демонстраційного коду">
+      <h1>Код для входу</h1>
+      <div className="pin-dots" aria-label={`Введено ${pinLength} із 4 символів`}>{[0,1,2,3].map(index=><span key={index} className={index<pinLength?'filled':''}/>)}</div>
+      <div className="numeric-keypad">
+        {keys.map(digit=><button key={digit} type="button" className={pressed===digit?'pressed':''} onPointerDown={()=>setPressed(digit)} onPointerCancel={()=>setPressed(null)} onPointerUp={()=>setPressed(null)} onClick={()=>enterDigit(digit)} aria-label={`Цифра ${digit}`}>{digit}</button>)}
+        <span aria-hidden="true"/>
+        <button type="button" className={pressed===0?'pressed':''} onPointerDown={()=>setPressed(0)} onPointerCancel={()=>setPressed(null)} onPointerUp={()=>setPressed(null)} onClick={()=>enterDigit(0)} aria-label="Цифра 0">0</button>
+        <button type="button" className="pin-erase" onClick={erase} aria-label="Видалити останній символ"><span>×</span></button>
+      </div>
+      <button type="button" className="pin-forgot" onClick={useAnotherCode}>Не пам’ятаю код для входу</button>
+    </section>
+  </main>;
 
   return <main className={`entry-flow auth-flow telegram-login-flow ${exiting?'is-exiting':''}`}>
     <form className="telegram-login-card" onSubmit={event=>{event.preventDefault();void submit()}}>
