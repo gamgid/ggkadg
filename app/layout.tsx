@@ -13,9 +13,13 @@ export const metadata: Metadata = {
   description: 'Демонстраційна пародія мобільного сервісу. Не є документом.',
   manifest: `${basePath}/manifest.webmanifest`,
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Облік DEMO' },
-  icons: { apple: `${basePath}/icon-192.png`, icon: `${basePath}/icon-192.png` },
-  openGraph: { title: 'Облік DEMO', description: 'Демонстраційна пародія — не є документом', images: [`${basePath}/icon-512.png`] },
-  twitter: { card: 'summary', title: 'Облік DEMO', description: 'Демонстраційна пародія — не є документом', images: [`${basePath}/icon-512.png`] },
+  icons: {
+    apple: [{ url: `${basePath}/apple-touch-icon-v3.png`, sizes: '180x180', type: 'image/png' }],
+    icon: [{ url: `${basePath}/pwa-icon-192-v3.png`, sizes: '192x192', type: 'image/png' }],
+    shortcut: `${basePath}/pwa-icon-192-v3.png`,
+  },
+  openGraph: { title: 'Облік DEMO', description: 'Демонстраційна пародія — не є документом', images: [`${basePath}/pwa-icon-512-v3.png`] },
+  twitter: { card: 'summary', title: 'Облік DEMO', description: 'Демонстраційна пародія — не є документом', images: [`${basePath}/pwa-icon-512-v3.png`] },
 };
 export const viewport: Viewport = {
   themeColor: '#243d31',
