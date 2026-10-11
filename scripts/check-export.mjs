@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH || '';
-for (const file of ['index.html', '404.html', 'sw.js', 'offline.html', 'manifest.webmanifest', 'apple-touch-icon-v2.png', 'pwa-icon-192-v2.png', 'pwa-icon-512-v2.png', 'p/demo-profile/index.html']) {
+for (const file of ['index.html', '404.html', 'sw.js', 'offline.html', 'manifest.webmanifest', 'apple-touch-icon-v3.png', 'pwa-icon-192-v3.png', 'pwa-icon-512-v3.png', 'p/demo-profile/index.html']) {
   await access(path.join('out', file));
 }
 const html = await readFile('out/index.html', 'utf8');
 assert(html.includes('Облік DEMO'), 'Missing demo branding');
 assert(!html.includes('chatgpt.site'), 'Old hosting URL remains in exported page');
 assert(html.includes(`${base}/manifest.webmanifest`), 'Manifest base path mismatch');
-assert(html.includes(`${base}/apple-touch-icon-v2.png`), 'Apple touch icon path mismatch');
+assert(html.includes(`${base}/apple-touch-icon-v3.png`), 'Apple touch icon path mismatch');
 const manifest = JSON.parse(await readFile('out/manifest.webmanifest', 'utf8'));
 assert.equal(manifest.start_url, './');
 assert.equal(manifest.scope, './');
