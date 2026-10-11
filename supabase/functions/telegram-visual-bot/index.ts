@@ -499,10 +499,6 @@ async function showProfile(chatId: number, user: TelegramUser): Promise<void> {
   }
 }
 
-function telegramUserName(user: TelegramUser): string {
-  return [user.first_name, user.last_name].filter(Boolean).join(" ").trim() || "Имя не указано";
-}
-
 async function getActivePaymentOrder(telegramUserId: number): Promise<PaymentOrder | null> {
   const query = new URLSearchParams({
     select: "order_code,telegram_user_id,profile_id,plan_months,amount_uah,status,receipt_received_at,created_at,confirmed_at",
@@ -599,7 +595,6 @@ async function notifyPaymentOperatorsNewOrder(order: PaymentOrder, account: Prof
     "",
     `Заявка: ${order.order_code}`,
     paymentPlanText(order),
-    `Пользователь: ${telegramUserName(user)}`,
     `DEMO-ID: ${account.profile_id}`,
     `Telegram ID: ${user.id}`,
     `Время: ${formatDate(new Date().toISOString())}`,
@@ -666,13 +661,12 @@ async function patchPaymentOrder(
   return rows[0] ?? null;
 }
 
-async function notifyPaymentReported(order: PaymentOrder, user: TelegramUser): Promise<void> {
+async function notifyPaymentReported(order: PaymentOrder): Promise<void> {
   const text = [
     "💰 Пользователь отметил оплату",
     "",
     `Заявка: ${order.order_code}`,
     paymentPlanText(order),
-    `Пользователь: ${telegramUserName(user)}`,
     `DEMO-ID: ${order.profile_id}`,
     "Ожидается обязательная квитанция. Подтверждение станет доступно после её получения.",
   ].join("\n");
@@ -1053,7 +1047,7 @@ async function handleCallback(callback: TelegramCallbackQuery): Promise<void> {
       message_id: callback.message.message_id,
       reply_markup: { inline_keyboard: [] },
     });
-    await notifyPaymentReported(updated, callback.from);
+    await notifyPaymentReported(updated);
     await sendMessage(
       callback.message.chat.id,
       `✅ Вы отметили оплату по заявке ${updated.order_code}.\n\nТеперь обязательно отправьте квитанцию: фото, скриншот или PDF до 10 МБ. Без квитанции оператор не сможет подтвердить оплату.`,

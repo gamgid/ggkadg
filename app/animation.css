@@ -489,6 +489,14 @@ html,body{background:#e1dfca}
   .document-view-header{padding-left:18px;padding-right:18px}
 }
 
+.settings-warning{
+  margin:16px 8px 0!important;
+  color:#6f7268;
+  font-size:12px!important;
+  line-height:1.35!important;
+  text-align:center;
+}
+
 /* Bottom navigation reference pass. Keep the accepted panel bounds and
    standalone safe-area anchoring; only icons and labels match the reference. */
 .video-nav button{
