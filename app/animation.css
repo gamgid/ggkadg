@@ -478,6 +478,7 @@ html,body{background:#e1dfca}
 .document-view-card-registration{height:241px;margin-top:8px;padding:0}
 .document-view-registration-office{height:109px;padding:16px;border-bottom:1px solid #e0dfcc}
 .document-view-register-meta{height:132px;padding:16px;display:grid;align-content:start;gap:16px}
+.document-view-card-deferral{min-height:118px;margin-top:8px;display:grid;align-content:start;gap:16px}
 .document-view-card-office{height:149px;margin-top:8px;display:grid;align-content:start;gap:14px}
 .document-view-card-updated{height:66px;margin-top:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .document-view-card-updated span{font-size:14px;line-height:17px;font-weight:300}

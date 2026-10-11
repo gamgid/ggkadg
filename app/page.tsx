@@ -25,9 +25,9 @@ const baseProfile:Profile={
   id:'DEMO-57392817',firstName:'Тестовий',lastName:'Демо',middleName:'Профіль',birthDate:'2000-01-01',
   phone:'+380 00 000 00 00',email:'demo@example.com',address:'Україна, навчальна область, м. Демо, вул. Тестова, буд. 1',
   taxId:'0000000000',status:'Демонстраційний статус',updatedAt:'09.09.2026',
-  documentGeneratedAt:'09.09.2026, 18:42',documentValidUntil:'09.09.2027',accountCategory:'Призовник',removalReason:'—',
+  documentGeneratedAt:'09.09.2026, 18:42',documentValidUntil:'09.09.2027',accountCategory:'Виключено з обліку',removalReason:'—',
   tcc:'Навчальний міський територіальний центр комплектування та соціальної підтримки',rank:'—',
-  oberihNumber:'DEMO23012024000004',vos:'—',deferralType:'—',deferralUntil:'—',policeReason:'—',policeRequestDate:'—',
+  oberihNumber:'DEMO23012024000004',vos:'—',deferralType:'—',deferralUntil:'до завершення мобілізації',policeReason:'—',policeRequestDate:'—',
   vlkDecision:'Придатний',vlkDate:'23.01.2024',disabilityGroup:'—',disabilityUntil:'—',disabilityReason:'—',dataClarifiedAt:'09.09.2026'
 };
 const services=[
@@ -42,6 +42,8 @@ const services=[
 ];
 const questions=['Електронна демо-черга','Дані профілю','Категорії обліку','Відстрочка','Загальні питання','Направлення','Можливості','Виправити дані онлайн'];
 const messages=['Дані профілю збережено','Новий демонстраційний QR створено','Це тестова версія сервісу'];
+const accountStatus='Виключено з обліку';
+const deferralTerm='до завершення мобілізації';
 const deferralTypes=[
   '—',
   'Студент',
@@ -59,13 +61,12 @@ const deferralTypes=[
 ] as const;
 const makeQr=()=>`DEMO-${crypto.getRandomValues(new Uint32Array(1))[0].toString(16).toUpperCase().padStart(8,'0').slice(0,8)}-${crypto.getRandomValues(new Uint32Array(1))[0].toString(16).toUpperCase().padStart(8,'0').slice(0,8)}`;
 const uaDate=(value:string)=>value.split('-').reverse().join('.');
-const kyivDate=(timestamp=Date.now())=>new Intl.DateTimeFormat('uk-UA',{timeZone:'Europe/Kyiv',day:'2-digit',month:'2-digit',year:'numeric'}).format(timestamp);
 const qrVersion=18;
 const qrExpiryDate=()=>{const date=new Date();date.setFullYear(date.getFullYear()+1);const months=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`};
 const DemoQr=({value,size}:{value:string;size:number})=><QRCodeSVG value={value} size={size} minVersion={qrVersion} level="M" boostLevel={false}/>;
 
 export default function HomePage(){
-  const [ready,setReady]=useState(false),[authState,setAuthState]=useState<'checking'|'needs-code'|'authenticated'>('checking'),[flowPhase,setFlowPhase]=useState<'entry'|'transitioning'|'complete'>('entry'),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[watermarkMode,setWatermarkMode]=useState<WatermarkMode>(1),[deferralUntil,setDeferralUntil]=useState(()=>kyivDate()),[notice,setNotice]=useState<string|null>(null);
+  const [ready,setReady]=useState(false),[authState,setAuthState]=useState<'checking'|'needs-code'|'authenticated'>('checking'),[flowPhase,setFlowPhase]=useState<'entry'|'transitioning'|'complete'>('entry'),[tab,setTab]=useState<Tab>('id'),[panel,setPanel]=useState<Panel>(null),[documentOpen,setDocumentOpen]=useState(false),[pdfOpen,setPdfOpen]=useState(false),[jobsContractsOpen,setJobsContractsOpen]=useState(true),[qrOpen,setQrOpen]=useState(false),[seconds,setSeconds]=useState(180),[profile,setProfile]=useState(baseProfile),[qr,setQr]=useState('DEMO-00000000-00000000'),[animations,setAnimations]=useState(true),[watermarkMode,setWatermarkMode]=useState<WatermarkMode>(1),[notice,setNotice]=useState<string|null>(null);
   useEffect(()=>{
     const nonPassive={passive:false} as const;
     const preventGesture=(event:Event)=>event.preventDefault();
@@ -96,15 +97,12 @@ export default function HomePage(){
         if(active&&sequence===requestSequence){
           if(expiryTimeout!==undefined)window.clearTimeout(expiryTimeout);
           setWatermarkMode(result.mode);
-          const now=Date.now();
-          const hasActiveSubscription=result.mode===0&&result.expiresAt!==undefined&&result.expiresAt>now;
-          setDeferralUntil(kyivDate(hasActiveSubscription?result.expiresAt:now));
           document.documentElement.dataset.remoteConfigStatus=result.status;
           if(result.mode===0&&result.expiresAt!==undefined){
             const delay=Math.max(0,result.expiresAt-Date.now());
             expiryTimeout=window.setTimeout(()=>{
               if(!active)return;
-              if(delay<=maxTimeoutMs){setWatermarkMode(1);setDeferralUntil(kyivDate())}
+              if(delay<=maxTimeoutMs)setWatermarkMode(1);
               refresh();
             },Math.min(delay,maxTimeoutMs));
           }
@@ -129,7 +127,7 @@ export default function HomePage(){
   const copyDeviceNumber=async()=>{try{await navigator.clipboard.writeText(profile.id);setNotice('Номер демо-пристрою скопійовано')}catch{setNotice('Не вдалося скопіювати номер пристрою')}};
   const completeFlow=useCallback((profileId:string)=>{setProfile(current=>current.id===profileId?current:{...baseProfile,id:profileId});setAuthState('authenticated');setFlowPhase(value=>value==='entry'?'transitioning':value)},[]);
   useEffect(()=>{if(flowPhase!=='transitioning')return;const id=window.setTimeout(()=>setFlowPhase('complete'),340);return()=>window.clearTimeout(id)},[flowPhase]);
-  const displayProfile={...profile,deferralUntil};
+  const displayProfile={...profile,accountCategory:accountStatus,deferralUntil:deferralTerm};
   const app=<main className={`video-app flow-main watermark-${watermarkMode===1?'large':'compact'} ${flowPhase==='transitioning'?'is-entering':''} ${animations?'':'no-motion'} ${panel?'panel-open':''} ${documentOpen?'document-open':''}`}>
     <div className="video-watermark">ДЕМО / ПАРОДІЯ — НЕ Є СПРАВЖНІМ ДОКУМЕНТОМ</div>
     {panel?<SubPanel panel={panel} close={()=>setPanel(panel==='profile'?'settings':null)} openProfile={()=>setPanel('profile')} profile={profile} setProfile={setProfile} animations={animations} setAnimations={setAnimations} openQr={()=>setQrOpen(true)}/>:<>
@@ -251,7 +249,7 @@ function PdfPreview({profile,qr,close,notify}:{profile:Profile;qr:string;close:(
         <div className="pdf-grid pdf-grid-two"><PdfField label="Категорія обліку">{profile.accountCategory}</PdfField><PdfField label="Підстава зняття/виключення">{profile.removalReason}</PdfField></div>
         <div className="pdf-rule"><PdfField label="ТЦК та СП">{profile.tcc}</PdfField></div>
         <div className="pdf-grid pdf-grid-three pdf-rule pdf-ruleless"><PdfField label="Звання">{profile.rank}</PdfField><PdfField label="Номер в реєстрі Оберіг">{profile.oberihNumber}</PdfField><PdfField label="ВОС">{profile.vos}</PdfField></div>
-        <div className="pdf-rule pdf-lines"><PdfField label="Тип відстрочки">{profile.deferralType}</PdfField><PdfField label="Відстрочка до">{profile.deferralUntil}</PdfField></div>
+        <div className="pdf-rule pdf-lines"><PdfField label="Тип відстрочки">{profile.deferralType}</PdfField><PdfField label="Відстрочка">{profile.deferralUntil}</PdfField></div>
         <div className="pdf-rule pdf-lines"><PdfField label="Причина звернення до Нацполіції">{profile.policeReason}</PdfField><PdfField label="Дата звернення">{profile.policeRequestDate}</PdfField></div>
         <div className="pdf-rule pdf-lines"><PdfField label="Постанова ВЛК">{profile.vlkDecision}</PdfField><PdfField label="Дата ВЛК">{profile.vlkDate}</PdfField></div>
         <div className="pdf-rule pdf-ruleless pdf-lines"><PdfField label="Група інвалідності">{profile.disabilityGroup}</PdfField><PdfField label="Діє до">{profile.disabilityUntil}</PdfField></div>
@@ -369,6 +367,10 @@ function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
             <Fact label="Категорія обліку">{profile.accountCategory}</Fact>
             <Fact label="Номер в реєстрі Оберіг">{profile.oberihNumber}</Fact>
           </div>
+        </section>
+        <section className="document-view-card document-view-card-deferral">
+          <Fact label="Тип відстрочки">{profile.deferralType}</Fact>
+          <Fact label="Відстрочка">{profile.deferralUntil}</Fact>
         </section>
         <section className="document-view-card document-view-card-office">
           <Fact label="Телефон">{profile.phone}</Fact>
@@ -491,7 +493,7 @@ function ProfileEditor({profile,save,close}:{profile:Profile;save:(p:Profile)=>v
     ['email','Email','email'],['address','Адреса проживання','text']
   ] as const;
   const documentFields=[
-    ['documentGeneratedAt','Сформовано'],['documentValidUntil','Дійсний до'],['accountCategory','Категорія обліку'],
+    ['documentGeneratedAt','Сформовано'],['documentValidUntil','Дійсний до'],
     ['removalReason','Підстава зняття/виключення'],['tcc','ТЦК та СП'],['rank','Звання'],
     ['oberihNumber','Номер в реєстрі Оберіг'],['vos','ВОС'],['policeReason','Причина звернення до Нацполіції'],
     ['policeRequestDate','Дата звернення'],['vlkDecision','Постанова ВЛК'],['vlkDate','Дата ВЛК'],
@@ -499,7 +501,7 @@ function ProfileEditor({profile,save,close}:{profile:Profile;save:(p:Profile)=>v
     ['disabilityReason','Причина інвалідності'],['dataClarifiedAt','Дата уточнення даних']
   ] as const;
   const field=(key:keyof Profile,label:string,type='text')=><label className="edit-field" key={key}><span>{label}</span><input required type={type} inputMode={key==='taxId'?'numeric':undefined} maxLength={key==='taxId'?10:240} value={p[key]||''} onChange={event=>set(key,event.target.value)}/></label>;
-  const submit=()=>{const clean={...p};for(const key of [...personalFields.map(item=>item[0]),...documentFields.map(item=>item[0])])clean[key]=clean[key].trim();save(clean)};
+  const submit=()=>{const clean={...p,accountCategory:accountStatus,deferralUntil:deferralTerm};for(const key of [...personalFields.map(item=>item[0]),...documentFields.map(item=>item[0])])clean[key]=clean[key].trim();save(clean)};
   return <form className="sub-screen editor" onSubmit={event=>{event.preventDefault();submit()}}>
     <button type="button" className="back" onClick={close}><ChevronLeft/></button>
     <h1>Дані профілю</h1>
@@ -509,7 +511,9 @@ function ProfileEditor({profile,save,close}:{profile:Profile;save:(p:Profile)=>v
     {personalFields.map(([key,label,type])=>field(key,label,type))}
     <label className="edit-field"><span>Демонстраційний статус</span><select value={p.status} onChange={event=>set('status',event.target.value)}><option>Демонстраційний статус</option><option>Дані уточнено</option><option>Очікує оновлення</option></select></label>
     <h2 className="editor-section-title">Дані військового обліку та PDF</h2>
-    <p className="editor-section-note">Тип відстрочки обирається нижче. Дата автоматично дорівнює закінченню активної підписки, а без оплати — поточній даті за Києвом.</p>
+    <p className="editor-section-note">Тип відстрочки обирається нижче. Статус обліку та строк відстрочки однаково показуються на картці, у повній інформації та PDF.</p>
+    <label className="edit-field"><span>Статус обліку</span><input value={accountStatus} readOnly/></label>
+    <label className="edit-field"><span>Відстрочка</span><input value={deferralTerm} readOnly/></label>
     <label className="edit-field"><span>Тип відстрочки</span><select value={p.deferralType} onChange={event=>set('deferralType',event.target.value)}>{!deferralTypes.includes(p.deferralType as typeof deferralTypes[number])&&<option value={p.deferralType}>{p.deferralType}</option>}{deferralTypes.map(value=><option key={value} value={value}>{value}</option>)}</select></label>
     {documentFields.map(([key,label])=>field(key,label))}
     <button className="orange-button">Зберегти локально</button>
