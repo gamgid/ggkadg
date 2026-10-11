@@ -509,7 +509,7 @@ function ProfileEditor({profile,save,close}:{profile:Profile;save:(p:Profile)=>v
     <label className="photo-picker">{p.photo?<img src={p.photo} alt="Фото профілю"/>:<span><Upload/></span>}<b>Змінити фото</b><input type="file" accept="image/*" onChange={event=>photo(event.target.files?.[0])}/></label>
     <h2 className="editor-section-title">Особисті та контактні дані</h2>
     {personalFields.map(([key,label,type])=>field(key,label,type))}
-    <label className="edit-field"><span>Демонстраційний статус</span><select value={p.status} onChange={event=>set('status',event.target.value)}><option>Демонстраційний статус</option><option>Дані уточнено</option><option>Очікує оновлення</option></select></label>
+    <label className="edit-field"><span>Документ оновлено</span><select value={p.status} onChange={event=>set('status',event.target.value)}><option>Документ оновлено</option><option>Дані уточнено</option><option>Очікує оновлення</option></select></label>
     <h2 className="editor-section-title">Дані військового обліку та PDF</h2>
     <p className="editor-section-note">Тип відстрочки обирається нижче. Статус обліку та строк відстрочки однаково показуються на картці, у повній інформації та PDF.</p>
     <label className="edit-field"><span>Статус обліку</span><input value={accountStatus} readOnly/></label>
