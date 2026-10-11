@@ -24,7 +24,7 @@ type Stored = { profile:Profile; qr:string; animations:boolean; notices:string[]
 const baseProfile:Profile={
   id:'DEMO-57392817',firstName:'Тестовий',lastName:'Демо',middleName:'Профіль',birthDate:'2000-01-01',
   phone:'+380 00 000 00 00',email:'demo@example.com',address:'Україна, навчальна область, м. Демо, вул. Тестова, буд. 1',
-  taxId:'0000000000',status:'Демонстраційний статус',updatedAt:'09.09.2026',
+  taxId:'0000000000',status:'Документ оновлено о',updatedAt:'09.09.2026',
   documentGeneratedAt:'09.09.2026, 18:42',documentValidUntil:'09.09.2027',accountCategory:'Виключено з обліку',removalReason:'—',
   tcc:'Навчальний міський територіальний центр комплектування та соціальної підтримки',rank:'—',
   oberihNumber:'DEMO23012024000004',vos:'—',deferralType:'—',deferralUntil:'до завершення мобілізації',policeReason:'—',policeRequestDate:'—',
@@ -267,7 +267,7 @@ function PdfPreview({profile,qr,close,notify}:{profile:Profile;qr:string;close:(
 }
 
 function DocumentView({profile,close}:{profile:Profile;close:()=>void}){
-  const marquee='ДЕМО • НЕ Є ДОКУМЕНТОМ • ДОКУМЕНТ ОНОВЛЕНО О 18:42 •';
+  const marquee='ДОКУМЕНТ ОНОВЛЕНО О 18:42 • ДОКУМЕНТ ОНОВЛЕНО О 18:42 •';
   const closeRef=useRef(close);
   closeRef.current=close;
   const sheetRef=useRef<HTMLElement|null>(null);
