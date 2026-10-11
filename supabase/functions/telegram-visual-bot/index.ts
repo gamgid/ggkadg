@@ -82,8 +82,8 @@ const TUTORIAL_IMAGE_URLS = [
 const MAX_RECEIPT_BYTES = 10 * 1024 * 1024;
 const PAYMENT_PLANS = [
   { months: 1, amountUah: 1200 },
-  { months: 2, amountUah: 2300 },
-  { months: 6, amountUah: 6800 },
+  { months: 2, amountUah: 2200 },
+  { months: 6, amountUah: 6000 },
   { months: 12, amountUah: 11500 },
 ] as const;
 
@@ -573,7 +573,7 @@ function paymentStatusText(order: PaymentOrder): string {
   if (order.status === "waiting_payment") return "Реквизиты уже отправлены. После перевода нажмите «Я оплатил».";
   return order.receipt_received_at
     ? "Оплата отмечена, чек получен и ожидает проверки."
-    : "Оплата отмечена и ожидает проверки. Чек можно отправить фото или PDF.";
+    : "Оплата отмечена. Для проверки обязательно отправьте квитанцию: фото, изображение или PDF.";
 }
 
 function userPaymentKeyboard(order: PaymentOrder): Record<string, unknown> | undefined {
@@ -590,22 +590,16 @@ function userPaymentKeyboard(order: PaymentOrder): Record<string, unknown> | und
       ],
     };
   }
-  if (order.status === "payment_reported" && !order.receipt_received_at) {
-    return {
-      inline_keyboard: [[{ text: "Без чека — ждать проверку", callback_data: `payment|skip|${order.order_code}` }]],
-    };
-  }
   return undefined;
 }
 
 async function notifyPaymentOperatorsNewOrder(order: PaymentOrder, account: ProfileAccount, user: TelegramUser): Promise<number> {
-  const username = user.username ? `@${user.username}` : "без @username";
   const notification = [
     "🆕 Новая заявка на оплату",
     "",
     `Заявка: ${order.order_code}`,
     paymentPlanText(order),
-    `Пользователь: ${telegramUserName(user)} (${username})`,
+    `Пользователь: ${telegramUserName(user)}`,
     `DEMO-ID: ${account.profile_id}`,
     `Telegram ID: ${user.id}`,
     `Время: ${formatDate(new Date().toISOString())}`,
@@ -680,16 +674,13 @@ async function notifyPaymentReported(order: PaymentOrder, user: TelegramUser): P
     paymentPlanText(order),
     `Пользователь: ${telegramUserName(user)}`,
     `DEMO-ID: ${order.profile_id}`,
-    "Чек необязателен и может прийти следующим сообщением.",
+    "Ожидается обязательная квитанция. Подтверждение станет доступно после её получения.",
   ].join("\n");
   await Promise.allSettled(PAYMENT_OPERATOR_IDS.map(chatId => paymentTelegram("sendMessage", {
     chat_id: chatId,
     text,
     reply_markup: {
-      inline_keyboard: [[
-        { text: "✅ Подтвердить", callback_data: `order|approve|${order.order_code}` },
-        { text: "❌ Отклонить", callback_data: `order|reject|${order.order_code}` },
-      ]],
+      inline_keyboard: [[{ text: "❌ Отклонить", callback_data: `order|reject|${order.order_code}` }]],
     },
   })));
 }
@@ -764,22 +755,38 @@ async function handleReceipt(message: TelegramMessage): Promise<boolean> {
       message.chat.id,
       tooLarge
         ? "Файл слишком большой. Максимальный размер чека — 10 МБ."
-        : "Не удалось переслать чек оператору. Попробуйте ещё раз или продолжите без чека.",
+        : "Не удалось переслать квитанцию оператору. Попробуйте ещё раз.",
       { reply_markup: MAIN_MENU },
     );
     return true;
   }
   if (delivered === 0) {
-    await sendMessage(message.chat.id, "Не удалось доставить чек оператору. Попробуйте ещё раз или продолжите без чека.", {
+    await sendMessage(message.chat.id, "Не удалось доставить квитанцию оператору. Попробуйте ещё раз.", {
       reply_markup: MAIN_MENU,
     });
     return true;
   }
-  await patchPaymentOrder(active.order_code, "payment_reported", {
+  const updated = await patchPaymentOrder(active.order_code, "payment_reported", {
     receipt_received_at: new Date().toISOString(),
     receipt_kind: source.kind,
   });
-  await sendMessage(message.chat.id, "✅ Чек отправлен оператору. Ожидайте подтверждения оплаты.", { reply_markup: MAIN_MENU });
+  if (!updated) {
+    await sendMessage(message.chat.id, "Заявка уже обработана оператором. Откройте «💳 Оплата», чтобы увидеть актуальный статус.", {
+      reply_markup: MAIN_MENU,
+    });
+    return true;
+  }
+  await Promise.allSettled(PAYMENT_OPERATOR_IDS.map(chatId => paymentTelegram("sendMessage", {
+    chat_id: chatId,
+    text: `✅ Обязательная квитанция по заявке ${active.order_code} получена. Заявку можно подтвердить.`,
+    reply_markup: {
+      inline_keyboard: [[
+        { text: "✅ Подтвердить", callback_data: `order|approve|${active.order_code}` },
+        { text: "❌ Отклонить", callback_data: `order|reject|${active.order_code}` },
+      ]],
+    },
+  })));
+  await sendMessage(message.chat.id, "✅ Квитанция отправлена оператору. Ожидайте подтверждения оплаты.", { reply_markup: MAIN_MENU });
   return true;
 }
 
@@ -792,7 +799,7 @@ async function showTutorial(chatId: number, section = "main"): Promise<void> {
     main: "📖 Инструкция\n\nВыберите нужный этап. Здесь можно пройти весь путь: от получения кода до активации подписки.",
     login: "🔑 Вход в приложение\n\n1. Нажмите «Получить новый код».\n2. Скопируйте код формата ABCD-EFGH.\n3. Откройте приложение.\n4. Введите код в течение 10 минут.\n\nКод одноразовый: после успешного входа или окончания 10 минут он больше не действует.",
     pin: "📱 PIN и повторный вход\n\nПосле одноразового кода приложение попросит создать четырёхзначный PIN. Он хранится только на вашем устройстве и боту не передаётся.\n\nПри следующих запусках обычно достаточно PIN. Если вы его забыли, выберите в приложении «Не пам’ятаю код для входу» и получите новый одноразовый код здесь.",
-    payment: "💳 Оплата и подписка\n\n1. Откройте «Оплата» и выберите тариф.\n2. Дождитесь реквизитов от оператора.\n3. После перевода нажмите «Я оплатил».\n4. При желании отправьте фото или PDF чека до 10 МБ.\n5. После подтверждения подписка начнётся с точностью до секунды.\n\nНе переводите деньги до появления реквизитов в боте.",
+    payment: "💳 Оплата и подписка\n\n1. Откройте «Оплата» и выберите тариф.\n2. Дождитесь реквизитов от оператора.\n3. После перевода нажмите «Я оплатил».\n4. Обязательно отправьте квитанцию: фото, изображение или PDF до 10 МБ.\n5. После подтверждения подписка начнётся с точностью до секунды.\n\nБез квитанции оплата не подтверждается. Не переводите деньги до появления реквизитов в боте.",
     status: "👤 Где смотреть результат\n\nВ разделе «Мой профиль» отображаются тариф, точные начало и окончание подписки, оставшееся время и последняя заявка. Кнопка «Обновить профиль» загружает актуальные данные.",
   };
   const text = pages[section] ?? pages.main;
@@ -818,7 +825,7 @@ async function showSettings(chatId: number, section = "main"): Promise<void> {
     main: "⚙️ Настройки\n\nВыберите раздел. Здесь можно обновить данные Telegram, проверить безопасность входа и открыть настройки оплаты.",
     security: "🛡 Безопасность входа\n\n• Профиль привязан к вашему Telegram-аккаунту.\n• Одноразовый код действует 10 минут и сгорает после входа.\n• Не отправляйте код другим людям.\n• Четырёхзначный PIN хранится только на вашем устройстве и не передаётся боту.\n• Бот никогда не просит пароль от Telegram или банковские данные.",
     telegram: "👤 Данные Telegram\n\nИмя и @username синхронизируются из вашего текущего профиля Telegram при открытии профиля или получении нового кода.\n\nСначала измените данные в Telegram, затем нажмите кнопку обновления ниже.",
-    payment: "💳 Оплата и чеки\n\nРеквизиты появляются только после ответа оператора. До этого переводить деньги не нужно. Чек необязателен; поддерживаются фото, изображения и PDF до 10 МБ. Статус последней заявки виден в профиле.",
+    payment: "💳 Оплата и квитанции\n\nРеквизиты появляются только после ответа оператора. До этого переводить деньги не нужно. Квитанция обязательна; поддерживаются фото, изображения и PDF до 10 МБ. Без квитанции оператор не сможет подтвердить оплату. Статус последней заявки виден в профиле.",
   };
   const text = pages[section] ?? pages.main;
   const inlineKeyboard = section === "main"
@@ -1049,7 +1056,7 @@ async function handleCallback(callback: TelegramCallbackQuery): Promise<void> {
     await notifyPaymentReported(updated, callback.from);
     await sendMessage(
       callback.message.chat.id,
-      `✅ Вы отметили оплату по заявке ${updated.order_code}.\n\nТеперь можно отправить фото, скриншот или PDF чека до 10 МБ. Это необязательно — оператор уже получил уведомление и проверит перевод.`,
+      `✅ Вы отметили оплату по заявке ${updated.order_code}.\n\nТеперь обязательно отправьте квитанцию: фото, скриншот или PDF до 10 МБ. Без квитанции оператор не сможет подтвердить оплату.`,
       { reply_markup: userPaymentKeyboard(updated) ?? MAIN_MENU },
     );
     return;
@@ -1075,19 +1082,6 @@ async function handleCallback(callback: TelegramCallbackQuery): Promise<void> {
       text: `Заявка ${order.order_code} отменена пользователем.`,
     })));
     await sendMessage(callback.message.chat.id, `Заявка ${order.order_code} отменена.`, { reply_markup: MAIN_MENU });
-    return;
-  }
-
-  if (event === "skip" && order.status === "payment_reported") {
-    await telegram("answerCallbackQuery", { callback_query_id: callback.id, text: "Ожидаем проверку" });
-    await telegram("editMessageReplyMarkup", {
-      chat_id: callback.message.chat.id,
-      message_id: callback.message.message_id,
-      reply_markup: { inline_keyboard: [] },
-    });
-    await sendMessage(callback.message.chat.id, "Хорошо, чек не обязателен. Ожидайте подтверждения оператора.", {
-      reply_markup: MAIN_MENU,
-    });
     return;
   }
 

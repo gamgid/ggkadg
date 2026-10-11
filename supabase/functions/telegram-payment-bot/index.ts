@@ -218,10 +218,6 @@ function accountName(account: ProfileAccount | null): string {
   return [account.telegram_first_name, account.telegram_last_name].filter(Boolean).join(" ").trim() || "Имя не указано";
 }
 
-function accountUsername(account: ProfileAccount | null): string {
-  return account?.telegram_username ? `@${account.telegram_username}` : "без @username";
-}
-
 function formatDate(value: string | null): string {
   if (!value) return "—";
   return new Intl.DateTimeFormat("ru-RU", {
@@ -263,10 +259,14 @@ function orderKeyboard(order: PaymentOrder): Record<string, unknown> {
   } else if (order.status === "waiting_payment") {
     rows.push([{ text: "❌ Отклонить", callback_data: `order|reject|${order.order_code}` }]);
   } else if (order.status === "payment_reported") {
-    rows.push([
-      { text: "✅ Подтвердить", callback_data: `order|approve|${order.order_code}` },
-      { text: "❌ Отклонить", callback_data: `order|reject|${order.order_code}` },
-    ]);
+    if (order.receipt_received_at) {
+      rows.push([
+        { text: "✅ Подтвердить", callback_data: `order|approve|${order.order_code}` },
+        { text: "❌ Отклонить", callback_data: `order|reject|${order.order_code}` },
+      ]);
+    } else {
+      rows.push([{ text: "❌ Отклонить", callback_data: `order|reject|${order.order_code}` }]);
+    }
   }
   rows.push([{ text: MENU_BUTTON, callback_data: "nav|menu" }]);
   return { inline_keyboard: rows };
@@ -278,7 +278,7 @@ async function orderText(order: PaymentOrder): Promise<string> {
     `Заявка: ${order.order_code}`,
     `Статус: ${statusName(order.status)}`,
     paymentPlanText(order),
-    `Пользователь: ${accountName(account)} (${accountUsername(account)})`,
+    `Пользователь: ${accountName(account)}`,
     `DEMO-ID: ${order.profile_id}`,
     `Telegram ID: ${order.telegram_user_id}`,
     `Создана: ${formatDate(order.created_at)}`,
@@ -343,7 +343,7 @@ async function showHelp(chatId: number): Promise<void> {
       "1. Откройте новую заявку и нажмите «Отправить реквизиты».",
       "2. Ответьте на сообщение-подсказку текстом с реквизитами.",
       "3. Пользователь получит текст в пользовательском боте и нажмёт «Я оплатил».",
-      "4. Чек может прийти фото или PDF, но он необязателен.",
+      "4. Дождитесь обязательной квитанции: без неё подтверждение недоступно.",
       "5. Нажмите «Подтвердить» только после фактической проверки перевода.",
       "",
       "Размер DEMO-маркировки меняется с 1 на 0 только после подтверждения.",
@@ -383,7 +383,7 @@ async function sendPaymentDetails(message: TelegramMessage, orderCode: string, d
 
   await userTelegram("sendMessage", {
     chat_id: order.telegram_user_id,
-    text: `💳 Реквизиты по заявке ${order.order_code}\n${paymentPlanText(order)}\n\nК оплате: ${order.amount_uah ?? "уточните у оператора"} грн\n\n${normalized}\n\nПосле перевода нажмите «✅ Я оплатил». Чек можно отправить следующим сообщением, но это необязательно.`,
+    text: `💳 Реквизиты по заявке ${order.order_code}\n${paymentPlanText(order)}\n\nК оплате: ${order.amount_uah ?? "уточните у оператора"} грн\n\n${normalized}\n\nПосле перевода нажмите «✅ Я оплатил» и обязательно отправьте квитанцию фото, изображением или PDF. Без квитанции оплата не подтверждается.`,
     reply_markup: {
       inline_keyboard: [
         [{ text: "✅ Я оплатил", callback_data: `payment|reported|${order.order_code}` }],
@@ -506,6 +506,10 @@ async function handleCallback(callback: TelegramCallbackQuery): Promise<void> {
     return;
   }
   if (event === "approve" && order.status === "payment_reported") {
+    if (!order.receipt_received_at) {
+      await answerCallback(callback.id, "Сначала пользователь должен отправить квитанцию", true);
+      return;
+    }
     const approved = await approveOrder(order.order_code, callback.from.id);
     if (!approved) {
       await answerCallback(callback.id, "Заявка уже обработана", true);

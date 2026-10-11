@@ -23,8 +23,8 @@ create table if not exists public.payment_orders (
   constraint payment_orders_plan_price_check check (
     (plan_months is null and amount_uah is null)
     or (plan_months = 1 and amount_uah = 1200)
-    or (plan_months = 2 and amount_uah = 2300)
-    or (plan_months = 6 and amount_uah = 6800)
+    or (plan_months = 2 and amount_uah = 2200)
+    or (plan_months = 6 and amount_uah = 6000)
     or (plan_months = 12 and amount_uah = 11500)
   ),
   check (status in ('waiting_operator', 'waiting_payment', 'payment_reported', 'approved', 'rejected', 'cancelled')),
@@ -43,23 +43,29 @@ alter table public.payment_orders add column if not exists subscription_expires_
 alter table public.profile_visuals add column if not exists subscription_started_at timestamptz;
 alter table public.profile_visuals add column if not exists subscription_expires_at timestamptz;
 
+-- Незавершённые заявки переводятся на новые цены. Закрытые заявки сохраняют
+-- историческую сумму, чтобы отчётность не переписывалась задним числом.
+alter table public.payment_orders drop constraint if exists payment_orders_plan_price_check;
+
+update public.payment_orders
+set amount_uah = case plan_months when 2 then 2200 when 6 then 6000 else amount_uah end,
+    updated_at = now()
+where status in ('waiting_operator', 'waiting_payment', 'payment_reported')
+  and ((plan_months = 2 and amount_uah = 2300) or (plan_months = 6 and amount_uah = 6800));
+
+alter table public.payment_orders
+  add constraint payment_orders_plan_price_check check (
+    (plan_months is null and amount_uah is null)
+    or (plan_months = 1 and amount_uah = 1200)
+    or (plan_months = 2 and amount_uah = 2200)
+    or (plan_months = 6 and amount_uah = 6000)
+    or (plan_months = 12 and amount_uah = 11500)
+    or (status in ('approved', 'rejected', 'cancelled') and plan_months = 2 and amount_uah = 2300)
+    or (status in ('approved', 'rejected', 'cancelled') and plan_months = 6 and amount_uah = 6800)
+  );
+
 do $$
 begin
-  if not exists (
-    select 1
-    from pg_constraint
-    where conrelid = 'public.payment_orders'::regclass
-      and conname = 'payment_orders_plan_price_check'
-  ) then
-    alter table public.payment_orders
-      add constraint payment_orders_plan_price_check check (
-        (plan_months is null and amount_uah is null)
-        or (plan_months = 1 and amount_uah = 1200)
-        or (plan_months = 2 and amount_uah = 2300)
-        or (plan_months = 6 and amount_uah = 6800)
-        or (plan_months = 12 and amount_uah = 11500)
-      );
-  end if;
   if not exists (
     select 1
     from pg_constraint
@@ -153,6 +159,10 @@ begin
 
   if not found or selected_order.status <> 'payment_reported' then
     return;
+  end if;
+
+  if selected_order.receipt_received_at is null then
+    raise exception 'Payment receipt is required before approval';
   end if;
 
   if selected_order.plan_months not in (1, 2, 6, 12) then

@@ -22,6 +22,8 @@ type TelegramUpdate = {
 type ProfileVisual = {
   profile_id: string;
   watermark_mode: 0 | 1;
+  subscription_started_at: string | null;
+  subscription_expires_at: string | null;
 };
 
 type ProfileAccount = {
@@ -124,7 +126,7 @@ async function configureWebhook(): Promise<void> {
 
 async function getProfile(profileId: string): Promise<ProfileVisual | null> {
   const query = new URLSearchParams({
-    select: "profile_id,watermark_mode",
+    select: "profile_id,watermark_mode,subscription_started_at,subscription_expires_at",
     profile_id: `eq.${profileId}`,
     limit: "1",
   });
@@ -257,7 +259,44 @@ function profileListKeyboard(profiles: ProfileVisual[]): Record<string, unknown>
 
 function profileText(profile: ProfileVisual, changed = false): string {
   const modeName = profile.watermark_mode === 0 ? "компактная маркировка" : "крупная маркировка";
-  return `${changed ? "Изменено" : "Профиль"}: ${profile.profile_id}\nРежим: ${profile.watermark_mode} — ${modeName}`;
+  const expiresAt = profile.subscription_expires_at;
+  const isActive = Boolean(expiresAt && new Date(expiresAt).getTime() > Date.now());
+  const subscription = !expiresAt
+    ? ["Подписка: не оформлена", "Осталось: —"]
+    : isActive
+    ? [`Подписка: активна до ${subscriptionDate(expiresAt)} (Киев)`, `Осталось: ${remainingTimeText(expiresAt)}`]
+    : [`Подписка: истекла ${subscriptionDate(expiresAt)} (Киев)`, "Осталось: 0 сек."];
+  return [
+    `${changed ? "Изменено" : "Профиль"}: ${profile.profile_id}`,
+    `Режим: ${profile.watermark_mode} — ${modeName}`,
+    ...subscription,
+  ].join("\n");
+}
+
+function subscriptionDate(value: string): string {
+  return new Intl.DateTimeFormat("ru-RU", {
+    timeZone: "Europe/Kyiv",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(new Date(value));
+}
+
+function remainingTimeText(expiresAt: string): string {
+  const remainingSeconds = Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
+  const days = Math.floor(remainingSeconds / 86400);
+  const hours = Math.floor((remainingSeconds % 86400) / 3600);
+  const minutes = Math.floor((remainingSeconds % 3600) / 60);
+  const seconds = remainingSeconds % 60;
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days} дн.`);
+  if (hours > 0 || days > 0) parts.push(`${hours} ч.`);
+  if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes} мин.`);
+  parts.push(`${seconds} сек.`);
+  return parts.join(" ");
 }
 
 function accountName(account: ProfileAccount): string {
