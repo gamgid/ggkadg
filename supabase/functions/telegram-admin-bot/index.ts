@@ -43,6 +43,11 @@ const ADMIN_IDS = new Set(
 );
 const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 const PROFILE_ID_PATTERN = /^DEMO-[A-Z0-9-]{4,40}$/;
+const USERS_BUTTON = "👥 Пользователи";
+const PROFILES_BUTTON = "🪪 Профили";
+const SEARCH_BUTTON = "🔎 Найти профиль";
+const HELP_BUTTON = "❓ Справка";
+const MENU_BUTTON = "🏠 Главное меню";
 
 function requiredEnv(name: string): string {
   const value = Deno.env.get(name)?.trim();
@@ -105,6 +110,15 @@ async function configureWebhook(): Promise<void> {
     url: `${SUPABASE_URL}/functions/v1/telegram-admin-bot`,
     secret_token: WEBHOOK_SECRET,
     allowed_updates: ["message", "callback_query"],
+  });
+  await telegram("setMyCommands", {
+    commands: [
+      { command: "start", description: "Открыть главное меню" },
+      { command: "users", description: "Последние пользователи" },
+      { command: "profiles", description: "Все профили и режимы" },
+      { command: "profile", description: "Найти профиль по DEMO-ID" },
+      { command: "help", description: "Справка по боту" },
+    ],
   });
 }
 
@@ -180,16 +194,64 @@ async function setProfileMode(profileId: string, mode: 0 | 1): Promise<ProfileVi
 
 function profileKeyboard(profile: ProfileVisual): Record<string, unknown> {
   return {
-    inline_keyboard: [[
-      {
-        text: `${profile.watermark_mode === 0 ? "✅ " : ""}0 · компактно`,
-        callback_data: `visual|0|${profile.profile_id}`,
-      },
-      {
-        text: `${profile.watermark_mode === 1 ? "✅ " : ""}1 · крупно`,
-        callback_data: `visual|1|${profile.profile_id}`,
-      },
-    ]],
+    inline_keyboard: [
+      [
+        {
+          text: `${profile.watermark_mode === 0 ? "✅ " : ""}0 · компактно`,
+          callback_data: `visual|0|${profile.profile_id}`,
+        },
+        {
+          text: `${profile.watermark_mode === 1 ? "✅ " : ""}1 · крупно`,
+          callback_data: `visual|1|${profile.profile_id}`,
+        },
+      ],
+      [
+        { text: USERS_BUTTON, callback_data: "nav|users" },
+        { text: PROFILES_BUTTON, callback_data: "nav|profiles" },
+      ],
+      [{ text: MENU_BUTTON, callback_data: "nav|menu" }],
+    ],
+  };
+}
+
+function adminMenuKeyboard(): Record<string, unknown> {
+  return {
+    keyboard: [
+      [{ text: USERS_BUTTON }, { text: PROFILES_BUTTON }],
+      [{ text: SEARCH_BUTTON }, { text: HELP_BUTTON }],
+    ],
+    resize_keyboard: true,
+    is_persistent: true,
+  };
+}
+
+function accountListKeyboard(accounts: ProfileAccount[]): Record<string, unknown> {
+  return {
+    inline_keyboard: [
+      ...accounts.map(account => [{
+        text: `${account.profile_id} · ${accountName(account)}`.slice(0, 64),
+        callback_data: `profile|${account.profile_id}`,
+      }]),
+      [
+        { text: "🔄 Обновить", callback_data: "nav|users" },
+        { text: MENU_BUTTON, callback_data: "nav|menu" },
+      ],
+    ],
+  };
+}
+
+function profileListKeyboard(profiles: ProfileVisual[]): Record<string, unknown> {
+  return {
+    inline_keyboard: [
+      ...profiles.map(profile => [{
+        text: `${profile.profile_id} · режим ${profile.watermark_mode}`,
+        callback_data: `profile|${profile.profile_id}`,
+      }]),
+      [
+        { text: "🔄 Обновить", callback_data: "nav|profiles" },
+        { text: MENU_BUTTON, callback_data: "nav|menu" },
+      ],
+    ],
   };
 }
 
@@ -220,10 +282,6 @@ function accountDetails(account: ProfileAccount): string {
   ].join("\n");
 }
 
-function accountListLine(account: ProfileAccount): string {
-  return `${account.profile_id} — ${accountName(account)} (${accountUsername(account)}) — вход: ${compactDate(account.last_login_at)}`;
-}
-
 async function showProfile(chatId: number, profileId: string): Promise<void> {
   const [profile, account] = await Promise.all([getProfile(profileId), getAccountByProfileId(profileId)]);
   if (!profile) {
@@ -234,6 +292,57 @@ async function showProfile(chatId: number, profileId: string): Promise<void> {
   await sendMessage(chatId, `${profileText(profile)}${details}`, profileKeyboard(profile));
 }
 
+async function showAdminMenu(chatId: number): Promise<void> {
+  await sendMessage(
+    chatId,
+    "Панель администратора\n\nВыберите действие кнопкой ниже. Для быстрого открытия карточки можно также отправить DEMO-ID сообщением.",
+    adminMenuKeyboard(),
+  );
+}
+
+async function showUsers(chatId: number): Promise<void> {
+  const accounts = await listAccounts();
+  if (!accounts.length) {
+    await sendMessage(chatId, "Пользователей пока нет.", accountListKeyboard([]));
+    return;
+  }
+  await sendMessage(
+    chatId,
+    `Последние пользователи: ${accounts.length}\n\nНажмите на пользователя, чтобы открыть карточку и изменить режим.`,
+    accountListKeyboard(accounts),
+  );
+}
+
+async function showProfiles(chatId: number): Promise<void> {
+  const profiles = await listProfiles();
+  if (!profiles.length) {
+    await sendMessage(chatId, "Профилей пока нет.", profileListKeyboard([]));
+    return;
+  }
+  await sendMessage(
+    chatId,
+    `Профили: ${profiles.length}\n\nРежим 0 — компактная маркировка, режим 1 — крупная. Нажмите на профиль для управления.`,
+    profileListKeyboard(profiles),
+  );
+}
+
+async function showHelp(chatId: number): Promise<void> {
+  await sendMessage(
+    chatId,
+    [
+      "Справка администратора",
+      "",
+      `• ${USERS_BUTTON} — последние зарегистрированные пользователи.`,
+      `• ${PROFILES_BUTTON} — профили и текущие режимы 0/1.`,
+      `• ${SEARCH_BUTTON} — поиск карточки по постоянному DEMO-ID.`,
+      "• В карточке нажмите 0 или 1, чтобы изменить размер DEMO-маркировки.",
+      "",
+      "Изменение появляется в приложении после возврата на экран, фокуса или автоматического обновления.",
+    ].join("\n"),
+    adminMenuKeyboard(),
+  );
+}
+
 async function handleMessage(message: TelegramMessage): Promise<void> {
   if (!isAdmin(message.from?.id)) {
     await sendMessage(message.chat.id, "Доступ запрещён.");
@@ -241,27 +350,31 @@ async function handleMessage(message: TelegramMessage): Promise<void> {
   }
 
   const text = message.text?.trim() ?? "";
-  if (/^\/(start|help)(?:@\w+)?$/i.test(text)) {
-    await sendMessage(
-      message.chat.id,
-      "Администраторский бот.\n\n/users — последние пользователи\n/profiles — профили и режимы\nТакже можно отправить постоянный ID вида DEMO-XXXXXXXX.",
-    );
+  if (/^\/start(?:@\w+)?$/i.test(text) || text === MENU_BUTTON) {
+    await showAdminMenu(message.chat.id);
     return;
   }
 
-  if (/^\/profiles(?:@\w+)?$/i.test(text)) {
-    const profiles = await listProfiles();
-    const lines = profiles.map(profile => `${profile.profile_id} — ${profile.watermark_mode}`);
-    await sendMessage(message.chat.id, lines.length ? `Профили:\n${lines.join("\n")}` : "Профилей пока нет.");
+  if (/^\/help(?:@\w+)?$/i.test(text) || text === HELP_BUTTON) {
+    await showHelp(message.chat.id);
     return;
   }
 
-  if (/^\/users(?:@\w+)?$/i.test(text)) {
-    const accounts = await listAccounts();
-    const lines = accounts.map(accountListLine);
+  if (/^\/profiles(?:@\w+)?$/i.test(text) || text === PROFILES_BUTTON) {
+    await showProfiles(message.chat.id);
+    return;
+  }
+
+  if (/^\/users(?:@\w+)?$/i.test(text) || text === USERS_BUTTON) {
+    await showUsers(message.chat.id);
+    return;
+  }
+
+  if (/^\/profile(?:@\w+)?$/i.test(text) || text === SEARCH_BUTTON) {
     await sendMessage(
       message.chat.id,
-      lines.length ? `Пользователи (до 20 последних):\n\n${lines.join("\n")}` : "Пользователей пока нет.",
+      "Отправьте постоянный ID профиля сообщением, например: DEMO-BKZYHEDR",
+      adminMenuKeyboard(),
     );
     return;
   }
@@ -269,7 +382,11 @@ async function handleMessage(message: TelegramMessage): Promise<void> {
   const profileArgument = text.replace(/^\/profile(?:@\w+)?\s+/i, "");
   const profileId = normalizeProfileId(profileArgument);
   if (!profileId) {
-    await sendMessage(message.chat.id, "Нужен ID вида DEMO-57392817.");
+    await sendMessage(
+      message.chat.id,
+      "Не удалось распознать команду. Используйте кнопки меню или отправьте ID вида DEMO-BKZYHEDR.",
+      adminMenuKeyboard(),
+    );
     return;
   }
   await showProfile(message.chat.id, profileId);
@@ -286,6 +403,31 @@ async function handleCallback(callback: TelegramCallbackQuery): Promise<void> {
   }
 
   const [action, rawMode, rawProfileId] = callback.data?.split("|") ?? [];
+
+  if (action === "profile") {
+    const profileId = rawMode ? normalizeProfileId(rawMode) : null;
+    if (!profileId || !callback.message) {
+      await telegram("answerCallbackQuery", {
+        callback_query_id: callback.id,
+        text: "Профиль не найден",
+        show_alert: true,
+      });
+      return;
+    }
+    await telegram("answerCallbackQuery", { callback_query_id: callback.id });
+    await showProfile(callback.message.chat.id, profileId);
+    return;
+  }
+
+  if (action === "nav") {
+    if (!callback.message) return;
+    await telegram("answerCallbackQuery", { callback_query_id: callback.id });
+    if (rawMode === "users") await showUsers(callback.message.chat.id);
+    else if (rawMode === "profiles") await showProfiles(callback.message.chat.id);
+    else await showAdminMenu(callback.message.chat.id);
+    return;
+  }
+
   const profileId = rawProfileId ? normalizeProfileId(rawProfileId) : null;
   const mode = rawMode === "0" ? 0 : rawMode === "1" ? 1 : null;
   if (action !== "visual" || mode === null || !profileId) {

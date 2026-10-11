@@ -6,3 +6,6 @@ verify_jwt = false
 
 [functions.telegram-profile-auth]
 verify_jwt = false
+
+[functions.telegram-payment-bot]
+verify_jwt = false

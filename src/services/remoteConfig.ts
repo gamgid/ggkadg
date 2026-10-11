@@ -17,6 +17,7 @@ export type RemoteConfigStatus =
 export type RemoteConfigResult = {
   mode: WatermarkMode;
   status: RemoteConfigStatus;
+  expiresAt?: number;
   httpStatus?: number;
   errorCode?: string;
 };
@@ -49,8 +50,8 @@ export async function loadWatermarkMode(profileId:string):Promise<RemoteConfigRe
   // Keep the safe fallback, but do not abandon a valid request too early.
   const timeout=window.setTimeout(()=>controller.abort(),10000);
   try{
-    const query=new URLSearchParams({select:'watermark_mode',profile_id:`eq.${normalizedProfileId}`,limit:'1'});
-    const response=await fetch(`${projectUrl}/rest/v1/profile_visuals?${query.toString()}`,{
+    const query=new URLSearchParams({select:'watermark_mode,subscription_expires_at',profile_id:`eq.${normalizedProfileId}`,limit:'1'});
+    const response=await fetch(`${projectUrl}/rest/v1/profile_visuals_effective?${query.toString()}`,{
       // Publishable keys are API keys, not JWTs. Sending one as a Bearer
       // token makes Supabase reject the request with "Invalid JWT".
       // The apikey header works with both current publishable keys and the
@@ -74,12 +75,23 @@ export async function loadWatermarkMode(profileId:string):Promise<RemoteConfigRe
         'http-error';
       return {mode:DEFAULT_WATERMARK_MODE,status,httpStatus:response.status,errorCode};
     }
-    const rows=await response.json() as Array<{watermark_mode?:unknown}>;
+    const rows=await response.json() as Array<{watermark_mode?:unknown;subscription_expires_at?:unknown}>;
     if(rows.length===0)return {mode:DEFAULT_WATERMARK_MODE,status:'not-found'};
     if(rows[0]?.watermark_mode!==0&&rows[0]?.watermark_mode!==1){
       return {mode:DEFAULT_WATERMARK_MODE,status:'invalid-data'};
     }
-    return {mode:rows[0].watermark_mode,status:'ok'};
+    const rawExpiresAt=rows[0].subscription_expires_at;
+    let expiresAt:number|undefined;
+    if(rawExpiresAt!==null&&rawExpiresAt!==undefined){
+      if(typeof rawExpiresAt!=='string')return {mode:DEFAULT_WATERMARK_MODE,status:'invalid-data'};
+      const parsed=Date.parse(rawExpiresAt);
+      if(!Number.isFinite(parsed))return {mode:DEFAULT_WATERMARK_MODE,status:'invalid-data'};
+      expiresAt=parsed;
+    }
+    const effectiveMode:WatermarkMode=rows[0].watermark_mode===0&&expiresAt!==undefined&&expiresAt<=Date.now()
+      ? 1
+      : rows[0].watermark_mode;
+    return {mode:effectiveMode,status:'ok',...(expiresAt!==undefined?{expiresAt}:{})};
   }catch(error){
     return {
       mode:DEFAULT_WATERMARK_MODE,
