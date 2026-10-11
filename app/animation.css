@@ -1193,5 +1193,14 @@ html,body{background:#e1dfca}
 .card-deferral{top:12px;left:15px;gap:4px}
 .card-deferral span{font-size:16px;line-height:1.2;font-weight:400}
 .card-deferral b{max-width:290px;color:#191a16;font-size:17px;line-height:1.2;font-weight:600}
+
+/* iOS WebKit can keep the opposite 3D face painted after the flip settles.
+   Hide only the inactive face at rest, so front-side text cannot show through
+   the transparent white modules of the QR while preserving the turn animation. */
+.flip-card:not(.flipped):not([aria-busy="true"]) .id-back,
+.flip-card.flipped:not([aria-busy="true"]) .id-front{
+  visibility:hidden;
+}
+.flip-qr,.flip-qr svg{background:#fff}
 .splash-v .island{display:block;color:inherit;font-size:inherit;font-weight:inherit}
 .splash-mark{margin:auto;width:76px;height:86px;border-radius:17px 17px 28px 28px;background:#161713;color:#e6e7cf;display:grid;place-items:center;font-size:34px;font-weight:900}
