@@ -206,7 +206,7 @@ function IdScreen({profile,qr,openMessages,openDocument,openPdf}:{profile:Profil
   const [updateDocumentOpen,setUpdateDocumentOpen]=useState(false);
   const cardRef=useRef<HTMLDivElement|null>(null);
   const flipRef=useRef<ReturnType<typeof createCardFlip>|null>(null);
-  const expiry=qrExpiryDate(),status=`${profile.status}  •  Оновлено ${profile.updatedAt}`;
+  const expiry=qrExpiryDate(),status=`Документ оновлено  •  Оновлено ${profile.updatedAt}`;
 
   useEffect(()=>{
     if(!cardRef.current)return;
